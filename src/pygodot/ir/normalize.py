@@ -2,10 +2,21 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from pygodot.dsl.nodes import Node
+from pygodot.dsl.resources import ExternalResource
 from pygodot.dsl.scene import Scene
 from pygodot.dsl.script import Script
-from pygodot.ir.model import IRExternalResource, IRNode, IRProject, IRScene, IRScript, IRSignalConnection
+from pygodot.ir.model import (
+    IRExternalResource,
+    IRExternalResourceRef,
+    IRNode,
+    IRProject,
+    IRScene,
+    IRScript,
+    IRSignalConnection,
+)
 
 
 def normalize_scene(scene: Scene) -> IRScene:
@@ -62,7 +73,7 @@ def _normalize_node(
         type=node.type,
         path=node_path,
         parent_path=parent_path,
-        props=dict(node.props),
+        props={key: _normalize_value(value, resources) for key, value in node.props.items()},
         children=children,
         script=script,
         signals=signals,
@@ -84,6 +95,27 @@ def _normalize_script(
         body=script.body,
         resource_id=resource_id,
     )
+
+
+def _normalize_value(value: Any, resources: dict[str, IRExternalResource]) -> Any:
+    if isinstance(value, ExternalResource):
+        resource_id = resource_id_for_path(value.path, prefix=value.type)
+        resources[value.path] = IRExternalResource(type=value.type, path=value.path, id=resource_id)
+        return IRExternalResourceRef(resource_id=resource_id)
+
+    if isinstance(value, list):
+        return [_normalize_value(item, resources) for item in value]
+
+    if isinstance(value, tuple):
+        return tuple(_normalize_value(item, resources) for item in value)
+
+    if isinstance(value, dict):
+        return {
+            _normalize_value(key, resources): _normalize_value(item, resources)
+            for key, item in value.items()
+        }
+
+    return value
 
 
 def _child_parent_path(node: Node, parent_path: str | None) -> str:

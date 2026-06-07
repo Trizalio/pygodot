@@ -1,7 +1,7 @@
 """Emitter for project.godot."""
 
 from pygodot.ir.model import IRProject
-from pygodot.emitters.tscn import gd_string
+from pygodot.emitters.values import gd_string
 
 
 class ProjectEmitter:

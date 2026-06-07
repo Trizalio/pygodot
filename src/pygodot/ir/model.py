@@ -30,6 +30,11 @@ class IRExternalResource:
 
 
 @dataclass(slots=True, frozen=True)
+class IRExternalResourceRef:
+    resource_id: str
+
+
+@dataclass(slots=True, frozen=True)
 class IRNode:
     name: str
     type: str

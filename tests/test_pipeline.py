@@ -4,10 +4,24 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from pygodot import Button, Game, Label, Node2D, Scene, Script, Vec2, signal
+from pygodot import (
+    Button,
+    Color,
+    Game,
+    Label,
+    Node2D,
+    NodePath,
+    Scene,
+    Script,
+    Vec2,
+    Vec3,
+    ext_resource,
+    signal,
+)
 from pygodot.emitters.gdscript import GdScriptEmitter
 from pygodot.emitters.project import ProjectEmitter
-from pygodot.emitters.tscn import TscnEmitter, gd_value
+from pygodot.emitters.tscn import TscnEmitter
+from pygodot.emitters.values import gd_value
 from pygodot.errors import ValidationError
 from pygodot.ir.model import IRProject
 from pygodot.ir.normalize import normalize_scene
@@ -51,6 +65,9 @@ class ValueSerializationTests(unittest.TestCase):
         self.assertEqual(gd_value((1, 2)), "Vector2(1, 2)")
         self.assertEqual(gd_value((1, 2, 3)), "Vector3(1, 2, 3)")
         self.assertEqual(gd_value(Vec2(80, 120)), "Vector2(80, 120)")
+        self.assertEqual(gd_value(Vec3(1, 2, 3)), "Vector3(1, 2, 3)")
+        self.assertEqual(gd_value(Color(1, 0.5, 0.25)), "Color(1, 0.5, 0.25, 1.0)")
+        self.assertEqual(gd_value(NodePath("../Player")), 'NodePath("../Player")')
 
 
 class EmitterSnapshotTests(unittest.TestCase):
@@ -109,6 +126,45 @@ text = "Click me"
 [connection signal="pressed" from="StartButton" to="." method="_on_start_pressed"]
 """,
         )
+
+    def test_tscn_emitter_snapshot_with_external_resource_property(self) -> None:
+        scene = normalize_scene(
+            Scene(
+                path="res://scenes/main.tscn",
+                root=Node2D(
+                    "Main",
+                    icon=ext_resource("res://assets/icon.svg", type="Texture2D"),
+                ),
+            )
+        )
+
+        self.assertEqual(
+            TscnEmitter().emit(scene),
+            """[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icon.svg" id="Texture2D_assets_icon_svg"]
+
+[node name="Main" type="Node2D"]
+icon = ExtResource("Texture2D_assets_icon_svg")
+""",
+        )
+
+    def test_normalize_collects_external_resource_properties(self) -> None:
+        scene = normalize_scene(
+            Scene(
+                path="res://scenes/main.tscn",
+                root=Node2D(
+                    "Main",
+                    icon=ext_resource("res://assets/icon.svg", type="Texture2D"),
+                ),
+            )
+        )
+
+        self.assertEqual(len(scene.external_resources), 1)
+        resource = scene.external_resources[0]
+        self.assertEqual(resource.type, "Texture2D")
+        self.assertEqual(resource.path, "res://assets/icon.svg")
+        self.assertEqual(resource.id, "Texture2D_assets_icon_svg")
 
 
 class ValidationTests(unittest.TestCase):

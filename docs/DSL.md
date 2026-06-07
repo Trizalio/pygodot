@@ -23,6 +23,7 @@ Node
 Script
 SignalConnection
 Godot value wrappers
+ExternalResource
 ```
 
 Node constructors/classes:
@@ -127,6 +128,20 @@ Label("Title", text="Hello", position=Vec2(80, 60))
 ```
 
 Do not rely forever on tuple length inference.
+
+External resources can be referenced from properties explicitly:
+
+```python
+from pygodot import ext_resource
+
+Node2D(
+    "IconOwner",
+    icon=ext_resource("res://assets/icon.svg", type="Texture2D"),
+)
+```
+
+Normalization collects these references into scene external resources and replaces
+the property value with an internal resource reference for the `.tscn` emitter.
 
 ## Signals
 

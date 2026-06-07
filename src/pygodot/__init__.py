@@ -4,6 +4,7 @@ from pygodot.dsl import (
     Button,
     Color,
     Control,
+    ExternalResource,
     Label,
     Node,
     Node2D,
@@ -13,6 +14,7 @@ from pygodot.dsl import (
     SignalConnection,
     Vec2,
     Vec3,
+    ext_resource,
     signal,
 )
 from pygodot.game import BuildResult, Game
@@ -22,6 +24,7 @@ __all__ = [
     "Button",
     "Color",
     "Control",
+    "ExternalResource",
     "Game",
     "Label",
     "Node",
@@ -32,5 +35,6 @@ __all__ = [
     "SignalConnection",
     "Vec2",
     "Vec3",
+    "ext_resource",
     "signal",
 ]

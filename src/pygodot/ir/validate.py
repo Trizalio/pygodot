@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from pygodot.emitters.tscn import gd_value
+from pygodot.emitters.values import gd_value
 from pygodot.errors import ValidationError
 from pygodot.ir.model import IRNode, IRProject, IRScene
 

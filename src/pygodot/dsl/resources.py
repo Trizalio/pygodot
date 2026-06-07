@@ -1,0 +1,13 @@
+"""Resource declarations for the public DSL."""
+
+from dataclasses import dataclass
+
+
+@dataclass(slots=True, frozen=True)
+class ExternalResource:
+    path: str
+    type: str
+
+
+def ext_resource(path: str, *, type: str) -> ExternalResource:
+    return ExternalResource(path=path, type=type)

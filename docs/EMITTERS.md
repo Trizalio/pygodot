@@ -65,8 +65,11 @@ Vec2(80, 60)
 Vec3(1, 2, 3)
 Color(1, 1, 1, 1)
 NodePath("../Player")
-ExtResourceRef("Script_scripts_main_gd")
+ext_resource("res://assets/player.png", type="Texture2D")
 ```
+
+Public `ext_resource(...)` values are normalized into IR external resources and
+internal resource references before emission.
 
 ## Resource IDs
 
