@@ -14,6 +14,7 @@ from pygodot import (
     NodePath,
     Node,
     packed_scene,
+    Rect2,
     Scene,
     Script,
     Vec2,
@@ -70,6 +71,7 @@ class ValueSerializationTests(unittest.TestCase):
         self.assertEqual(gd_value((1, 2, 3)), "Vector3(1, 2, 3)")
         self.assertEqual(gd_value(Vec2(80, 120)), "Vector2(80, 120)")
         self.assertEqual(gd_value(Vec3(1, 2, 3)), "Vector3(1, 2, 3)")
+        self.assertEqual(gd_value(Rect2(1, 2, 30, 40)), "Rect2(1, 2, 30, 40)")
         self.assertEqual(gd_value(Color(1, 0.5, 0.25)), "Color(1, 0.5, 0.25, 1.0)")
         self.assertEqual(gd_value(NodePath("../Player")), 'NodePath("../Player")')
 
@@ -150,6 +152,26 @@ text = "Click me"
 
 [node name="Main" type="Node2D"]
 icon = ExtResource("Texture2D_assets_icon_svg")
+""",
+        )
+
+    def test_tscn_emitter_snapshot_with_rect2_property(self) -> None:
+        scene = normalize_scene(
+            Scene(
+                path="res://scenes/main.tscn",
+                root=Node2D(
+                    "Main",
+                    region_rect=Rect2(0, 0, 16, 32),
+                ),
+            )
+        )
+
+        self.assertEqual(
+            TscnEmitter().emit(scene),
+            """[gd_scene format=3]
+
+[node name="Main" type="Node2D"]
+region_rect = Rect2(0, 0, 16, 32)
 """,
         )
 

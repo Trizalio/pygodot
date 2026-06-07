@@ -125,6 +125,7 @@ However, explicit value wrappers should be added early:
 
 ```python
 Label("Title", text="Hello", position=Vec2(80, 60))
+Node2D("Region", region_rect=Rect2(0, 0, 16, 32))
 ```
 
 Do not rely forever on tuple length inference.

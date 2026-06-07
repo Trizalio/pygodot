@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from pygodot.dsl.values import Color, NodePath, Vec2, Vec3
+from pygodot.dsl.values import Color, NodePath, Rect2, Vec2, Vec3
 from pygodot.ir.model import IRExternalResourceRef
 
 
@@ -33,6 +33,12 @@ def gd_value(value: Any) -> str:
 
     if isinstance(value, Vec3):
         return f"Vector3({gd_value(value.x)}, {gd_value(value.y)}, {gd_value(value.z)})"
+
+    if isinstance(value, Rect2):
+        return (
+            f"Rect2({gd_value(value.x)}, {gd_value(value.y)}, "
+            f"{gd_value(value.width)}, {gd_value(value.height)})"
+        )
 
     if isinstance(value, Color):
         return f"Color({gd_value(value.r)}, {gd_value(value.g)}, {gd_value(value.b)}, {gd_value(value.a)})"

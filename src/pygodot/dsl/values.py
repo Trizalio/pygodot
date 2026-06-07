@@ -17,6 +17,14 @@ class Vec3:
 
 
 @dataclass(slots=True, frozen=True)
+class Rect2:
+    x: float
+    y: float
+    width: float
+    height: float
+
+
+@dataclass(slots=True, frozen=True)
 class Color:
     r: float
     g: float

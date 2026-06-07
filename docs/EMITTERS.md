@@ -63,6 +63,7 @@ But add explicit wrappers early:
 ```python
 Vec2(80, 60)
 Vec3(1, 2, 3)
+Rect2(0, 0, 16, 32)
 Color(1, 1, 1, 1)
 NodePath("../Player")
 ext_resource("res://assets/player.png", type="Texture2D")

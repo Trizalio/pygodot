@@ -58,7 +58,7 @@ Examples:
 - `Button`
 - `Script`
 - `signal(...)`
-- `Vec2`, `Vec3`, `Color`, `NodePath`
+- `Vec2`, `Vec3`, `Rect2`, `Color`, `NodePath`
 
 The DSL should be explicit and boring. Avoid magic.
 
