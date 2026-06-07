@@ -11,6 +11,8 @@ C:\code\PyGodot\.venv\Scripts\python.exe C:\code\PyGodot\example.py
 The example owns a `Game` object and calls `game.run()`, which builds the Godot
 project, runs Godot import, and starts the generated main scene.
 
+There is also a self-contained minimal example at `examples/minimal/game.py`.
+
 ## Run tests
 
 ```powershell
