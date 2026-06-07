@@ -11,71 +11,107 @@ def validate_project(project: IRProject) -> None:
     if not project.name:
         raise ValidationError("Project name must not be empty.")
     if not _is_res_path(project.main_scene):
-        raise ValidationError(f"Main scene path must start with res://, got {project.main_scene!r}.")
+        raise ValidationError(
+            f"Main scene path must start with res://: main_scene={project.main_scene!r}."
+        )
     if not project.scenes:
         raise ValidationError("Game must contain at least one scene.")
     scene_paths = {scene.path for scene in project.scenes}
     if project.main_scene not in scene_paths:
-        raise ValidationError(f"Main scene {project.main_scene!r} is not registered in the game.")
+        raise ValidationError(
+            f"Main scene is not registered in the game: "
+            f"main_scene={project.main_scene!r}, registered_scenes={sorted(scene_paths)!r}."
+        )
     for scene in project.scenes:
         validate_scene(scene)
 
 
 def validate_scene(scene: IRScene) -> None:
     if not _is_res_path(scene.path):
-        raise ValidationError(f"Scene path must start with res://, got {scene.path!r}.")
+        raise ValidationError(f"Scene path must start with res://: scene={scene.path!r}.")
     _validate_node(scene.root, scene_path=scene.path)
     for resource in scene.external_resources:
         if not resource.type:
-            raise ValidationError(f"External resource type must not be empty for {resource.path!r}.")
+            raise ValidationError(
+                f"External resource type must not be empty: scene={scene.path!r}, "
+                f"resource_path={resource.path!r}, resource_id={resource.id!r}."
+            )
         if not _is_res_path(resource.path):
-            raise ValidationError(f"External resource path must start with res://, got {resource.path!r}.")
+            raise ValidationError(
+                f"External resource path must start with res://: scene={scene.path!r}, "
+                f"resource_type={resource.type!r}, resource_path={resource.path!r}."
+            )
         if not resource.id:
-            raise ValidationError(f"External resource id must not be empty for {resource.path!r}.")
+            raise ValidationError(
+                f"External resource id must not be empty: scene={scene.path!r}, "
+                f"resource_type={resource.type!r}, resource_path={resource.path!r}."
+            )
 
 
 def _validate_node(node: IRNode, *, scene_path: str) -> None:
-    location = f"{scene_path}:{node.path}"
+    location = _location(scene_path, node.path)
     if not node.name:
-        raise ValidationError(f"Node name must not be empty at {location}.")
+        raise ValidationError(f"Node name must not be empty: {location}.")
     if "/" in node.name:
-        raise ValidationError(f"Node name must not contain '/' at {location}: {node.name!r}.")
+        raise ValidationError(
+            f"Node name must not contain '/': {location}, node_name={node.name!r}."
+        )
     if not node.type:
-        raise ValidationError(f"Node type must not be empty at {location}.")
+        raise ValidationError(f"Node type must not be empty: {location}.")
     if node.script is not None:
         if not _is_res_path(node.script.path):
-            raise ValidationError(f"Script path must start with res:// at {location}: {node.script.path!r}.")
+            raise ValidationError(
+                f"Script path must start with res://: {location}, script_path={node.script.path!r}."
+            )
         if not node.script.extends:
-            raise ValidationError(f"Script extends must not be empty at {location}.")
+            raise ValidationError(
+                f"Script extends must not be empty: {location}, script_path={node.script.path!r}."
+            )
         if node.script.generated and not node.script.body.strip():
-            raise ValidationError(f"Generated script body must not be empty at {location}.")
+            raise ValidationError(
+                f"Generated script body must not be empty: {location}, script_path={node.script.path!r}."
+            )
         if not node.script.generated and node.script.body.strip():
-            raise ValidationError(f"Referenced manual script body must be empty at {location}.")
+            raise ValidationError(
+                f"Referenced manual script body must be empty: {location}, script_path={node.script.path!r}."
+            )
     for key, value in node.props.items():
-        _validate_supported_value(value, property_name=key, location=location)
+        _validate_supported_value(value, value_path=f"property {key!r}", location=location)
     for conn in node.signals:
         if not conn.signal:
-            raise ValidationError(f"Signal name must not be empty at {location}.")
+            raise ValidationError(f"Signal name must not be empty: {location}, method={conn.method!r}.")
         if not conn.target:
-            raise ValidationError(f"Signal target must not be empty at {location}.")
+            raise ValidationError(
+                f"Signal target must not be empty: {location}, "
+                f"signal={conn.signal!r}, method={conn.method!r}."
+            )
         if not conn.method:
-            raise ValidationError(f"Signal method must not be empty at {location}.")
+            raise ValidationError(
+                f"Signal method must not be empty: {location}, signal={conn.signal!r}, target={conn.target!r}."
+            )
 
     seen: set[str] = set()
     for child in node.children:
         if child.name in seen:
-            raise ValidationError(f"Duplicate child node name {child.name!r} under {location}.")
+            raise ValidationError(
+                f"Duplicate child node name: {location}, child_name={child.name!r}."
+            )
         seen.add(child.name)
         _validate_node(child, scene_path=scene_path)
 
 
-def _validate_supported_value(value: Any, *, property_name: str, location: str) -> None:
+def _validate_supported_value(value: Any, *, value_path: str, location: str) -> None:
     try:
         gd_value(value)
     except TypeError as exc:
         raise ValidationError(
-            f"Unsupported value for property {property_name!r} at {location}: {value!r}."
+            f"Unsupported value for {value_path}: {location}, "
+            f"value={value!r}, value_type={type(value).__name__}."
         ) from exc
+
+
+def _location(scene_path: str, node_path: str) -> str:
+    return f"scene={scene_path!r}, node={node_path!r}"
 
 
 def _is_res_path(path: str) -> bool:

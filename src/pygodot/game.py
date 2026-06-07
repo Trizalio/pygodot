@@ -165,4 +165,9 @@ def _rel_to_project(project_dir: Path, path: Path) -> str:
 def _res_to_rel(path: str) -> Path:
     if not path.startswith("res://"):
         raise BuildError(f"Expected res:// path, got {path!r}.")
-    return Path(path.removeprefix("res://"))
+    relative = Path(path.removeprefix("res://"))
+    if relative.is_absolute() or ".." in relative.parts:
+        raise BuildError(f"Unsafe res:// path cannot leave project root: path={path!r}.")
+    if not relative.parts:
+        raise BuildError(f"Expected non-empty res:// path, got {path!r}.")
+    return relative

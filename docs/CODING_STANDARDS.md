@@ -74,6 +74,9 @@ class GodotCliError(PyGodotError): ...
 ```
 
 Errors should include scene path and node path where possible.
+For property/resource/script errors, include the smallest useful context:
+scene path, node path, property name, resource path, script path, and value type
+where relevant.
 
 Bad:
 
@@ -85,6 +88,12 @@ Better:
 
 ```text
 Unsupported value for property 'position' at res://scenes/main.tscn:Main/Title: <value repr>
+```
+
+Current style:
+
+```text
+Unsupported value for property 'position': scene='res://scenes/main.tscn', node='Title', value=<...>, value_type=...
 ```
 
 ## Generated files

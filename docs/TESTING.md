@@ -53,6 +53,8 @@ Required negative cases:
 - invalid signal method name;
 - attempt to overwrite manual file.
 - asset manifest contains stable generated/resource entries.
+- validation errors include scene/node/property or resource context.
+- unsafe `res://` paths cannot escape the generated project root.
 
 ## Snapshot example
 

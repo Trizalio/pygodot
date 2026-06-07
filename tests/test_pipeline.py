@@ -26,7 +26,7 @@ from pygodot.emitters.gdscript import GdScriptEmitter
 from pygodot.emitters.project import ProjectEmitter
 from pygodot.emitters.tscn import TscnEmitter
 from pygodot.emitters.values import gd_value
-from pygodot.errors import ValidationError
+from pygodot.errors import BuildError, ValidationError
 from pygodot.ir.model import IRProject
 from pygodot.ir.normalize import normalize_scene
 from pygodot.ir.validate import validate_scene
@@ -272,8 +272,43 @@ class ValidationTests(unittest.TestCase):
             ),
         )
 
-        with self.assertRaisesRegex(ValidationError, "Generated script body must not be empty"):
+        with self.assertRaisesRegex(
+            ValidationError,
+            "Generated script body must not be empty: scene='res://scenes/main.tscn', "
+            "node='.', script_path='res://scripts/main.gd'",
+        ):
             validate_scene(normalize_scene(scene))
+
+    def test_unsupported_property_value_error_includes_context(self) -> None:
+        scene = Scene(
+            path="res://scenes/main.tscn",
+            root=Node2D(
+                "Main",
+                metadata=object(),
+            ),
+        )
+
+        with self.assertRaisesRegex(
+            ValidationError,
+            "Unsupported value for property 'metadata': scene='res://scenes/main.tscn', "
+            "node='.', value=.*value_type=object",
+        ):
+            validate_scene(normalize_scene(scene))
+
+    def test_main_scene_error_includes_registered_scenes(self) -> None:
+        game = Game(
+            name="GeneratedGame",
+            source_root=Path("."),
+            build_dir=Path("build/godot_project"),
+            main_scene="res://missing.tscn",
+        )
+        game.add_scene(make_scene())
+
+        with self.assertRaisesRegex(
+            ValidationError,
+            "main_scene='res://missing.tscn'.*registered_scenes=\\['res://scenes/main.tscn'\\]",
+        ):
+            game.build()
 
 
 class BuildTests(unittest.TestCase):
@@ -398,6 +433,28 @@ class BuildTests(unittest.TestCase):
                     }
                 ],
             )
+
+    def test_game_build_rejects_unsafe_res_paths(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            build_dir = Path(tmp) / "godot_project"
+            game = Game(
+                name="GeneratedGame",
+                source_root=Path(tmp),
+                build_dir=build_dir,
+                main_scene="res://../main.tscn",
+            )
+            game.add_scene(
+                Scene(
+                    path="res://../main.tscn",
+                    root=Node2D("Main"),
+                )
+            )
+
+            with self.assertRaisesRegex(
+                BuildError,
+                "Unsafe res:// path cannot leave project root: path='res://../main.tscn'",
+            ):
+                game.build()
 
 
 def _read_generated_files(build_dir: Path) -> dict[str, str]:

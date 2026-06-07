@@ -38,7 +38,7 @@ class GeneratedFileWriter:
         if relative_path.is_absolute():
             raise BuildError(f"Copied file path must be relative: {relative_path}.")
         if not source.is_file():
-            raise BuildError(f"Cannot copy missing resource: {source}.")
+            raise BuildError(f"Cannot copy missing resource: source={source}, destination={relative_path}.")
 
         destination = self.project_dir / relative_path
         destination.parent.mkdir(parents=True, exist_ok=True)
