@@ -15,7 +15,10 @@ from pygodot.dsl import (
     Vec2,
     Vec3,
     ext_resource,
+    external_resource,
+    packed_scene,
     signal,
+    texture,
 )
 from pygodot.game import BuildResult, Game
 
@@ -36,5 +39,8 @@ __all__ = [
     "Vec2",
     "Vec3",
     "ext_resource",
+    "external_resource",
+    "packed_scene",
     "signal",
+    "texture",
 ]

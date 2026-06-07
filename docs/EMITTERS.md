@@ -66,10 +66,14 @@ Vec3(1, 2, 3)
 Color(1, 1, 1, 1)
 NodePath("../Player")
 ext_resource("res://assets/player.png", type="Texture2D")
+texture("res://assets/player.png")
+packed_scene("res://scenes/menu.tscn")
 ```
 
 Public `ext_resource(...)` values are normalized into IR external resources and
-internal resource references before emission.
+internal resource references before emission. Identical resources are deduplicated
+by `(type, path)`, so two references to the same texture share one `[ext_resource]`
+entry while different Godot resource types with the same path remain distinct.
 
 ## Resource IDs
 
@@ -79,7 +83,8 @@ Acceptable strategy for MVP:
 
 ```text
 Script_scripts_main_gd
-Texture_assets_player_png
+Texture2D_assets_player_png
+PackedScene_scenes_menu_tscn
 ```
 
 Hash-based IDs are also acceptable if deterministic and readable enough.

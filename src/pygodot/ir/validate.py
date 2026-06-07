@@ -26,8 +26,12 @@ def validate_scene(scene: IRScene) -> None:
         raise ValidationError(f"Scene path must start with res://, got {scene.path!r}.")
     _validate_node(scene.root, scene_path=scene.path)
     for resource in scene.external_resources:
+        if not resource.type:
+            raise ValidationError(f"External resource type must not be empty for {resource.path!r}.")
         if not _is_res_path(resource.path):
             raise ValidationError(f"External resource path must start with res://, got {resource.path!r}.")
+        if not resource.id:
+            raise ValidationError(f"External resource id must not be empty for {resource.path!r}.")
 
 
 def _validate_node(node: IRNode, *, scene_path: str) -> None:

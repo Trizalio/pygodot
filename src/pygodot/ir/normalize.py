@@ -20,7 +20,7 @@ from pygodot.ir.model import (
 
 
 def normalize_scene(scene: Scene) -> IRScene:
-    resources: dict[str, IRExternalResource] = {}
+    resources: dict[tuple[str, str], IRExternalResource] = {}
     root = _normalize_node(
         scene.root,
         node_path=".",
@@ -30,7 +30,7 @@ def normalize_scene(scene: Scene) -> IRScene:
     return IRScene(
         path=scene.path,
         root=root,
-        external_resources=tuple(resources[path] for path in sorted(resources)),
+        external_resources=tuple(resources[key] for key in sorted(resources)),
     )
 
 
@@ -47,7 +47,7 @@ def _normalize_node(
     *,
     node_path: str,
     parent_path: str | None,
-    resources: dict[str, IRExternalResource],
+    resources: dict[tuple[str, str], IRExternalResource],
 ) -> IRNode:
     script = _normalize_script(node.script, resources)
     signals = tuple(
@@ -82,26 +82,27 @@ def _normalize_node(
 
 def _normalize_script(
     script: Script | None,
-    resources: dict[str, IRExternalResource],
+    resources: dict[tuple[str, str], IRExternalResource],
 ) -> IRScript | None:
     if script is None:
         return None
 
-    resource_id = resource_id_for_path(script.path, prefix="Script")
-    resources[script.path] = IRExternalResource(type="Script", path=script.path, id=resource_id)
+    resource = _register_external_resource(
+        resources,
+        ExternalResource(path=script.path, type="Script"),
+    )
     return IRScript(
         path=script.path,
         extends=script.extends,
         body=script.body,
-        resource_id=resource_id,
+        resource_id=resource.id,
     )
 
 
-def _normalize_value(value: Any, resources: dict[str, IRExternalResource]) -> Any:
+def _normalize_value(value: Any, resources: dict[tuple[str, str], IRExternalResource]) -> Any:
     if isinstance(value, ExternalResource):
-        resource_id = resource_id_for_path(value.path, prefix=value.type)
-        resources[value.path] = IRExternalResource(type=value.type, path=value.path, id=resource_id)
-        return IRExternalResourceRef(resource_id=resource_id)
+        resource = _register_external_resource(resources, value)
+        return IRExternalResourceRef(resource_id=resource.id)
 
     if isinstance(value, list):
         return [_normalize_value(item, resources) for item in value]
@@ -118,6 +119,16 @@ def _normalize_value(value: Any, resources: dict[str, IRExternalResource]) -> An
     return value
 
 
+def _register_external_resource(
+    resources: dict[tuple[str, str], IRExternalResource],
+    resource: ExternalResource,
+) -> IRExternalResource:
+    resource_id = resource_id_for_path(resource.path, prefix=resource.type)
+    ir_resource = IRExternalResource(type=resource.type, path=resource.path, id=resource_id)
+    resources[(resource.type, resource.path)] = ir_resource
+    return ir_resource
+
+
 def _child_parent_path(node: Node, parent_path: str | None) -> str:
     if parent_path is None:
         return "."
@@ -127,5 +138,17 @@ def _child_parent_path(node: Node, parent_path: str | None) -> str:
 
 
 def resource_id_for_path(path: str, *, prefix: str) -> str:
-    safe = path.removeprefix("res://").replace("/", "_").replace(".", "_").replace("-", "_")
-    return f"{prefix}_{safe}"
+    safe_prefix = _safe_resource_id_part(prefix)
+    safe_path = _safe_resource_id_part(path.removeprefix("res://"))
+    return f"{safe_prefix}_{safe_path}"
+
+
+def _safe_resource_id_part(value: str) -> str:
+    return (
+        value.replace("://", "_")
+        .replace("/", "_")
+        .replace("\\", "_")
+        .replace(".", "_")
+        .replace("-", "_")
+        .replace(":", "_")
+    )

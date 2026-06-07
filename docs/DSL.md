@@ -140,6 +140,18 @@ Node2D(
 )
 ```
 
+Convenience helpers are available for common resource types:
+
+```python
+from pygodot import packed_scene, texture
+
+Node2D(
+    "IconOwner",
+    icon=texture("res://assets/icon.svg"),
+    next_scene=packed_scene("res://scenes/menu.tscn"),
+)
+```
+
 Normalization collects these references into scene external resources and replaces
 the property value with an internal resource reference for the `.tscn` emitter.
 
