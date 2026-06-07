@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from pygodot.build.manifest import BuildManifest, ManifestResource
 from pygodot.build.writer import GeneratedFileWriter
 from pygodot.dsl.scene import Scene
 from pygodot.errors import BuildError
@@ -12,7 +13,7 @@ from pygodot.emitters.gdscript import GdScriptEmitter
 from pygodot.emitters.project import ProjectEmitter
 from pygodot.emitters.tscn import TscnEmitter
 from pygodot.godot_cli import import_project, run_project
-from pygodot.ir.model import IRNode, IRScript
+from pygodot.ir.model import IRExternalResource, IRNode, IRProject, IRScript
 from pygodot.ir.normalize import normalize_project
 from pygodot.ir.validate import validate_project
 
@@ -25,6 +26,8 @@ class BuildResult:
     written_files: list[Path]
     generated_scenes: list[Path]
     generated_scripts: list[Path]
+    copied_resources: list[Path] = field(default_factory=list)
+    manifest_path: Path | None = None
 
 
 @dataclass(slots=True)
@@ -53,8 +56,12 @@ class Game:
         written_files: list[Path] = []
         generated_scenes: list[Path] = []
         generated_scripts: list[Path] = []
+        copied_resources: list[Path] = []
+        manifest = BuildManifest()
 
-        written_files.append(writer.write_text(Path("project.godot"), project_emitter.emit(project)))
+        project_file = writer.write_text(Path("project.godot"), project_emitter.emit(project))
+        written_files.append(project_file)
+        manifest.generated_files.append(_rel_to_project(self.build_dir, project_file))
 
         emitted_script_paths: set[str] = set()
         for scene in project.scenes:
@@ -67,16 +74,34 @@ class Game:
                 script_path = writer.write_text(_res_to_rel(script.path), script_emitter.emit(script))
                 written_files.append(script_path)
                 generated_scripts.append(script_path)
+                rel_script_path = _rel_to_project(self.build_dir, script_path)
+                manifest.generated_files.append(rel_script_path)
+                manifest.generated_scripts.append(rel_script_path)
 
             scene_path = writer.write_text(_res_to_rel(scene.path), scene_emitter.emit(scene))
             written_files.append(scene_path)
             generated_scenes.append(scene_path)
+            rel_scene_path = _rel_to_project(self.build_dir, scene_path)
+            manifest.generated_files.append(rel_scene_path)
+            manifest.generated_scenes.append(rel_scene_path)
+
+        copied_resources.extend(_copy_external_resources(project, writer, self.source_root, manifest))
+        manifest_relative_path = Path(".pygodot") / "manifest.json"
+        manifest.generated_files.append(manifest_relative_path.as_posix())
+        manifest_path = writer.write_text(
+            manifest_relative_path,
+            manifest.to_json(),
+            mark_generated=False,
+        )
+        written_files.append(manifest_path)
 
         return BuildResult(
             project_dir=self.build_dir,
             written_files=written_files,
             generated_scenes=generated_scenes,
             generated_scripts=generated_scripts,
+            copied_resources=copied_resources,
+            manifest_path=manifest_path,
         )
 
     def run(self, scene: str | None = None) -> None:
@@ -92,6 +117,49 @@ def _iter_scripts(node: IRNode) -> list[IRScript]:
     for child in node.children:
         scripts.extend(_iter_scripts(child))
     return scripts
+
+
+def _copy_external_resources(
+    project: IRProject,
+    writer: GeneratedFileWriter,
+    source_root: Path,
+    manifest: BuildManifest,
+) -> list[Path]:
+    copied: list[Path] = []
+    seen: set[tuple[str, str]] = set()
+    for resource in _iter_external_resources(project):
+        key = (resource.type, resource.path)
+        if key in seen:
+            continue
+        seen.add(key)
+
+        relative_path = _res_to_rel(resource.path)
+        source = source_root / relative_path
+        copied_path: Path | None = None
+        if source.is_file():
+            copied_path = writer.copy_file(source, relative_path)
+            copied.append(copied_path)
+
+        manifest.external_resources.append(
+            ManifestResource(
+                type=resource.type,
+                path=resource.path,
+                id=resource.id,
+                copied=copied_path is not None,
+            )
+        )
+    return copied
+
+
+def _iter_external_resources(project: IRProject) -> list[IRExternalResource]:
+    resources: list[IRExternalResource] = []
+    for scene in project.scenes:
+        resources.extend(scene.external_resources)
+    return resources
+
+
+def _rel_to_project(project_dir: Path, path: Path) -> str:
+    return path.relative_to(project_dir).as_posix()
 
 
 def _res_to_rel(path: str) -> Path:

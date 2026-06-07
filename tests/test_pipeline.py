@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -292,11 +293,12 @@ class BuildTests(unittest.TestCase):
             self.assertEqual(result.project_dir, build_dir)
             self.assertEqual(
                 sorted(path.relative_to(build_dir).as_posix() for path in result.written_files),
-                ["project.godot", "scenes/main.tscn", "scripts/main.gd"],
+                [".pygodot/manifest.json", "project.godot", "scenes/main.tscn", "scripts/main.gd"],
             )
             self.assertTrue((build_dir / "project.godot").exists())
             self.assertTrue((build_dir / "scenes" / "main.tscn").exists())
             self.assertTrue((build_dir / "scripts" / "main.gd").exists())
+            self.assertEqual(result.manifest_path, build_dir / ".pygodot" / "manifest.json")
 
     def test_game_build_output_is_stable_across_repeated_builds(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -342,13 +344,59 @@ class BuildTests(unittest.TestCase):
 
             self.assertEqual(
                 sorted(path.relative_to(build_dir).as_posix() for path in result.written_files),
-                ["project.godot", "scenes/main.tscn"],
+                [".pygodot/manifest.json", "project.godot", "scenes/main.tscn"],
             )
             self.assertEqual(result.generated_scripts, [])
             self.assertFalse((build_dir / "manual" / "player.gd").exists())
             self.assertIn(
                 'path="res://manual/player.gd"',
                 (build_dir / "scenes" / "main.tscn").read_text(encoding="utf-8"),
+            )
+
+    def test_game_build_copies_existing_external_assets_and_writes_manifest(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            source_root = Path(tmp) / "source"
+            build_dir = Path(tmp) / "godot_project"
+            asset_path = source_root / "assets" / "icon.svg"
+            asset_path.parent.mkdir(parents=True)
+            asset_path.write_text("<svg></svg>\n", encoding="utf-8")
+
+            game = Game(
+                name="GeneratedGame",
+                source_root=source_root,
+                build_dir=build_dir,
+                main_scene="res://scenes/main.tscn",
+            )
+            game.add_scene(
+                Scene(
+                    path="res://scenes/main.tscn",
+                    root=Node2D(
+                        "Main",
+                        icon=texture("res://assets/icon.svg"),
+                    ),
+                )
+            )
+
+            result = game.build()
+
+            copied_asset = build_dir / "assets" / "icon.svg"
+            self.assertEqual(result.copied_resources, [copied_asset])
+            self.assertEqual(copied_asset.read_text(encoding="utf-8"), "<svg></svg>\n")
+
+            manifest_path = build_dir / ".pygodot" / "manifest.json"
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            self.assertEqual(result.manifest_path, manifest_path)
+            self.assertIn(".pygodot/manifest.json", manifest["generated_files"])
+            self.assertEqual(
+                manifest["external_resources"],
+                [
+                    {
+                        "copied": True,
+                        "id": "Texture2D_assets_icon_svg",
+                        "path": "res://assets/icon.svg",
+                        "type": "Texture2D",
+                    }
+                ],
             )
 
 

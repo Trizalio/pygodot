@@ -170,6 +170,8 @@ Recommended generated project structure:
 
 ```text
 build/godot/
+  .pygodot/
+    manifest.json
   project.godot
   scenes/
     main.tscn
@@ -187,3 +189,14 @@ res://.generated/scripts/
 res://manual/scripts/
 res://assets/
 ```
+
+## Build manifest
+
+`Game.build()` writes `res://.pygodot/manifest.json` in the generated Godot
+project. The manifest records generated files, generated scenes/scripts, and
+external resources.
+
+For MVP build-directory output, external resources that already exist under
+`Game.source_root` are copied to the same `res://` relative path inside the build
+directory. Missing external resources remain referenced and are recorded with
+`copied=false`.

@@ -74,8 +74,9 @@ Options:
 - maintain an asset manifest.
 
 Current leaning:
-- start with simple copy/reference;
-- add manifest once resources matter.
+- for build-directory output, copy resources that exist under `source_root`;
+- keep missing resources as references and record `copied=false` in the manifest;
+- evolve the manifest before supporting persistent project cleanup.
 
 ## Q007 — Godot API validation
 

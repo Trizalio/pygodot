@@ -28,6 +28,7 @@ Snapshot tests are important because generated file format stability is a produc
 Target:
 - build a minimal project into a temporary directory;
 - verify expected files exist;
+- verify copied external assets and `.pygodot/manifest.json`;
 - optionally run Godot headless import if `GODOT_BIN` is available.
 
 Godot-dependent tests should be skippable when Godot is not installed.
@@ -51,6 +52,7 @@ Required negative cases:
 - invalid script path;
 - invalid signal method name;
 - attempt to overwrite manual file.
+- asset manifest contains stable generated/resource entries.
 
 ## Snapshot example
 
