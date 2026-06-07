@@ -20,6 +20,7 @@ class IRScript:
     extends: str
     body: str
     resource_id: str
+    generated: bool = True
 
 
 @dataclass(slots=True, frozen=True)

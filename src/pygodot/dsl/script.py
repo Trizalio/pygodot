@@ -7,4 +7,9 @@ from dataclasses import dataclass
 class Script:
     path: str
     extends: str
-    body: str
+    body: str = ""
+    generated: bool = True
+
+    @classmethod
+    def reference(cls, path: str, *, extends: str) -> "Script":
+        return cls(path=path, extends=extends, generated=False)

@@ -196,7 +196,15 @@ Future support:
 - loading body from file;
 - Jinja-like templates;
 - generated boilerplate from structured definitions;
-- manual script references without generation.
+
+Manual scripts can be referenced without generation:
+
+```python
+Script.reference("res://manual/player.gd", extends="CharacterBody2D")
+```
+
+Referenced scripts are included in `.tscn` as external script resources, but
+`Game.build()` does not write or overwrite the `.gd` file.
 
 Do not implement Python-to-GDScript transpilation in MVP.
 

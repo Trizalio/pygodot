@@ -59,6 +59,8 @@ class Game:
         emitted_script_paths: set[str] = set()
         for scene in project.scenes:
             for script in _iter_scripts(scene.root):
+                if not script.generated:
+                    continue
                 if script.path in emitted_script_paths:
                     continue
                 emitted_script_paths.add(script.path)

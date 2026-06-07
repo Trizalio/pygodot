@@ -96,6 +96,7 @@ def _normalize_script(
         extends=script.extends,
         body=script.body,
         resource_id=resource.id,
+        generated=script.generated,
     )
 
 

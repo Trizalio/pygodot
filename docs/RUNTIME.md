@@ -82,6 +82,17 @@ func _ready() -> void:
 Then add:
 - `Script.from_file(...)`;
 - `Script.template(...)`;
-- `Script.reference(...)` for manual scripts that should not be generated.
+
+Manual scripts can be referenced without generation:
+
+```python
+Script.reference(
+    path="res://manual/player.gd",
+    extends="CharacterBody2D",
+)
+```
+
+Referenced scripts are emitted as external script resources in `.tscn` files, but
+`Game.build()` does not write or overwrite the `.gd` file.
 
 Do not build a Python-to-GDScript transpiler unless a later explicit decision reverses this.

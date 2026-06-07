@@ -47,6 +47,10 @@ def _validate_node(node: IRNode, *, scene_path: str) -> None:
             raise ValidationError(f"Script path must start with res:// at {location}: {node.script.path!r}.")
         if not node.script.extends:
             raise ValidationError(f"Script extends must not be empty at {location}.")
+        if node.script.generated and not node.script.body.strip():
+            raise ValidationError(f"Generated script body must not be empty at {location}.")
+        if not node.script.generated and node.script.body.strip():
+            raise ValidationError(f"Referenced manual script body must be empty at {location}.")
     for key, value in node.props.items():
         _validate_supported_value(value, property_name=key, location=location)
     for conn in node.signals:

@@ -54,7 +54,7 @@ Options:
 - hybrid file with generated regions.
 
 Current leaning:
-- support generated raw body and manual reference early;
+- support generated raw body and manual references early;
 - avoid generated regions until needed.
 
 ## Q005 — Godot version target

@@ -152,6 +152,31 @@ icon = ExtResource("Texture2D_assets_icon_svg")
 """,
         )
 
+    def test_tscn_emitter_snapshot_with_referenced_script(self) -> None:
+        scene = normalize_scene(
+            Scene(
+                path="res://scenes/main.tscn",
+                root=Node2D(
+                    "Main",
+                    script=Script.reference(
+                        "res://manual/player.gd",
+                        extends="Node2D",
+                    ),
+                ),
+            )
+        )
+
+        self.assertEqual(
+            TscnEmitter().emit(scene),
+            """[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://manual/player.gd" id="Script_manual_player_gd"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("Script_manual_player_gd")
+""",
+        )
+
     def test_normalize_collects_external_resource_properties(self) -> None:
         scene = normalize_scene(
             Scene(
@@ -237,6 +262,18 @@ class ValidationTests(unittest.TestCase):
         with self.assertRaisesRegex(ValidationError, "Duplicate child node name"):
             validate_scene(normalize_scene(scene))
 
+    def test_generated_script_body_must_not_be_empty(self) -> None:
+        scene = Scene(
+            path="res://scenes/main.tscn",
+            root=Node2D(
+                "Main",
+                script=Script(path="res://scripts/main.gd", extends="Node2D"),
+            ),
+        )
+
+        with self.assertRaisesRegex(ValidationError, "Generated script body must not be empty"):
+            validate_scene(normalize_scene(scene))
+
 
 class BuildTests(unittest.TestCase):
     def test_game_build_writes_expected_files(self) -> None:
@@ -278,6 +315,41 @@ class BuildTests(unittest.TestCase):
             second = _read_generated_files(build_dir)
 
             self.assertEqual(second, first)
+
+    def test_game_build_does_not_write_referenced_manual_scripts(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            build_dir = Path(tmp) / "godot_project"
+            game = Game(
+                name="GeneratedGame",
+                source_root=Path(tmp),
+                build_dir=build_dir,
+                main_scene="res://scenes/main.tscn",
+            )
+            game.add_scene(
+                Scene(
+                    path="res://scenes/main.tscn",
+                    root=Node2D(
+                        "Main",
+                        script=Script.reference(
+                            "res://manual/player.gd",
+                            extends="Node2D",
+                        ),
+                    ),
+                )
+            )
+
+            result = game.build()
+
+            self.assertEqual(
+                sorted(path.relative_to(build_dir).as_posix() for path in result.written_files),
+                ["project.godot", "scenes/main.tscn"],
+            )
+            self.assertEqual(result.generated_scripts, [])
+            self.assertFalse((build_dir / "manual" / "player.gd").exists())
+            self.assertIn(
+                'path="res://manual/player.gd"',
+                (build_dir / "scenes" / "main.tscn").read_text(encoding="utf-8"),
+            )
 
 
 def _read_generated_files(build_dir: Path) -> dict[str, str]:
