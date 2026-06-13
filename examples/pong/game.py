@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-from pygodot import Color, Game, Label, Node, Node2D, Scene, Script, Vec2
+from pygodot import Color, Game, Label, Node2D, Scene, Script, Vec2, node
 
 ROOT = Path(__file__).parent
 
@@ -130,41 +130,33 @@ game.add_scene(
             "Main",
             script=PONG_SCRIPT,
             children=[
-                Node(
-                    name="Background",
-                    type="ColorRect",
-                    props={
-                        "position": Vec2(0, 0),
-                        "size": Vec2(800, 600),
-                        "color": Color(0.03, 0.04, 0.05),
-                    },
+                node(
+                    "Background",
+                    "ColorRect",
+                    position=Vec2(0, 0),
+                    size=Vec2(800, 600),
+                    color=Color(0.03, 0.04, 0.05),
                 ),
-                Node(
-                    name="LeftPaddle",
-                    type="ColorRect",
-                    props={
-                        "position": Vec2(32, 252),
-                        "size": Vec2(18, 96),
-                        "color": Color(0.9, 0.95, 1.0),
-                    },
+                node(
+                    "LeftPaddle",
+                    "ColorRect",
+                    position=Vec2(32, 252),
+                    size=Vec2(18, 96),
+                    color=Color(0.9, 0.95, 1.0),
                 ),
-                Node(
-                    name="RightPaddle",
-                    type="ColorRect",
-                    props={
-                        "position": Vec2(750, 252),
-                        "size": Vec2(18, 96),
-                        "color": Color(1.0, 0.86, 0.45),
-                    },
+                node(
+                    "RightPaddle",
+                    "ColorRect",
+                    position=Vec2(750, 252),
+                    size=Vec2(18, 96),
+                    color=Color(1.0, 0.86, 0.45),
                 ),
-                Node(
-                    name="Ball",
-                    type="ColorRect",
-                    props={
-                        "position": Vec2(392, 292),
-                        "size": Vec2(16, 16),
-                        "color": Color(1.0, 1.0, 1.0),
-                    },
+                node(
+                    "Ball",
+                    "ColorRect",
+                    position=Vec2(392, 292),
+                    size=Vec2(16, 16),
+                    color=Color(1.0, 1.0, 1.0),
                 ),
                 Label(
                     "LeftScore",

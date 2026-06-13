@@ -1,6 +1,6 @@
 """Public DSL objects."""
 
-from pygodot.dsl.nodes import Button, Control, Label, Node, Node2D
+from pygodot.dsl.nodes import Button, Control, Label, Node, Node2D, node
 from pygodot.dsl.resources import ExternalResource, ext_resource, external_resource, packed_scene, texture
 from pygodot.dsl.scene import Scene
 from pygodot.dsl.script import Script
@@ -24,6 +24,7 @@ __all__ = [
     "Vec3",
     "ext_resource",
     "external_resource",
+    "node",
     "packed_scene",
     "signal",
     "texture",

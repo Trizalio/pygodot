@@ -24,6 +24,7 @@ from pygodot import (
     Vec3,
     ext_resource,
     signal,
+    node,
     texture,
 )
 from pygodot.emitters.gdscript import GdScriptEmitter
@@ -64,6 +65,34 @@ def make_scene() -> Scene:
             ],
         ),
     )
+
+
+class DslNodeTests(unittest.TestCase):
+    def test_node_helper_creates_generic_node(self) -> None:
+        script = Script(
+            path="res://scripts/panel.gd",
+            extends="Control",
+            body="func _ready() -> void:\n    pass",
+        )
+        signals = [signal("pressed", target=".", method="_on_pressed")]
+        child = Label("Title", text="Hello")
+
+        generic = node(
+            "Panel",
+            "Control",
+            children=[child],
+            script=script,
+            signals=signals,
+            position=Vec2(12, 24),
+            visible=True,
+        )
+
+        self.assertEqual(generic.name, "Panel")
+        self.assertEqual(generic.type, "Control")
+        self.assertEqual(generic.props, {"position": Vec2(12, 24), "visible": True})
+        self.assertEqual(generic.children, [child])
+        self.assertIs(generic.script, script)
+        self.assertEqual(generic.signals, signals)
 
 
 class ValueSerializationTests(unittest.TestCase):

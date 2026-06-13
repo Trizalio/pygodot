@@ -23,6 +23,25 @@ class Node:
         return self
 
 
+def node(
+    name: str,
+    type: str,
+    *,
+    children: list[Node] | None = None,
+    script: Script | None = None,
+    signals: list[SignalConnection] | None = None,
+    **props: Any,
+) -> Node:
+    return Node(
+        name=name,
+        type=type,
+        props=props,
+        children=children or [],
+        script=script,
+        signals=signals or [],
+    )
+
+
 def Node2D(
     name: str,
     *,
