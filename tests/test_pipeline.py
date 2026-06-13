@@ -270,6 +270,25 @@ text = "Click me"
             GdScriptEmitter().emit(script),
         )
 
+    def test_snake_scene_file_snapshot(self) -> None:
+        snake = _load_example_game("snake")
+        scene = normalize_scene(snake.game.scenes[0])
+
+        self.assert_matches_snapshot(
+            "snake_scene.tscn",
+            TscnEmitter().emit(scene),
+        )
+
+    def test_snake_script_file_snapshot(self) -> None:
+        snake = _load_example_game("snake")
+        script = normalize_scene(snake.game.scenes[0]).root.script
+        assert script is not None
+
+        self.assert_matches_snapshot(
+            "snake_script.gd",
+            GdScriptEmitter().emit(script),
+        )
+
     def test_tscn_emitter_snapshot_with_external_resource_property(self) -> None:
         scene = normalize_scene(
             Scene(
@@ -737,6 +756,32 @@ class BuildTests(unittest.TestCase):
             self.assertIn('"keycode":87', project_text)
             self.assertIn("right_down={", project_text)
             self.assertIn('"keycode":4194322', project_text)
+
+    def test_snake_example_builds_draw_based_scene(self) -> None:
+        snake = _load_example_game("snake")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            build_dir = Path(tmp) / "godot_project"
+            snake.game.build_dir = build_dir
+
+            result = snake.game.build()
+
+            self.assertEqual(
+                sorted(path.relative_to(build_dir).as_posix() for path in result.written_files),
+                [".pygodot/manifest.json", "project.godot", "scenes/snake.tscn", "scripts/snake.gd"],
+            )
+
+            scene_text = (build_dir / "scenes" / "snake.tscn").read_text(encoding="utf-8")
+            script_text = (build_dir / "scripts" / "snake.gd").read_text(encoding="utf-8")
+            project_text = (build_dir / "project.godot").read_text(encoding="utf-8")
+
+            self.assertIn('[node name="Snake" type="Node2D"]', scene_text)
+            self.assertIn("func _draw() -> void:", script_text)
+            self.assertIn('Input.is_action_just_pressed("move_up")', script_text)
+            self.assertIn("draw_cell(food", script_text)
+            self.assertIn('run/main_scene="res://scenes/snake.tscn"', project_text)
+            self.assertIn("move_left={", project_text)
+            self.assertIn('"keycode":65', project_text)
 
 
 def _read_generated_files(build_dir: Path) -> dict[str, str]:

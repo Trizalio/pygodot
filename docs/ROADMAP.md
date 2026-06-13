@@ -23,27 +23,14 @@ Implemented:
 - build manifest at `.pygodot/manifest.json`;
 - generated/manual overwrite boundary;
 - deterministic snapshot tests;
-- `examples/minimal` and a playable two-scene `examples/pong`.
+- `examples/minimal`;
+- a playable two-scene `examples/pong`;
+- a draw-based `examples/snake`.
 
-## Next: Snake example
+## Next: useful project configuration
 
-Goal: add `examples/snake` as a small game that stresses generated GDScript and
-InputMap without adding physics or complex resources.
-
-The scene should stay intentionally simple, likely one `Node2D` root with most
-rendering done in `_draw()`.
-
-Useful checks:
-
-- generated script body remains readable;
-- InputMap actions cover directional controls and restart;
-- manual tick accumulator works without Timer DSL;
-- generated scene can be minimal and still playable;
-- snapshots remain manageable.
-
-## Then: useful project configuration
-
-Add small project settings only when an example needs them:
+Snake and Pong both hard-code their intended viewport in generated scripts and
+nodes. Add small project settings only where examples now need them:
 
 - display/window size;
 - optional window title metadata;
@@ -52,7 +39,7 @@ Add small project settings only when an example needs them:
 Keep this incremental. Do not build a broad settings DSL before examples prove
 the need.
 
-## Later: script sources and templates
+## Then: script sources and templates
 
 Generated raw script bodies are enough for the current examples, but larger
 examples will need better ergonomics:

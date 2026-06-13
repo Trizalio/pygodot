@@ -34,6 +34,8 @@ Current snapshots cover:
 - Pong menu scene;
 - Pong game scene;
 - generated Pong script.
+- Snake scene;
+- generated Snake script.
 
 Snapshot tests protect:
 

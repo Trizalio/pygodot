@@ -22,6 +22,13 @@ $env:PYTHONPATH = "src"
 python examples/pong/game.py
 ```
 
+Draw-based Snake example:
+
+```powershell
+$env:PYTHONPATH = "src"
+python examples/snake/game.py
+```
+
 Set `GODOT_BIN` if your Godot executable is not available as `godot`:
 
 ```powershell
