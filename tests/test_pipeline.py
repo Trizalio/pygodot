@@ -224,16 +224,25 @@ text = "Click me"
 
     def test_pong_scene_file_snapshot(self) -> None:
         pong = _load_example_game("pong")
-        scene = normalize_scene(pong.game.scenes[0])
+        scene = normalize_scene(_find_scene(pong.game, "res://scenes/pong.tscn"))
 
         self.assert_matches_snapshot(
             "pong_scene.tscn",
             TscnEmitter().emit(scene),
         )
 
+    def test_pong_menu_scene_file_snapshot(self) -> None:
+        pong = _load_example_game("pong")
+        scene = normalize_scene(_find_scene(pong.game, "res://scenes/menu.tscn"))
+
+        self.assert_matches_snapshot(
+            "pong_menu_scene.tscn",
+            TscnEmitter().emit(scene),
+        )
+
     def test_pong_script_file_snapshot(self) -> None:
         pong = _load_example_game("pong")
-        script = normalize_scene(pong.game.scenes[0]).root.script
+        script = normalize_scene(_find_scene(pong.game, "res://scenes/pong.tscn")).root.script
         assert script is not None
 
         self.assert_matches_snapshot(
@@ -658,7 +667,7 @@ class BuildTests(unittest.TestCase):
             self.assertIn("fake godot ok", result.stdout)
             self.assertIn("Loading resource", result.log_text)
 
-    def test_pong_example_builds_single_scene_project(self) -> None:
+    def test_pong_example_builds_menu_and_game_scenes(self) -> None:
         pong = _load_example_game("pong")
 
         with tempfile.TemporaryDirectory() as tmp:
@@ -669,11 +678,29 @@ class BuildTests(unittest.TestCase):
 
             self.assertEqual(
                 sorted(path.relative_to(build_dir).as_posix() for path in result.written_files),
-                [".pygodot/manifest.json", "project.godot", "scenes/pong.tscn", "scripts/pong.gd"],
+                [
+                    ".pygodot/manifest.json",
+                    "project.godot",
+                    "scenes/menu.tscn",
+                    "scenes/pong.tscn",
+                    "scripts/menu.gd",
+                    "scripts/pong.gd",
+                ],
             )
 
+            menu_scene_text = (build_dir / "scenes" / "menu.tscn").read_text(encoding="utf-8")
+            menu_script_text = (build_dir / "scripts" / "menu.gd").read_text(encoding="utf-8")
             scene_text = (build_dir / "scenes" / "pong.tscn").read_text(encoding="utf-8")
             script_text = (build_dir / "scripts" / "pong.gd").read_text(encoding="utf-8")
+
+            self.assertIn('[node name="Menu" type="Control"]', menu_scene_text)
+            self.assertIn('[node name="StartButton" type="Button" parent="."]', menu_scene_text)
+            self.assertIn(
+                '[connection signal="pressed" from="StartButton" to="." method="_on_start_pressed"]',
+                menu_scene_text,
+            )
+            self.assertIn('change_scene_to_file("res://scenes/pong.tscn")', menu_script_text)
+            self.assertIn("get_tree().quit()", menu_script_text)
 
             self.assertIn('[node name="Main" type="Node2D"]', scene_text)
             self.assertIn('[node name="Ball" type="ColorRect" parent="."]', scene_text)
@@ -684,6 +711,7 @@ class BuildTests(unittest.TestCase):
             self.assertIn("func reset_ball(direction: int) -> void:", script_text)
 
             project_text = (build_dir / "project.godot").read_text(encoding="utf-8")
+            self.assertIn('run/main_scene="res://scenes/menu.tscn"', project_text)
             self.assertIn("[input]", project_text)
             self.assertIn("left_up={", project_text)
             self.assertIn('"keycode":87', project_text)
@@ -707,6 +735,13 @@ def _load_example_game(name: str):
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+def _find_scene(game: Game, path: str) -> Scene:
+    for scene in game.scenes:
+        if scene.path == path:
+            return scene
+    raise AssertionError(f"Missing scene: {path}")
 
 
 if __name__ == "__main__":

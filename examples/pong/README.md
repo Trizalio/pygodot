@@ -1,6 +1,6 @@
 # Pong example
 
-This example builds a single-scene Pong project from the pygodot Python DSL.
+This example builds a two-scene Pong project from the pygodot Python DSL.
 Python is used only at build time; the generated Godot project runs ordinary
 GDScript.
 
@@ -46,6 +46,7 @@ python examples/pong/game.py
 
 Controls:
 
+- Menu: click `Start` to play or `Exit` to quit
 - Left paddle: `W` / `S`
 - Right paddle: `Up` / `Down`
 - Restart: `Space`

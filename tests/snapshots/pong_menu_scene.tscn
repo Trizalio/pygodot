@@ -1,0 +1,29 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/menu.gd" id="Script_scripts_menu_gd"]
+
+[node name="Menu" type="Control"]
+script = ExtResource("Script_scripts_menu_gd")
+
+[node name="Background" type="ColorRect" parent="."]
+color = Color(0.03, 0.04, 0.05, 1.0)
+position = Vector2(0, 0)
+size = Vector2(800, 600)
+
+[node name="Title" type="Label" parent="."]
+position = Vector2(310, 160)
+text = "Pygodot Pong"
+
+[node name="StartButton" type="Button" parent="."]
+position = Vector2(330, 260)
+size = Vector2(140, 44)
+text = "Start"
+
+[node name="ExitButton" type="Button" parent="."]
+position = Vector2(330, 320)
+size = Vector2(140, 44)
+text = "Exit"
+
+
+[connection signal="pressed" from="StartButton" to="." method="_on_start_pressed"]
+[connection signal="pressed" from="ExitButton" to="." method="_on_exit_pressed"]

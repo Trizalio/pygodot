@@ -3,9 +3,21 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-from pygodot import Color, Game, Label, Node2D, Scene, Script, Vec2, node
+from pygodot import Button, Color, Control, Game, Label, Node2D, Scene, Script, Vec2, node, signal
 
 ROOT = Path(__file__).parent
+
+MENU_SCRIPT = Script(
+    path="res://scripts/menu.gd",
+    extends="Control",
+    body="""
+    func _on_start_pressed() -> void:
+        get_tree().change_scene_to_file("res://scenes/pong.tscn")
+
+    func _on_exit_pressed() -> void:
+        get_tree().quit()
+    """,
+)
 
 PONG_SCRIPT = Script(
     path="res://scripts/pong.gd",
@@ -119,7 +131,7 @@ game = Game(
     name="PygodotPong",
     source_root=ROOT,
     build_dir=ROOT / "build" / "godot_project",
-    main_scene="res://scenes/pong.tscn",
+    main_scene="res://scenes/menu.tscn",
     godot_bin=os.environ.get("GODOT_BIN", "godot"),
 )
 
@@ -128,6 +140,48 @@ game.add_input_action("left_down", keys=["S"])
 game.add_input_action("right_up", keys=["UP"])
 game.add_input_action("right_down", keys=["DOWN"])
 game.add_input_action("restart", keys=["SPACE"])
+
+game.add_scene(
+    Scene(
+        path="res://scenes/menu.tscn",
+        root=Control(
+            "Menu",
+            script=MENU_SCRIPT,
+            children=[
+                node(
+                    "Background",
+                    "ColorRect",
+                    position=Vec2(0, 0),
+                    size=Vec2(800, 600),
+                    color=Color(0.03, 0.04, 0.05),
+                ),
+                Label(
+                    "Title",
+                    text="Pygodot Pong",
+                    position=Vec2(310, 160),
+                ),
+                Button(
+                    "StartButton",
+                    text="Start",
+                    position=Vec2(330, 260),
+                    size=Vec2(140, 44),
+                    signals=[
+                        signal("pressed", target=".", method="_on_start_pressed"),
+                    ],
+                ),
+                Button(
+                    "ExitButton",
+                    text="Exit",
+                    position=Vec2(330, 320),
+                    size=Vec2(140, 44),
+                    signals=[
+                        signal("pressed", target=".", method="_on_exit_pressed"),
+                    ],
+                ),
+            ],
+        ),
+    )
+)
 
 game.add_scene(
     Scene(
