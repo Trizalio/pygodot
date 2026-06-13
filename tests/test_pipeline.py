@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 import json
+import importlib.util
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from pygodot import (
     Button,
@@ -28,6 +31,7 @@ from pygodot.emitters.project import ProjectEmitter
 from pygodot.emitters.tscn import TscnEmitter
 from pygodot.emitters.values import gd_value
 from pygodot.errors import BuildError, ValidationError
+from pygodot.godot_cli import check_project_run
 from pygodot.ir.model import IRProject
 from pygodot.ir.normalize import normalize_scene
 from pygodot.ir.validate import validate_scene
@@ -478,6 +482,62 @@ class BuildTests(unittest.TestCase):
             ):
                 game.build()
 
+    def test_check_project_run_builds_headless_command(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project_dir = Path(tmp)
+            (project_dir / "pygodot_check_run.log").write_text(
+                "Loading resource: res://scenes/main.tscn\n",
+                encoding="utf-8",
+            )
+
+            with patch("pygodot.godot_cli.subprocess.run") as run:
+                run.return_value = subprocess.CompletedProcess(
+                    args=[],
+                    returncode=0,
+                    stdout="fake godot ok\n",
+                    stderr="",
+                )
+
+                result = check_project_run(
+                    project_dir,
+                    godot_bin="godot",
+                    scene="res://scenes/main.tscn",
+                    frames=3,
+                )
+
+            self.assertEqual(result.returncode, 0)
+            self.assertIn("--headless", result.command)
+            self.assertIn("--scene", result.command)
+            self.assertIn("res://scenes/main.tscn", result.command)
+            self.assertIn("--quit-after", result.command)
+            self.assertIn("3", result.command)
+            self.assertIn("fake godot ok", result.stdout)
+            self.assertIn("Loading resource", result.log_text)
+
+    def test_pong_example_builds_single_scene_project(self) -> None:
+        pong = _load_example_game("pong")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            build_dir = Path(tmp) / "godot_project"
+            pong.game.build_dir = build_dir
+
+            result = pong.game.build()
+
+            self.assertEqual(
+                sorted(path.relative_to(build_dir).as_posix() for path in result.written_files),
+                [".pygodot/manifest.json", "project.godot", "scenes/pong.tscn", "scripts/pong.gd"],
+            )
+
+            scene_text = (build_dir / "scenes" / "pong.tscn").read_text(encoding="utf-8")
+            script_text = (build_dir / "scripts" / "pong.gd").read_text(encoding="utf-8")
+
+            self.assertIn('[node name="Main" type="Node2D"]', scene_text)
+            self.assertIn('[node name="Ball" type="ColorRect" parent="."]', scene_text)
+            self.assertIn('[node name="HelpText" type="Label" parent="."]', scene_text)
+            self.assertIn("func _process(delta: float) -> void:", script_text)
+            self.assertIn("Input.is_key_pressed(KEY_W)", script_text)
+            self.assertIn("func reset_ball(direction: int) -> void:", script_text)
+
 
 def _read_generated_files(build_dir: Path) -> dict[str, str]:
     return {
@@ -485,6 +545,16 @@ def _read_generated_files(build_dir: Path) -> dict[str, str]:
         for path in sorted(build_dir.rglob("*"))
         if path.is_file()
     }
+
+
+def _load_example_game(name: str):
+    path = Path(__file__).parents[1] / "examples" / name / "game.py"
+    spec = importlib.util.spec_from_file_location(f"pygodot_example_{name}", path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"Could not load example module from {path}.")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 if __name__ == "__main__":

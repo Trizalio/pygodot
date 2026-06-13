@@ -22,6 +22,7 @@ from pygodot.dsl import (
     texture,
 )
 from pygodot.game import BuildResult, Game
+from pygodot.godot_cli import GodotRunResult
 
 __all__ = [
     "BuildResult",
@@ -30,6 +31,7 @@ __all__ = [
     "Control",
     "ExternalResource",
     "Game",
+    "GodotRunResult",
     "Label",
     "Node",
     "Node2D",

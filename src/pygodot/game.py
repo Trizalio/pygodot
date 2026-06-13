@@ -12,7 +12,7 @@ from pygodot.errors import BuildError
 from pygodot.emitters.gdscript import GdScriptEmitter
 from pygodot.emitters.project import ProjectEmitter
 from pygodot.emitters.tscn import TscnEmitter
-from pygodot.godot_cli import import_project, run_project
+from pygodot.godot_cli import GodotRunResult, check_project_run, import_project, run_project
 from pygodot.ir.model import IRExternalResource, IRNode, IRProject, IRScript
 from pygodot.ir.normalize import normalize_project
 from pygodot.ir.validate import validate_project
@@ -108,6 +108,16 @@ class Game:
         result = self.build()
         import_project(result.project_dir, godot_bin=self.godot_bin)
         run_project(result.project_dir, godot_bin=self.godot_bin, scene=scene or self.main_scene)
+
+    def check_run(self, *, scene: str | None = None, frames: int = 20) -> GodotRunResult:
+        result = self.build()
+        import_project(result.project_dir, godot_bin=self.godot_bin)
+        return check_project_run(
+            result.project_dir,
+            godot_bin=self.godot_bin,
+            scene=scene or self.main_scene,
+            frames=frames,
+        )
 
 
 def _iter_scripts(node: IRNode) -> list[IRScript]:
