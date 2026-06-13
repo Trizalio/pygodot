@@ -1,99 +1,74 @@
 # Open Questions
 
-These are not settled yet. Do not implement large irreversible designs for them without an explicit decision.
+These questions remain open. Do not implement large irreversible designs for
+them without an explicit decision.
 
-## Q001 — Generated path policy
+## Q001 - Persistent Godot Project Output
 
-Options:
+Current builds generate a complete project under `Game.build_dir`.
 
-1. Generate directly into normal Godot paths:
-   - `res://scenes/main.tscn`
-   - `res://scripts/main.gd`
+Open question:
 
-2. Generate into `.generated`:
-   - `res://.generated/scenes/main.tscn`
-   - `res://.generated/scripts/main.gd`
+- should pygodot also support writing generated files into a persistent
+  hand-edited Godot project?
 
-3. Generate into a temporary/build-only Godot project.
+If yes, generated paths, cleanup behavior, and overwrite policy need stronger
+rules than the current build-directory workflow.
 
-Current leaning:
-- for MVP, generate a whole build directory project;
-- later support generating into a persistent Godot project with strict overwrite markers.
+## Q002 - Godot API Validation
 
-## Q002 — Public node wrappers as functions or classes
+Should pygodot ingest Godot API dumps to validate property names, property
+types, signal names, and resource types?
 
-Options:
-- `Node2D(...)` as a function returning `Node`;
-- `Node2D` as a dataclass subclass;
-- generated typed wrappers from Godot API dump.
+Current answer:
 
-Current leaning:
-- start with simple functions/classes;
-- do not overbuild typed wrappers before the emitter and validation architecture is stable.
+- not yet;
+- examples and direct emitter stability come first.
 
-## Q003 — Property name mapping
+## Q003 - Script Source Ergonomics
 
-Godot properties use names like `position`, `text`, `disabled`.
+Raw GDScript bodies inside Python strings work for small examples.
 
-Question:
-- should Python DSL preserve exact Godot property names;
-- or provide Python aliases for awkward names?
+Open options:
 
-Current leaning:
-- preserve exact Godot property names in MVP;
-- add aliases only with clear value.
+- `Script.from_file(...)`;
+- simple templates;
+- generated helper snippets;
+- better smoke-check error presentation.
 
-## Q004 — Script ownership
+Do not build a Python-to-GDScript transpiler.
 
-How should scripts be represented?
+## Q004 - Complex Resource Strategy
 
-Options:
-- generated raw body;
-- template-generated body;
-- manual existing file reference;
-- hybrid file with generated regions.
+Direct text emission is fine for current scenes.
 
-Current leaning:
-- support generated raw body and manual references early;
-- avoid generated regions until needed.
+Open question:
 
-## Q005 — Godot version target
+- when should pygodot introduce direct `.tres` emission or a Godot-assisted
+  emitter?
 
-MVP should target Godot 4.x, likely current stable Godot 4.
+Likely trigger examples include physics shapes, AnimationPlayer, TileSet,
+Theme, ShaderMaterial, or Mesh data.
 
-Need to decide:
-- minimum supported Godot 4 version;
-- whether to support multiple `.tscn` variants;
-- how to test compatibility.
+## Q005 - CLI Shape
 
-## Q006 — Asset import strategy
+The public workflow is library-first.
 
-Options:
-- copy assets into build dir and run Godot import;
-- reference assets already in a persistent Godot project;
-- maintain an asset manifest.
-
-Current leaning:
-- for build-directory output, copy resources that exist under `source_root`;
-- keep missing resources as references and record `copied=false` in the manifest;
-- evolve the manifest before supporting persistent project cleanup.
-
-## Q007 — Godot API validation
-
-Should the project ingest Godot API dumps to validate properties/signals/types?
-
-Current leaning:
-- not in MVP;
-- add later after direct emitter works.
-
-## Q008 — CLI shape
-
-Potential CLI:
+A future CLI could look like:
 
 ```bash
 pygodot build package.module:game
 pygodot run package.module:game
-pygodot editor package.module:game
+pygodot check package.module:game
 ```
 
-But CLI is secondary to `Game` methods.
+The CLI should remain a thin wrapper around imported `Game` objects.
+
+## Q006 - Supported Godot Versions
+
+The current project is tested manually against Godot 4.6.x.
+
+Open question:
+
+- what minimum Godot 4 version should be supported?
+- should snapshots or smoke checks vary by Godot version?

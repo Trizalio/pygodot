@@ -1,202 +1,129 @@
 # Architecture
 
-`pygodot` is a layered generator for Godot 4 projects.
+`pygodot` is a layered generator for native Godot 4 projects.
 
 ## Goal
 
-Allow developers to describe Godot scenes and project structure using ordinary Python, then compile that description into native Godot files.
+Developers describe scenes and project structure with ordinary Python. `pygodot`
+normalizes that description into typed IR, validates it, and emits normal Godot
+files.
 
-The generated output should be a normal Godot project that can be opened in the Godot editor, run, debugged, and exported.
+The generated project should be openable, debuggable, and runnable by Godot 4.
 
-## High-level pipeline
+## Pipeline
 
 ```text
 User Python project
-    ↓
-Public DSL objects
-    ↓
-Normalization
-    ↓
-Typed IR
-    ↓
-Validation
-    ↓
-Emitters
-    ↓
-Generated Godot project
-    ↓
-Godot CLI import/run/export
+  -> Public DSL objects
+  -> Normalized IR
+  -> Validation
+  -> Emitters
+  -> Generated Godot project
+  -> Optional Godot CLI import/run/check
 ```
 
-## Layer 1 — User project
+## User project
 
-The user imports `pygodot` and defines a game with scenes, nodes, scripts, resources, and build/run commands.
+The user project is ordinary Python. It can use modules, functions, constants,
+loops, package managers, linters, and type checkers.
 
-Example direction:
+The source Python project owns the `Game` object and remains the source of
+truth. Generated Godot files are build output.
 
-```python
-from pygodot import Game, Scene, Node2D, Label
-
-game = Game(name="Example")
-game.add_scene(Scene(path="res://scenes/main.tscn", root=Node2D("Main")))
-
-game.build()
-```
-
-The user project is ordinary Python. It can use functions, loops, modules, constants, package managers, linters, formatters, and type checkers.
-
-## Layer 2 — Public DSL
+## Public DSL
 
 Public DSL objects represent user intent, not final `.tscn` syntax.
 
-Examples:
-- `Game`
-- `Scene`
-- `Node2D`
-- `Control`
-- `Label`
-- `Button`
-- `Script`
-- `signal(...)`
-- `Vec2`, `Vec3`, `Rect2`, `Color`, `NodePath`
+Current public concepts include:
 
-The DSL should be explicit and boring. Avoid magic.
+- `Game`;
+- `Scene`;
+- `Node` and `node(...)`;
+- node constructors: `Node2D`, `Control`, `ColorRect`, `Label`, `Button`;
+- `Script` and `Script.reference(...)`;
+- `signal(...)`;
+- `InputAction` through `Game.add_input_action(...)`;
+- values: `Vec2`, `Vec3`, `Rect2`, `Color`, `NodePath`;
+- external resources: `ext_resource(...)`, `texture(...)`,
+  `packed_scene(...)`.
 
-## Layer 3 — Normalized IR
+The DSL should stay explicit and boring. Avoid hidden global scene stacks,
+metaclass-heavy APIs, and mandatory context managers.
+
+## Normalized IR
 
 The normalized IR is the internal compiler model.
 
 Responsibilities:
-- resolve paths;
-- normalize property names and values;
-- compute parent paths;
+
+- compute node and parent paths;
+- normalize property values;
 - collect external resources;
-- create stable IDs;
-- validate tree structure;
-- detect duplicate sibling names;
+- compute stable resource IDs;
+- carry project-level input actions;
 - prepare emitter-friendly objects.
 
-The IR should be separate from the public DSL because:
-- public ergonomics and emitter needs differ;
-- validation should not mutate user objects;
-- tests can target the normalization boundary.
+Validation should not mutate public DSL objects.
 
-## Layer 4 — Validation
+## Validation
 
-Validation should catch errors before writing files.
+Validation catches errors before writing files.
 
-MVP validation:
-- scene paths start with `res://`;
-- node names are non-empty;
-- node names do not contain `/`;
-- sibling node names are unique;
-- script paths start with `res://`;
-- signal targets and methods are syntactically valid;
-- supported value types are serializable by the emitter.
+Current validation includes:
 
-Future validation:
-- property existence by Godot class;
-- signal existence by Godot class;
-- type checks against Godot API dump;
-- resource type checks;
-- path existence checks for assets.
+- `res://` scene, script, and resource paths;
+- non-empty node names and types;
+- no `/` in node names;
+- duplicate sibling node detection;
+- generated/manual script ownership checks;
+- serializable property values;
+- non-empty signal names, targets, and methods;
+- registered `main_scene`;
+- keyboard input action names, duplicates, and supported keys.
 
-## Layer 5 — Emitters
+Future validation may use Godot API data to check property names, property
+types, signal names, and resource types.
 
-Emitters convert normalized IR into files.
+## Emitters
 
-MVP emitters:
-- `ProjectEmitter` → `project.godot`
-- `TscnEmitter` → `.tscn`
-- `GdScriptEmitter` → `.gd`
+Emitters convert normalized IR into strings.
 
-Future emitters:
-- `TresEmitter`
-- `ExportPresetsEmitter`
-- `ImportSettingsEmitter`
-- `GodotAssistedEmitter`
+Current emitters:
 
-Emitters should be deterministic and side-effect-light. File writing should be centralized in a build orchestrator.
+- `ProjectEmitter` -> `project.godot`;
+- `TscnEmitter` -> `.tscn`;
+- `GdScriptEmitter` -> `.gd`.
 
-## Layer 6 — Godot CLI integration
+Emitters should be deterministic and side-effect-light. File writing belongs to
+the build layer.
 
-Godot CLI integration is optional for plain build, but useful for validation/run/export.
+## Build layer
 
-Expected operations:
-- import resources in headless mode;
-- run generated project;
-- open editor;
-- export debug/release builds;
-- maybe dump Godot API for typed wrapper generation.
+`Game.build()` writes a generated Godot project under `build_dir`.
 
-This layer should not be required to unit-test emitters.
-
-## Suggested package layout
+Current build output:
 
 ```text
-src/pygodot/
-  __init__.py
-  game.py
-  errors.py
-  paths.py
-  dsl/
-    __init__.py
-    scene.py
-    nodes.py
-    script.py
-    signal.py
-    values.py
-    resources.py
-  ir/
-    __init__.py
-    model.py
-    normalize.py
-    validate.py
-  emitters/
-    __init__.py
-    project.py
-    tscn.py
-    gdscript.py
-  build/
-    __init__.py
-    writer.py
-    manifest.py
-  godot_cli.py
-```
-
-## Build output direction
-
-Recommended generated project structure:
-
-```text
-build/godot/
+build/godot_project/
   .pygodot/
     manifest.json
   project.godot
   scenes/
-    main.tscn
   scripts/
-    main.gd
   assets/
-    ...
 ```
 
-If generated/manual separation is needed inside a long-lived Godot project:
+The generated/manual ownership rules are documented in
+`docs/GENERATED_BOUNDARY.md`.
 
-```text
-res://.generated/scenes/
-res://.generated/scripts/
-res://manual/scripts/
-res://assets/
-```
+## Godot CLI integration
 
-## Build manifest
+Godot is not required for emitter/unit tests.
 
-`Game.build()` writes `res://.pygodot/manifest.json` in the generated Godot
-project. The manifest records generated files, generated scenes/scripts, and
-external resources.
+Current Godot CLI helpers:
 
-For MVP build-directory output, external resources that already exist under
-`Game.source_root` are copied to the same `res://` relative path inside the build
-directory. Missing external resources remain referenced and are recorded with
-`copied=false`.
+- import generated resources before run/check;
+- run the generated project;
+- run a headless smoke check with captured logs.
+
+Future work may add editor opening and export helpers.

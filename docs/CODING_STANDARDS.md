@@ -42,10 +42,11 @@ Use frozen dataclasses for normalized IR if mutation becomes a problem.
 
 ## Dependencies
 
-Keep MVP dependencies minimal.
+Keep dependencies minimal.
 
-Acceptable early dependencies:
-- `pytest` for tests;
+Current tests use `unittest` and do not require extra dependencies.
+
+Possible later dependencies:
 - `typer` only if/when CLI becomes useful;
 - `ruff` for lint/format if the project adopts it.
 

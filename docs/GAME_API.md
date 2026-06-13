@@ -1,25 +1,9 @@
 # Game API and Workflow
 
-`pygodot` should be a library-first framework. The user should import it from the game project and control build/run through a `Game` object.
+`pygodot` is a library-first framework. A game project imports `pygodot`, owns a
+`Game` object, and calls methods on it.
 
-## Rejected primary workflow
-
-Avoid making this the primary workflow:
-
-```bash
-python compile.py game.py
-```
-
-Problems:
-- weak IDE integration;
-- awkward import model;
-- difficult composition with other libraries/build systems;
-- encourages monolithic compiler-script design;
-- makes the game definition feel like data passed to a tool instead of a Python project.
-
-## Preferred workflow
-
-The game project owns a `Game` object:
+## Basic workflow
 
 ```python
 from pathlib import Path
@@ -28,89 +12,55 @@ from pygodot import Game
 game = Game(
     name="MyGame",
     source_root=Path(__file__).parent,
-    build_dir=Path(__file__).parent / "build" / "godot",
+    build_dir=Path(__file__).parent / "build" / "godot_project",
     main_scene="res://scenes/main.tscn",
 )
 ```
 
-Then the project registers scenes/resources:
+Register scenes:
 
 ```python
 game.add_scene(main_scene)
 game.add_scene(menu_scene)
 ```
 
-Keyboard input actions can be registered on the same `Game` object:
+Register keyboard input actions:
 
 ```python
 game.add_input_action("move_up", keys=["W", "UP"])
 game.add_input_action("restart", keys=["SPACE"])
 ```
 
-These actions are emitted into `project.godot` and used from GDScript through
-Godot's normal `Input.is_action_pressed(...)` APIs.
-
-Then it calls:
+Build or run:
 
 ```python
 game.build()
-game.import_resources()
 game.run()
-game.open_editor()
-game.export(preset="Linux/X11", release=True)
+game.check_run(frames=20)
 ```
 
-## CLI role
+`check_run(...)` builds the project, imports it with Godot, runs a headless smoke
+check for a fixed number of frames, captures logs, and raises on Godot script
+errors.
 
-A CLI is allowed but should be secondary:
-
-```bash
-pygodot run path.to.game:game
-pygodot build path.to.game:game
-```
-
-The CLI should import a `Game` object and call its methods. It should not own the compiler architecture.
-
-## Suggested `Game` responsibilities
-
-`Game` should orchestrate:
-- project metadata;
-- scene registration;
-- resource registration;
-- build directory policy;
-- generated/manual file policy;
-- emitters;
-- Godot CLI integration;
-- build manifests.
-
-`Game` should not contain all emitter logic directly.
-
-## Possible API sketch
+## Current public API
 
 ```python
 class Game:
-    def __init__(
-        self,
-        *,
-        name: str,
-        source_root: Path,
-        build_dir: Path,
-        main_scene: str,
-        godot_bin: str = "godot",
-    ) -> None: ...
-
     def add_scene(self, scene: Scene) -> None: ...
     def add_input_action(self, name: str, *, keys: list[str]) -> None: ...
     def build(self) -> BuildResult: ...
-    def import_resources(self) -> None: ...
     def run(self, scene: str | None = None) -> None: ...
-    def open_editor(self) -> None: ...
-    def export(self, *, preset: str, release: bool = True) -> None: ...
+    def check_run(self, *, scene: str | None = None, frames: int = 20) -> GodotRunResult: ...
 ```
+
+CLI commands, editor opening, import-only helpers, and export helpers are not
+public API yet. If added later, they should delegate to `Game` instead of
+becoming the primary workflow.
 
 ## Build result
 
-`build()` should return structured information rather than only printing text:
+`build()` returns structured information:
 
 ```python
 @dataclass(frozen=True)
@@ -119,26 +69,21 @@ class BuildResult:
     written_files: list[Path]
     generated_scenes: list[Path]
     generated_scripts: list[Path]
+    copied_resources: list[Path]
+    manifest_path: Path | None
 ```
 
-## Entry point file pattern
+## Entry point pattern
 
-A game project can use a normal Python file:
+Game projects can use a normal Python file:
 
 ```python
-# game.py
-
 game = Game(...)
 game.add_scene(...)
 
 if __name__ == "__main__":
-    game.build()
     game.run()
 ```
 
-This supports:
-- direct Python execution;
-- IDE run/debug;
-- import by tests;
-- import by CLI;
-- custom build scripts.
+This supports direct Python execution, IDE run/debug, tests that import the
+`Game` object, and future thin CLI wrappers.

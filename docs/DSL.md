@@ -1,59 +1,49 @@
-# Declarative DSL Design
+# Declarative DSL
 
-The DSL should be Pythonic, explicit, typed, and IDE-friendly.
+The DSL is ordinary Python object construction. It should be explicit, typed
+where useful, IDE-friendly, and easy to compose with functions.
 
-## Design principles
+## Principles
 
-1. Ordinary Python object construction.
-2. No mandatory context managers.
-3. No metaclass-heavy API.
-4. No hidden global scene stack.
-5. Good autocomplete and type hints.
-6. Easy composition through functions.
-7. Public DSL objects are not the same as normalized compiler IR.
+1. No mandatory context managers.
+2. No metaclass-heavy public API.
+3. No hidden global scene stack.
+4. Public DSL objects are separate from normalized compiler IR.
+5. Prefer small helpers that examples actually need.
 
-## MVP object model
+## Public Concepts
 
-Required public concepts:
+Current public concepts:
 
-```text
-Game
-Scene
-Node
-Script
-SignalConnection
-Godot value wrappers
-ExternalResource
-InputAction
-```
+- `Game`;
+- `Scene`;
+- `Node`;
+- `Script`;
+- `SignalConnection`;
+- `InputAction`;
+- Godot value wrappers;
+- external resource references.
 
-Node constructors/classes:
+Node constructors/helpers:
 
-```text
-Node2D
-Control
-ColorRect
-Label
-Button
-Sprite2D later
-Camera2D later
-CharacterBody2D later
-```
+- `node(name, type, ...)` for arbitrary Godot node classes;
+- `Node2D`;
+- `Control`;
+- `ColorRect`;
+- `Label`;
+- `Button`.
 
-## Example scene
+## Example Scene
 
 ```python
 from pathlib import Path
-from pygodot import Game, Scene, Node2D, Label, Button, Script, signal
+from pygodot import Button, Game, Label, Node2D, Scene, Script, Vec2, signal
 
-main_script = Script(
+script = Script(
     path="res://scripts/main.gd",
     extends="Node2D",
     body="""
 var counter := 0
-
-func _ready() -> void:
-    $Title.text = "Generated from Python DSL"
 
 func _on_start_pressed() -> void:
     counter += 1
@@ -64,7 +54,7 @@ func _on_start_pressed() -> void:
 game = Game(
     name="GeneratedGame",
     source_root=Path(__file__).parent,
-    build_dir=Path(__file__).parent / "build" / "godot",
+    build_dir=Path(__file__).parent / "build" / "godot_project",
     main_scene="res://scenes/main.tscn",
 )
 
@@ -73,95 +63,74 @@ game.add_scene(
         path="res://scenes/main.tscn",
         root=Node2D(
             "Main",
-            script=main_script,
+            script=script,
             children=[
-                Label("Title", text="Generated scene", position=(80, 60)),
+                Label("Title", text="Generated scene", position=Vec2(80, 60)),
                 Button(
                     "StartButton",
                     text="Click me",
-                    position=(80, 120),
+                    position=Vec2(80, 120),
                     signals=[signal("pressed", target=".", method="_on_start_pressed")],
                 ),
             ],
         ),
     )
 )
-
-if __name__ == "__main__":
-    game.build()
-    game.run()
 ```
 
-## Node API direction
+## Nodes
 
-A basic node should support:
+Use `node(...)` for Godot classes that do not have a convenience constructor:
 
 ```python
-Node(
-    name="Main",
-    type="Node2D",
-    props={"position": Vec2(80, 60)},
-    children=[...],
-    script=Script(...),
-    signals=[...],
+node(
+    "CustomNode",
+    "SomeGodotClass",
+    position=Vec2(10, 20),
 )
 ```
 
-Convenience wrappers should map to specific Godot classes:
+Use convenience constructors when they exist:
 
 ```python
-Node2D("Main", position=Vec2(10, 20))
+Node2D("Main")
 ColorRect("Panel", color=Color(1, 1, 1), size=Vec2(200, 80))
 Label("Title", text="Hello")
 Button("Start", text="Start")
 ```
 
-## Properties
+Do not add broad wrappers for the whole Godot API. Add small constructors only
+when examples show repeated pain.
 
-MVP may accept keyword properties:
+## Values and Resources
 
-```python
-Label("Title", text="Hello", position=(80, 60))
-```
-
-However, explicit value wrappers should be added early:
+Prefer explicit wrappers:
 
 ```python
-Label("Title", text="Hello", position=Vec2(80, 60))
-Node2D("Region", region_rect=Rect2(0, 0, 16, 32))
+Vec2(80, 60)
+Vec3(1, 2, 3)
+Rect2(0, 0, 16, 32)
+Color(1, 1, 1)
+NodePath("../Player")
 ```
 
-Do not rely forever on tuple length inference.
+Temporary tuple inference exists for simple vectors, but new examples should use
+explicit wrappers.
 
-External resources can be referenced from properties explicitly:
+External resources are referenced explicitly:
 
 ```python
-from pygodot import ext_resource
-
-Node2D(
-    "IconOwner",
-    icon=ext_resource("res://assets/icon.svg", type="Texture2D"),
-)
+Node2D("IconOwner", icon=texture("res://assets/icon.svg"))
+Node2D("Spawner", next_scene=packed_scene("res://scenes/enemy.tscn"))
+Node2D("Other", resource=ext_resource("res://assets/data.tres", type="Resource"))
 ```
 
-Convenience helpers are available for common resource types:
-
-```python
-from pygodot import packed_scene, texture
-
-Node2D(
-    "IconOwner",
-    icon=texture("res://assets/icon.svg"),
-    next_scene=packed_scene("res://scenes/menu.tscn"),
-)
-```
-
-Normalization collects these references into scene external resources and replaces
-the property value with an internal resource reference for the `.tscn` emitter.
+Normalization collects external resources into scene resource tables and
+deduplicates them by `(type, path)`.
 
 ## Signals
 
-Preferred MVP syntax:
+Signals are explicit connection objects:
 
 ```python
 Button(
@@ -173,46 +142,31 @@ Button(
 )
 ```
 
-Future syntax may allow:
-
-```python
-Button("StartButton", text="Start").on("pressed", target=".", method="_on_start_pressed")
-```
-
-But avoid hidden mutation that makes trees difficult to inspect.
-
 ## Scripts
 
-MVP supports raw GDScript body generation:
+Generated scripts use raw GDScript bodies:
 
 ```python
 Script(
     path="res://scripts/player.gd",
-    extends="CharacterBody2D",
+    extends="Node2D",
     body="""
-func _physics_process(delta: float) -> void:
-    pass
+func _ready() -> void:
+    print("ready")
 """,
 )
 ```
 
-Future support:
-- loading body from file;
-- Jinja-like templates;
-- generated boilerplate from structured definitions;
-
-Manual scripts can be referenced without generation:
+Manual scripts are referenced without generation:
 
 ```python
 Script.reference("res://manual/player.gd", extends="CharacterBody2D")
 ```
 
-Referenced scripts are included in `.tscn` as external script resources, but
-`Game.build()` does not write or overwrite the `.gd` file.
+Referenced manual scripts are included in generated `.tscn` files as external
+script resources, but `Game.build()` does not write the `.gd` file.
 
-Do not implement Python-to-GDScript transpilation in MVP.
-
-## Input actions
+## Input Actions
 
 Keyboard input actions are declared on `Game` and emitted into `project.godot`:
 
@@ -229,13 +183,11 @@ Input.is_action_pressed("left_up")
 Input.is_action_just_pressed("restart")
 ```
 
-The first version intentionally supports keyboard keys only. Mouse buttons,
-joypads, axes, deadzones, presets, and platform-specific bindings are later
-work.
+The current InputMap DSL is keyboard-only.
 
-## Composition examples
+## Composition
 
-The DSL should encourage normal Python functions:
+Use normal Python functions for reusable scene fragments:
 
 ```python
 def menu_button(name: str, text: str, y: int, method: str) -> Button:
@@ -244,19 +196,5 @@ def menu_button(name: str, text: str, y: int, method: str) -> Button:
         text=text,
         position=Vec2(80, y),
         signals=[signal("pressed", target=".", method=method)],
-    )
-```
-
-Scene factories are encouraged:
-
-```python
-def make_main_menu() -> Scene:
-    return Scene(
-        path="res://scenes/main_menu.tscn",
-        root=Control("MainMenu", children=[
-            Label("Title", text="Slay The Eldritch"),
-            menu_button("NewGame", "New Game", 120, "_on_new_game"),
-            menu_button("Exit", "Exit", 180, "_on_exit"),
-        ]),
     )
 ```

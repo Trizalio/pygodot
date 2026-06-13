@@ -1,80 +1,73 @@
 # Architecture Decisions
 
-This document records the current project decisions. Treat it as the source of truth unless superseded by a later explicit decision.
+This document records current project decisions. Historical decision churn
+belongs in git.
 
-## D001 — Python is build-time only
+## D001 - Python Is Build-Time Only
 
 Status: accepted.
 
-`pygodot` uses Python to describe and generate a Godot 4 project. Python code does not run inside the exported game in MVP.
+Python describes and generates a Godot 4 project. Python code does not run
+inside the exported game.
 
-Runtime logic is ordinary GDScript attached to generated or user-owned Godot scenes.
-
-Rationale:
-- avoids unstable Python/Godot runtime bindings;
-- keeps generated projects native to Godot;
-- avoids export/distribution problems;
-- avoids CPython/GIL/platform packaging concerns;
-- matches the actual goal: remove editor boilerplate, not replace Godot runtime.
+Runtime logic is ordinary GDScript attached to generated or user-owned Godot
+scenes.
 
 Consequences:
-- gameplay logic is written in GDScript for MVP;
-- Python can generate boilerplate `.gd` files;
-- Python subset transpilation is out of scope for MVP.
 
-## D002 — No JSON/YAML main IR
+- gameplay logic is written in GDScript;
+- Python can generate `.gd` files;
+- Python-in-Godot runtimes and Python-to-GDScript transpilation are out of
+  scope.
+
+## D002 - No JSON/YAML Main IR
 
 Status: accepted.
 
-The main compilation pipeline is:
+The compiler pipeline is:
 
 ```text
-Python DSL objects → typed Python IR → emitters
+Python DSL objects -> typed Python IR -> emitters
 ```
 
-JSON/YAML may later be used for debug dumps, cache inspection, or snapshot testing, but not as the primary compiler boundary.
+JSON/YAML may be used later for debugging or cache inspection, but not as the
+primary compilation boundary.
 
-Rationale:
-- Python is already the source language;
-- typed Python objects are easier to validate and refactor;
-- JSON/YAML would add serialization noise without solving the core problem;
-- object references, resources, and paths are easier to handle in Python IR.
-
-## D003 — Start with direct `.tscn` emitter
+## D003 - Direct `.tscn` Emitter First
 
 Status: accepted.
 
-MVP directly emits simple Godot 4 `.tscn` text scenes.
+Simple Godot 4 text scenes are emitted directly.
 
-Rationale:
-- fast;
-- deterministic;
-- easy to snapshot-test;
-- does not require Godot for the compile step;
-- produces reviewable files.
+Reasons:
 
-Future extension:
-- add a Godot-assisted emitter for complex resources such as Animation, TileSet, Theme, Mesh, ShaderMaterial, or imported assets when direct text generation becomes too brittle.
+- fast builds;
+- deterministic output;
+- readable generated files;
+- snapshot-testable emission;
+- no Godot dependency for normal builds.
 
-## D004 — Avoid metaclass/context-manager DSL magic
+Godot-assisted emission is reserved for complex resources where direct text
+generation becomes brittle.
 
-Status: accepted.
-
-The public DSL should be explicit Python object construction, functions, and ordinary composition.
-
-Rationale:
-- IDE autocomplete matters;
-- static analysis and linting matter;
-- the framework should be understandable to Python developers;
-- hidden global state makes scene generation difficult to debug.
-
-## D005 — Library-first API
+## D004 - Explicit DSL
 
 Status: accepted.
 
-`pygodot` must be primarily a library imported by the game project. The game code should own a `Game` object and call methods on it.
+The public DSL uses explicit Python objects and functions.
 
-Preferred workflow:
+Avoid:
+
+- mandatory context managers;
+- metaclass-heavy scene syntax;
+- hidden global scene stacks;
+- import-time magic.
+
+## D005 - Library-First API
+
+Status: accepted.
+
+The game project owns a `Game` object:
 
 ```python
 game = Game(...)
@@ -83,42 +76,27 @@ game.build()
 game.run()
 ```
 
-A CLI may exist, but it should be a thin wrapper around project/library entrypoints.
+A CLI may exist later, but it should import a `Game` object and call its methods.
 
-Rationale:
-- better IDE support;
-- easier integration with arbitrary build systems;
-- no special `compile.py game.py` protocol;
-- makes the project feel like a Python package, not a one-off script runner.
-
-## D006 — Generated/manual file boundaries
+## D006 - Generated/Manual Boundary
 
 Status: accepted.
 
-Generated files must be clearly separated from user-owned files.
+Generated files are build output. The Python source project, manual assets, and
+explicitly referenced manual scripts are the source of truth.
 
-Possible policies:
-- generated files live under `res://.generated/`;
-- generated files include a clear header comment;
-- compiler refuses to overwrite files without a generated marker;
-- manual scripts/resources live under explicit manual paths.
+The current policy is documented in `docs/GENERATED_BOUNDARY.md`.
 
-MVP should choose one clear policy and enforce it.
-
-## D007 — Stable output is a feature
+## D007 - Stable Output Is A Feature
 
 Status: accepted.
 
 Generated output must be deterministic across runs with the same input.
 
-Rationale:
-- clean Git diffs;
-- reliable snapshot tests;
-- easier debugging;
-- fewer false changes in generated Godot project files.
-
 Implementation implications:
+
 - stable resource IDs;
 - stable node order;
 - stable property order;
-- stable path normalization.
+- stable manifest order;
+- no timestamps in generated files.

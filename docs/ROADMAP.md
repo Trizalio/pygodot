@@ -1,125 +1,84 @@
 # Roadmap
 
-## MVP v0.1 - Direct scene generation
+This roadmap describes the current product direction. Completed sprint history
+belongs in git.
 
-Status: implemented.
+## Current baseline
 
-Goal: generate and run a minimal native Godot 4 project from a Python `Game` object.
+`pygodot` can generate and run small native Godot 4 projects from ordinary
+Python code.
 
-Required features:
-- done: package skeleton;
-- done: `Game` library-first API;
-- done: `Scene` model;
-- done: basic nodes: `Node`, `Node2D`, `Control`, `Label`, `Button`;
-- done: `Script` with raw GDScript body;
-- done: signal connection model;
-- done: simple value serialization;
-- done: direct `.tscn` emitter;
-- done: `project.godot` emitter;
-- done: `.gd` emitter;
-- done: build directory writer;
-- done: generated/manual overwrite policy;
-- done: `game.build()`;
-- done: `game.run()` invoking Godot CLI;
-- done: snapshot tests.
+Implemented:
 
-Definition of done:
-- done: a Python game file can define one scene;
-- done: build produces `project.godot`, `.tscn`, and `.gd`;
-- done: generated project opens/runs in Godot 4;
-- done: repeated builds produce stable diffs;
-- done: tests verify emitted files.
+- library-first `Game` API with `build()`, `run()`, and `check_run()`;
+- public scene/node/script DSL;
+- generic `node(...)` helper and selected node constructors: `Node2D`,
+  `Control`, `ColorRect`, `Label`, `Button`;
+- typed value wrappers: `Vec2`, `Vec3`, `Rect2`, `Color`, `NodePath`;
+- external resources through `ext_resource(...)`, `texture(...)`, and
+  `packed_scene(...)`;
+- generated and referenced GDScript;
+- direct `.tscn`, `.gd`, and `project.godot` emitters;
+- keyboard-only InputMap generation;
+- build manifest at `.pygodot/manifest.json`;
+- generated/manual overwrite boundary;
+- deterministic snapshot tests;
+- `examples/minimal` and a playable two-scene `examples/pong`.
 
-Notes:
-- the old `src/compiler.py` prototype has been removed;
-- the library-first example lives in `examples/minimal/`;
-- tests currently use `unittest` so they run without extra dependencies.
+## Next: Snake example
 
-## v0.2 - Better values and resources
+Goal: add `examples/snake` as a small game that stresses generated GDScript and
+InputMap without adding physics or complex resources.
 
-Status: mostly implemented.
+The scene should stay intentionally simple, likely one `Node2D` root with most
+rendering done in `_draw()`.
 
-Goal: remove MVP serialization hacks.
+Useful checks:
 
-Features:
-- done: `Vec2`, `Vec3`, `Color`, `NodePath`, `Rect2`;
-- done: external resource references via `ext_resource(...)`;
-- done: texture references via `texture(...)`;
-- done: packed scene references via `packed_scene(...)`;
-- done: generated resource IDs;
-- done: asset copy/import manifest at `.pygodot/manifest.json`;
-- done: manual script references via `Script.reference(...)`;
-- done: better validation errors with scene/node/property/resource context.
+- generated script body remains readable;
+- InputMap actions cover directional controls and restart;
+- manual tick accumulator works without Timer DSL;
+- generated scene can be minimal and still playable;
+- snapshots remain manageable.
 
-Remaining before v0.3:
-- decide whether v0.2 needs any more explicit value wrappers beyond `Rect2`;
-- decide whether missing external resources should remain `copied=false` or become warnings/errors;
-- optionally add a small example that demonstrates copied assets and manual script references.
+## Then: useful project configuration
 
-## v0.3 - Typed wrappers and validation
+Add small project settings only when an example needs them:
 
-Status: not started.
+- display/window size;
+- optional window title metadata;
+- maybe application icon once asset copy behavior needs a real example.
 
-Goal: improve correctness and IDE experience.
+Keep this incremental. Do not build a broad settings DSL before examples prove
+the need.
 
-Features:
-- typed node wrappers for common Godot classes;
-- optional API dump ingestion;
-- validation of property names/types where practical;
-- signal validation where practical;
-- richer error context with scene/node path.
+## Later: script sources and templates
 
-## v0.4 - Project configuration
+Generated raw script bodies are enough for the current examples, but larger
+examples will need better ergonomics:
 
-Status: not started.
+- `Script.from_file(...)`;
+- simple template support;
+- clearer error reporting for generated GDScript smoke checks.
 
-Goal: generate more of the Godot project.
+This is still not Python-to-GDScript transpilation.
 
-Features:
-- input map;
-- autoloads;
-- display/window settings;
-- rendering settings;
-- export presets;
-- debug/release export commands;
-- editor open command.
+## Later: richer resources
 
-## v0.5 - Templates and manual boundaries
+Delay complex Godot resources until an example needs them.
 
-Status: not started.
+Likely candidates:
 
-Goal: make generated GDScript useful without building a transpiler.
+- `Timer`;
+- scene instancing through `PackedScene`;
+- shape resources for physics examples;
+- Godot-assisted emission for resources that are brittle to write by hand.
 
-Features:
-- `Script.from_file`;
-- `Script.template`;
-- generated file manifest;
-- refusal to overwrite non-generated files;
-- generated file cleanup for removed scenes/scripts.
+## Non-goals for the near term
 
-## v0.6 - Godot-assisted emitter
-
-Status: not started.
-
-Goal: support complex Godot resources safely.
-
-Features:
-- optional Godot headless generation scripts;
-- `ResourceSaver`-based output for complex resources;
-- support for resources that are brittle to write by hand;
-- compare Godot-saved output in tests where possible.
-
-## v1.0 - Usable framework foundation
-
-Status: future target.
-
-Goal: a small but coherent framework suitable for real hobby projects.
-
-Expected properties:
-- library-first workflow;
-- deterministic generation;
-- good errors;
-- normal Godot project output;
-- clear generated/manual boundaries;
-- useful DSL for common 2D/UI scenes;
-- no Python runtime dependency in exported game.
+- Python runtime inside Godot;
+- Python-to-GDScript transpiler;
+- generated wrappers for the entire Godot API;
+- visual editor replacement;
+- ECS;
+- broad physics/resource DSL before examples justify it.

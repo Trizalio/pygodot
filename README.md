@@ -1,24 +1,53 @@
 # pygodot
-Declarative python framework to create godot projects
 
-## Run the example from a source checkout
+`pygodot` is a build-time Python library for declaring Godot 4 projects and
+generating normal Godot files.
+
+Python is used to describe scenes and project structure. Runtime logic remains
+ordinary GDScript inside the generated Godot project.
+
+## Current Examples
+
+Minimal example:
 
 ```powershell
-$env:PYTHONPATH = "C:\code\PyGodot\src"
-C:\code\PyGodot\.venv\Scripts\python.exe C:\code\PyGodot\example.py
+$env:PYTHONPATH = "src"
+python examples/minimal/game.py
 ```
 
-The example owns a `Game` object and calls `game.run()`, which builds the Godot
-project, runs Godot import, and starts the generated main scene.
+Playable Pong example:
 
-There is also a self-contained minimal example at `examples/minimal/game.py`.
+```powershell
+$env:PYTHONPATH = "src"
+python examples/pong/game.py
+```
+
+Set `GODOT_BIN` if your Godot executable is not available as `godot`:
+
+```powershell
+$env:GODOT_BIN = "C:\Path\To\Godot.exe"
+```
+
+To build without launching Godot:
+
+```powershell
+$env:PYTHONPATH = "src"
+python -c "from examples.pong.game import game; game.build()"
+```
+
+To run a short headless Godot smoke check:
+
+```powershell
+$env:PYTHONPATH = "src"
+python -c "from examples.pong.game import game; game.check_run(frames=20)"
+```
 
 Generated Godot projects are build output, not the source of truth. See
 `docs/GENERATED_BOUNDARY.md` for the generated/manual file ownership policy.
 
-## Run tests
+## Run Tests
 
 ```powershell
-$env:PYTHONPATH = "C:\code\PyGodot\src"
-C:\code\PyGodot\.venv\Scripts\python.exe -m unittest discover -s tests
+$env:PYTHONPATH = "src"
+python -m unittest discover -s tests
 ```

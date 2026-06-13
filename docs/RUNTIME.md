@@ -2,88 +2,41 @@
 
 ## Decision
 
-Runtime is Godot 4 + GDScript.
+Runtime is Godot 4 plus GDScript.
 
-Python is not part of the game runtime in MVP.
+Python is design/build-time only. Python is not embedded in the generated game.
 
 ## Why
 
-The project goal is to reduce Godot editor boilerplate and make scene/project construction declarative and repeatable. It is not to replace the Godot runtime.
+The project goal is to reduce Godot editor boilerplate and make project
+generation declarative and repeatable. It is not to replace the Godot runtime.
 
-Using Python inside Godot would create large problems:
-- export complexity;
-- platform-specific packaging;
-- dependency management inside game builds;
-- CPython runtime overhead;
-- GIL concerns;
-- binding stability issues;
-- harder debugging;
-- less native Godot workflow.
+Embedding Python in Godot would create export, packaging, dependency, GIL,
+platform, and binding-stability problems.
 
-## Accepted runtime model
+## Accepted Runtime Model
 
 ```text
 Python DSL/build step
-    ↓
-Generated Godot files
-    ↓
-Godot runtime executes GDScript/native engine code
+  -> Generated Godot files
+  -> Godot runtime executes GDScript/native engine code
 ```
 
-## GDScript role
+## GDScript Role
 
-GDScript is the primary gameplay glue language.
+GDScript is the gameplay glue language.
 
 Allowed:
+
 - generated `.gd` files;
 - raw GDScript body strings in Python DSL;
-- template-generated scripts later;
-- user-authored manual GDScript scripts referenced by Python DSL;
-- generated signal connections.
+- user-authored manual GDScript files referenced by Python DSL;
+- generated signal connections;
+- future script file/template helpers.
 
-## GDExtension role
+## Manual Scripts
 
-GDExtension is not part of MVP.
-
-Future use:
-- heavy simulation;
-- pathfinding;
-- procedural generation hot paths;
-- combat calculations;
-- geometry/mesh processing;
-- Rust/C++ acceleration.
-
-Python should not be routed through GDExtension for runtime.
-
-## Explicitly out of scope for MVP
-
-- Python GDExtension runtime;
-- godot-python dependency;
-- Python subset transpilation to GDScript;
-- AST compiler from Python to GDScript;
-- runtime construction of all scenes from Python-like descriptors;
-- Python scripting inside exported games.
-
-## Script generation strategy
-
-Start simple:
-
-```python
-Script(
-    path="res://scripts/main.gd",
-    extends="Node2D",
-    body="""
-func _ready() -> void:
-    print("ready")
-""",
-)
-```
-
-Then add:
-- `Script.from_file(...)`;
-- `Script.template(...)`;
-
-Manual scripts can be referenced without generation:
+Manual scripts are referenced explicitly:
 
 ```python
 Script.reference(
@@ -92,7 +45,14 @@ Script.reference(
 )
 ```
 
-Referenced scripts are emitted as external script resources in `.tscn` files, but
-`Game.build()` does not write or overwrite the `.gd` file.
+Referenced scripts are emitted as external script resources in `.tscn` files,
+but `Game.build()` does not write or overwrite the `.gd` file.
 
-Do not build a Python-to-GDScript transpiler unless a later explicit decision reverses this.
+## Out Of Scope
+
+- Python runtime inside Godot;
+- `godot-python` dependency;
+- Python GDExtension runtime;
+- Python-to-GDScript transpilation;
+- AST compiler from Python to GDScript;
+- runtime construction of all scenes from Python descriptors.
