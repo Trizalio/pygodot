@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-from pygodot import Button, Color, Control, Game, Label, Node2D, Scene, Script, Vec2, node, signal
+from pygodot import Button, Color, ColorRect, Control, Game, Label, Node2D, Scene, Script, Vec2, signal
 
 ROOT = Path(__file__).parent
 
@@ -148,9 +148,8 @@ game.add_scene(
             "Menu",
             script=MENU_SCRIPT,
             children=[
-                node(
+                ColorRect(
                     "Background",
-                    "ColorRect",
                     position=Vec2(0, 0),
                     size=Vec2(800, 600),
                     color=Color(0.03, 0.04, 0.05),
@@ -190,30 +189,26 @@ game.add_scene(
             "Main",
             script=PONG_SCRIPT,
             children=[
-                node(
+                ColorRect(
                     "Background",
-                    "ColorRect",
                     position=Vec2(0, 0),
                     size=Vec2(800, 600),
                     color=Color(0.03, 0.04, 0.05),
                 ),
-                node(
+                ColorRect(
                     "LeftPaddle",
-                    "ColorRect",
                     position=Vec2(32, 252),
                     size=Vec2(18, 96),
                     color=Color(0.9, 0.95, 1.0),
                 ),
-                node(
+                ColorRect(
                     "RightPaddle",
-                    "ColorRect",
                     position=Vec2(750, 252),
                     size=Vec2(18, 96),
                     color=Color(1.0, 0.86, 0.45),
                 ),
-                node(
+                ColorRect(
                     "Ball",
-                    "ColorRect",
                     position=Vec2(392, 292),
                     size=Vec2(16, 16),
                     color=Color(1.0, 1.0, 1.0),

@@ -32,6 +32,7 @@ Node constructors/classes:
 ```text
 Node2D
 Control
+ColorRect
 Label
 Button
 Sprite2D later
@@ -110,6 +111,7 @@ Convenience wrappers should map to specific Godot classes:
 
 ```python
 Node2D("Main", position=Vec2(10, 20))
+ColorRect("Panel", color=Color(1, 1, 1), size=Vec2(200, 80))
 Label("Title", text="Hello")
 Button("Start", text="Start")
 ```

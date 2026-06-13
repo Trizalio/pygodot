@@ -3,6 +3,7 @@
 from pygodot.dsl import (
     Button,
     Color,
+    ColorRect,
     Control,
     ExternalResource,
     InputAction,
@@ -30,6 +31,7 @@ __all__ = [
     "BuildResult",
     "Button",
     "Color",
+    "ColorRect",
     "Control",
     "ExternalResource",
     "Game",

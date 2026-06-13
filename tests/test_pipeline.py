@@ -11,6 +11,7 @@ from unittest.mock import patch
 from pygodot import (
     Button,
     Color,
+    ColorRect,
     Game,
     Label,
     Node2D,
@@ -97,6 +98,25 @@ class DslNodeTests(unittest.TestCase):
         self.assertEqual(generic.children, [child])
         self.assertIs(generic.script, script)
         self.assertEqual(generic.signals, signals)
+
+    def test_color_rect_constructor_creates_color_rect_node(self) -> None:
+        rect = ColorRect(
+            "Panel",
+            position=Vec2(10, 20),
+            size=Vec2(200, 80),
+            color=Color(0.1, 0.2, 0.3),
+        )
+
+        self.assertEqual(rect.name, "Panel")
+        self.assertEqual(rect.type, "ColorRect")
+        self.assertEqual(
+            rect.props,
+            {
+                "position": Vec2(10, 20),
+                "size": Vec2(200, 80),
+                "color": Color(0.1, 0.2, 0.3),
+            },
+        )
 
 
 class ValueSerializationTests(unittest.TestCase):
