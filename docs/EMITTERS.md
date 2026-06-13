@@ -126,10 +126,10 @@ MVP fields:
 - `config_version=5`;
 - application name;
 - main scene.
+- keyboard-only input map actions.
 
 Future fields:
 - autoloads;
-- input map;
 - display/window settings;
 - rendering settings;
 - physics settings;

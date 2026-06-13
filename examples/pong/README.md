@@ -49,3 +49,6 @@ Controls:
 - Left paddle: `W` / `S`
 - Right paddle: `Up` / `Down`
 - Restart: `Space`
+
+The controls are declared with pygodot input actions in `game.py` and emitted to
+the generated `project.godot` InputMap.

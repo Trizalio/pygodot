@@ -40,6 +40,16 @@ game.add_scene(main_scene)
 game.add_scene(menu_scene)
 ```
 
+Keyboard input actions can be registered on the same `Game` object:
+
+```python
+game.add_input_action("move_up", keys=["W", "UP"])
+game.add_input_action("restart", keys=["SPACE"])
+```
+
+These actions are emitted into `project.godot` and used from GDScript through
+Godot's normal `Input.is_action_pressed(...)` APIs.
+
 Then it calls:
 
 ```python
@@ -90,6 +100,7 @@ class Game:
     ) -> None: ...
 
     def add_scene(self, scene: Scene) -> None: ...
+    def add_input_action(self, name: str, *, keys: list[str]) -> None: ...
     def build(self) -> BuildResult: ...
     def import_resources(self) -> None: ...
     def run(self, scene: str | None = None) -> None: ...

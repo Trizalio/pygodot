@@ -25,7 +25,7 @@ PONG_SCRIPT = Script(
         reset_game()
 
     func _process(delta: float) -> void:
-        if Input.is_key_pressed(KEY_SPACE):
+        if Input.is_action_just_pressed("restart"):
             reset_game()
 
         move_paddles(delta)
@@ -42,15 +42,15 @@ PONG_SCRIPT = Script(
 
     func move_paddles(delta: float) -> void:
         var left_direction := 0.0
-        if Input.is_key_pressed(KEY_W):
+        if Input.is_action_pressed("left_up"):
             left_direction -= 1.0
-        if Input.is_key_pressed(KEY_S):
+        if Input.is_action_pressed("left_down"):
             left_direction += 1.0
 
         var right_direction := 0.0
-        if Input.is_key_pressed(KEY_UP):
+        if Input.is_action_pressed("right_up"):
             right_direction -= 1.0
-        if Input.is_key_pressed(KEY_DOWN):
+        if Input.is_action_pressed("right_down"):
             right_direction += 1.0
 
         $LeftPaddle.position.y = clamp(
@@ -122,6 +122,12 @@ game = Game(
     main_scene="res://scenes/pong.tscn",
     godot_bin=os.environ.get("GODOT_BIN", "godot"),
 )
+
+game.add_input_action("left_up", keys=["W"])
+game.add_input_action("left_down", keys=["S"])
+game.add_input_action("right_up", keys=["UP"])
+game.add_input_action("right_down", keys=["DOWN"])
+game.add_input_action("restart", keys=["SPACE"])
 
 game.add_scene(
     Scene(

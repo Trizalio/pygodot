@@ -7,6 +7,7 @@ from pathlib import Path
 
 from pygodot.build.manifest import BuildManifest, ManifestResource
 from pygodot.build.writer import GeneratedFileWriter
+from pygodot.dsl.input import InputAction
 from pygodot.dsl.scene import Scene
 from pygodot.errors import BuildError
 from pygodot.emitters.gdscript import GdScriptEmitter
@@ -40,12 +41,21 @@ class Game:
     main_scene: str
     godot_bin: str = "godot"
     scenes: list[Scene] = field(default_factory=list)
+    input_actions: list[InputAction] = field(default_factory=list)
 
     def add_scene(self, scene: Scene) -> None:
         self.scenes.append(scene)
 
+    def add_input_action(self, name: str, *, keys: list[str]) -> None:
+        self.input_actions.append(InputAction(name=name, keys=tuple(keys)))
+
     def build(self) -> BuildResult:
-        project = normalize_project(name=self.name, main_scene=self.main_scene, scenes=self.scenes)
+        project = normalize_project(
+            name=self.name,
+            main_scene=self.main_scene,
+            scenes=self.scenes,
+            input_actions=self.input_actions,
+        )
         validate_project(project)
 
         writer = GeneratedFileWriter(self.build_dir, allow_overwrite_unmarked=True)

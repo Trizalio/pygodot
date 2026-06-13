@@ -4,7 +4,8 @@ from typing import Any
 
 from pygodot.emitters.values import gd_value
 from pygodot.errors import ValidationError
-from pygodot.ir.model import IRNode, IRProject, IRScene
+from pygodot.input_keys import keycode_for
+from pygodot.ir.model import IRInputAction, IRNode, IRProject, IRScene
 
 
 def validate_project(project: IRProject) -> None:
@@ -24,6 +25,7 @@ def validate_project(project: IRProject) -> None:
         )
     for scene in project.scenes:
         validate_scene(scene)
+    _validate_input_actions(project.input_actions)
 
 
 def validate_scene(scene: IRScene) -> None:
@@ -108,6 +110,32 @@ def _validate_supported_value(value: Any, *, value_path: str, location: str) -> 
             f"Unsupported value for {value_path}: {location}, "
             f"value={value!r}, value_type={type(value).__name__}."
         ) from exc
+
+
+def _validate_input_actions(actions: tuple[IRInputAction, ...]) -> None:
+    seen: set[str] = set()
+    for action in actions:
+        if not _is_valid_input_action_name(action.name):
+            raise ValidationError(
+                f"Input action name must contain only letters, numbers, and underscores: "
+                f"action={action.name!r}."
+            )
+        if action.name in seen:
+            raise ValidationError(f"Duplicate input action name: action={action.name!r}.")
+        seen.add(action.name)
+        if not action.keys:
+            raise ValidationError(f"Input action must contain at least one key: action={action.name!r}.")
+        for key in action.keys:
+            if keycode_for(key) is None:
+                raise ValidationError(
+                    f"Unsupported input action key: action={action.name!r}, key={key!r}."
+                )
+
+
+def _is_valid_input_action_name(name: str) -> bool:
+    if not name:
+        return False
+    return all(char.isalnum() or char == "_" for char in name)
 
 
 def _location(scene_path: str, node_path: str) -> str:

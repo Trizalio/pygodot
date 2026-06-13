@@ -24,6 +24,7 @@ Script
 SignalConnection
 Godot value wrappers
 ExternalResource
+InputAction
 ```
 
 Node constructors/classes:
@@ -208,6 +209,27 @@ Referenced scripts are included in `.tscn` as external script resources, but
 `Game.build()` does not write or overwrite the `.gd` file.
 
 Do not implement Python-to-GDScript transpilation in MVP.
+
+## Input actions
+
+Keyboard input actions are declared on `Game` and emitted into `project.godot`:
+
+```python
+game.add_input_action("left_up", keys=["W"])
+game.add_input_action("right_up", keys=["UP"])
+game.add_input_action("restart", keys=["SPACE"])
+```
+
+Generated GDScript should use Godot's InputMap APIs:
+
+```gdscript
+Input.is_action_pressed("left_up")
+Input.is_action_just_pressed("restart")
+```
+
+The first version intentionally supports keyboard keys only. Mouse buttons,
+joypads, axes, deadzones, presets, and platform-specific bindings are later
+work.
 
 ## Composition examples
 

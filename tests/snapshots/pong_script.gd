@@ -14,7 +14,7 @@ func _ready() -> void:
     reset_game()
 
 func _process(delta: float) -> void:
-    if Input.is_key_pressed(KEY_SPACE):
+    if Input.is_action_just_pressed("restart"):
         reset_game()
 
     move_paddles(delta)
@@ -31,15 +31,15 @@ func reset_game() -> void:
 
 func move_paddles(delta: float) -> void:
     var left_direction := 0.0
-    if Input.is_key_pressed(KEY_W):
+    if Input.is_action_pressed("left_up"):
         left_direction -= 1.0
-    if Input.is_key_pressed(KEY_S):
+    if Input.is_action_pressed("left_down"):
         left_direction += 1.0
 
     var right_direction := 0.0
-    if Input.is_key_pressed(KEY_UP):
+    if Input.is_action_pressed("right_up"):
         right_direction -= 1.0
-    if Input.is_key_pressed(KEY_DOWN):
+    if Input.is_action_pressed("right_down"):
         right_direction += 1.0
 
     $LeftPaddle.position.y = clamp(

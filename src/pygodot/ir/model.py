@@ -55,7 +55,14 @@ class IRScene:
 
 
 @dataclass(slots=True, frozen=True)
+class IRInputAction:
+    name: str
+    keys: tuple[str, ...]
+
+
+@dataclass(slots=True, frozen=True)
 class IRProject:
     name: str
     main_scene: str
     scenes: tuple[IRScene, ...] = ()
+    input_actions: tuple[IRInputAction, ...] = ()

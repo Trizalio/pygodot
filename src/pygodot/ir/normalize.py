@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from pygodot.dsl.input import InputAction
 from pygodot.dsl.nodes import Node
 from pygodot.dsl.resources import ExternalResource
 from pygodot.dsl.scene import Scene
@@ -11,12 +12,14 @@ from pygodot.dsl.script import Script
 from pygodot.ir.model import (
     IRExternalResource,
     IRExternalResourceRef,
+    IRInputAction,
     IRNode,
     IRProject,
     IRScene,
     IRScript,
     IRSignalConnection,
 )
+from pygodot.input_keys import normalize_key_name
 
 
 def normalize_scene(scene: Scene) -> IRScene:
@@ -34,11 +37,25 @@ def normalize_scene(scene: Scene) -> IRScene:
     )
 
 
-def normalize_project(*, name: str, main_scene: str, scenes: list[Scene]) -> IRProject:
+def normalize_project(
+    *,
+    name: str,
+    main_scene: str,
+    scenes: list[Scene],
+    input_actions: list[InputAction] | None = None,
+) -> IRProject:
     return IRProject(
         name=name,
         main_scene=main_scene,
         scenes=tuple(normalize_scene(scene) for scene in scenes),
+        input_actions=tuple(_normalize_input_action(action) for action in input_actions or []),
+    )
+
+
+def _normalize_input_action(action: InputAction) -> IRInputAction:
+    return IRInputAction(
+        name=action.name,
+        keys=tuple(normalize_key_name(key) for key in action.keys),
     )
 
 
