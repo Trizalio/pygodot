@@ -1,0 +1,38 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/pong.gd" id="Script_scripts_pong_gd"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("Script_scripts_pong_gd")
+
+[node name="Background" type="ColorRect" parent="."]
+color = Color(0.03, 0.04, 0.05, 1.0)
+position = Vector2(0, 0)
+size = Vector2(800, 600)
+
+[node name="LeftPaddle" type="ColorRect" parent="."]
+color = Color(0.9, 0.95, 1.0, 1.0)
+position = Vector2(32, 252)
+size = Vector2(18, 96)
+
+[node name="RightPaddle" type="ColorRect" parent="."]
+color = Color(1.0, 0.86, 0.45, 1.0)
+position = Vector2(750, 252)
+size = Vector2(18, 96)
+
+[node name="Ball" type="ColorRect" parent="."]
+color = Color(1.0, 1.0, 1.0, 1.0)
+position = Vector2(392, 292)
+size = Vector2(16, 16)
+
+[node name="LeftScore" type="Label" parent="."]
+position = Vector2(330, 28)
+text = "0"
+
+[node name="RightScore" type="Label" parent="."]
+position = Vector2(455, 28)
+text = "0"
+
+[node name="HelpText" type="Label" parent="."]
+position = Vector2(215, 560)
+text = "W/S and Up/Down move paddles. Space restarts."

@@ -38,6 +38,9 @@ from pygodot.ir.normalize import normalize_scene
 from pygodot.ir.validate import validate_scene
 
 
+SNAPSHOTS_DIR = Path(__file__).parent / "snapshots"
+
+
 def make_scene() -> Scene:
     script = Script(
         path="res://scripts/main.gd",
@@ -166,6 +169,43 @@ text = "Click me"
 """,
         )
 
+    def test_minimal_scene_file_snapshot(self) -> None:
+        scene = normalize_scene(
+            Scene(
+                path="res://scenes/minimal.tscn",
+                root=Node2D(
+                    "Main",
+                    children=[
+                        Label("Title", text="Hello snapshots"),
+                    ],
+                ),
+            )
+        )
+
+        self.assert_matches_snapshot(
+            "minimal_scene.tscn",
+            TscnEmitter().emit(scene),
+        )
+
+    def test_pong_scene_file_snapshot(self) -> None:
+        pong = _load_example_game("pong")
+        scene = normalize_scene(pong.game.scenes[0])
+
+        self.assert_matches_snapshot(
+            "pong_scene.tscn",
+            TscnEmitter().emit(scene),
+        )
+
+    def test_pong_script_file_snapshot(self) -> None:
+        pong = _load_example_game("pong")
+        script = normalize_scene(pong.game.scenes[0]).root.script
+        assert script is not None
+
+        self.assert_matches_snapshot(
+            "pong_script.gd",
+            GdScriptEmitter().emit(script),
+        )
+
     def test_tscn_emitter_snapshot_with_external_resource_property(self) -> None:
         scene = normalize_scene(
             Scene(
@@ -269,6 +309,10 @@ script = ExtResource("Script_manual_player_gd")
                 ("Texture2D", "res://assets/icon.svg", "Texture2D_assets_icon_svg"),
             ],
         )
+
+    def assert_matches_snapshot(self, snapshot_name: str, actual: str) -> None:
+        expected = (SNAPSHOTS_DIR / snapshot_name).read_text(encoding="utf-8")
+        self.assertEqual(actual, expected)
 
     def test_external_resources_dedupe_by_type_and_path(self) -> None:
         scene = normalize_scene(

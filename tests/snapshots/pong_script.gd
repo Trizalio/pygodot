@@ -1,0 +1,103 @@
+extends Node2D
+
+const SCREEN_SIZE := Vector2(800, 600)
+const PADDLE_SIZE := Vector2(18, 96)
+const BALL_SIZE := Vector2(16, 16)
+const PADDLE_SPEED := 420.0
+const BALL_SPEED := 320.0
+
+var left_score := 0
+var right_score := 0
+var ball_velocity := Vector2.ZERO
+
+func _ready() -> void:
+    reset_game()
+
+func _process(delta: float) -> void:
+    if Input.is_key_pressed(KEY_SPACE):
+        reset_game()
+
+    move_paddles(delta)
+    move_ball(delta)
+    update_scores()
+
+func reset_game() -> void:
+    left_score = 0
+    right_score = 0
+    $LeftPaddle.position = Vector2(32, 252)
+    $RightPaddle.position = Vector2(750, 252)
+    reset_ball(1)
+    update_scores()
+
+func move_paddles(delta: float) -> void:
+    var left_direction := 0.0
+    if Input.is_key_pressed(KEY_W):
+        left_direction -= 1.0
+    if Input.is_key_pressed(KEY_S):
+        left_direction += 1.0
+
+    var right_direction := 0.0
+    if Input.is_key_pressed(KEY_UP):
+        right_direction -= 1.0
+    if Input.is_key_pressed(KEY_DOWN):
+        right_direction += 1.0
+
+    $LeftPaddle.position.y = clamp(
+        $LeftPaddle.position.y + left_direction * PADDLE_SPEED * delta,
+        0.0,
+        SCREEN_SIZE.y - PADDLE_SIZE.y
+    )
+    $RightPaddle.position.y = clamp(
+        $RightPaddle.position.y + right_direction * PADDLE_SPEED * delta,
+        0.0,
+        SCREEN_SIZE.y - PADDLE_SIZE.y
+    )
+
+func move_ball(delta: float) -> void:
+    $Ball.position += ball_velocity * delta
+    bounce_from_walls()
+    bounce_from_paddles()
+
+    if $Ball.position.x + BALL_SIZE.x < 0.0:
+        right_score += 1
+        reset_ball(-1)
+    elif $Ball.position.x > SCREEN_SIZE.x:
+        left_score += 1
+        reset_ball(1)
+
+func bounce_from_walls() -> void:
+    if $Ball.position.y <= 0.0:
+        $Ball.position.y = 0.0
+        ball_velocity.y = abs(ball_velocity.y)
+    elif $Ball.position.y + BALL_SIZE.y >= SCREEN_SIZE.y:
+        $Ball.position.y = SCREEN_SIZE.y - BALL_SIZE.y
+        ball_velocity.y = -abs(ball_velocity.y)
+
+func bounce_from_paddles() -> void:
+    var ball_rect := Rect2($Ball.position, BALL_SIZE)
+    var left_rect := Rect2($LeftPaddle.position, PADDLE_SIZE)
+    var right_rect := Rect2($RightPaddle.position, PADDLE_SIZE)
+
+    if ball_velocity.x < 0.0 and ball_rect.intersects(left_rect):
+        $Ball.position.x = $LeftPaddle.position.x + PADDLE_SIZE.x
+        ball_velocity.x = abs(ball_velocity.x)
+        apply_paddle_spin($LeftPaddle.position.y)
+    elif ball_velocity.x > 0.0 and ball_rect.intersects(right_rect):
+        $Ball.position.x = $RightPaddle.position.x - BALL_SIZE.x
+        ball_velocity.x = -abs(ball_velocity.x)
+        apply_paddle_spin($RightPaddle.position.y)
+
+func apply_paddle_spin(paddle_y: float) -> void:
+    var paddle_center: float = paddle_y + PADDLE_SIZE.y * 0.5
+    var ball_center: float = $Ball.position.y + BALL_SIZE.y * 0.5
+    var offset: float = clamp((ball_center - paddle_center) / (PADDLE_SIZE.y * 0.5), -1.0, 1.0)
+    ball_velocity.y = offset * BALL_SPEED
+    ball_velocity = ball_velocity.normalized() * BALL_SPEED
+
+func reset_ball(direction: int) -> void:
+    $Ball.position = Vector2(392, 292)
+    ball_velocity = Vector2(float(direction), 0.45).normalized() * BALL_SPEED
+
+func update_scores() -> void:
+    $LeftScore.text = str(left_score)
+    $RightScore.text = str(right_score)
