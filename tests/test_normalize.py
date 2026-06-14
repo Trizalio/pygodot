@@ -4,6 +4,7 @@ import unittest
 
 from pygodot import (
     CollisionShape2D,
+    Color,
     Node,
     Node2D,
     Scene,
@@ -12,12 +13,13 @@ from pygodot import (
     circle_shape_2d,
     ext_resource,
     font,
+    label_settings,
     packed_scene,
     rectangle_shape_2d,
     sub_resource,
     texture,
 )
-from pygodot.ir.normalize import normalize_scene
+from pygodot.ir.normalize import normalize_project, normalize_scene
 
 
 class NormalizeTests(unittest.TestCase):
@@ -191,3 +193,39 @@ class NormalizeTests(unittest.TestCase):
                 ("Texture2D", "res://assets/icon.svg", "Texture2D_assets_icon_svg"),
             ],
         )
+
+    def test_generated_label_settings_becomes_external_ref_and_project_resource(self) -> None:
+        project = normalize_project(
+            name="GeneratedResources",
+            main_scene="res://scenes/main.tscn",
+            scenes=[
+                Scene(
+                    path="res://scenes/main.tscn",
+                    root=Node2D(
+                        "Main",
+                        label_settings=label_settings(
+                            "res://ui/title_label_settings.tres",
+                            font_size=32,
+                            font_color=Color(1, 1, 1),
+                        ),
+                    ),
+                )
+            ],
+        )
+
+        self.assertEqual(
+            [(resource.type, resource.path, resource.id) for resource in project.scenes[0].external_resources],
+            [
+                (
+                    "LabelSettings",
+                    "res://ui/title_label_settings.tres",
+                    "LabelSettings_ui_title_label_settings_tres",
+                )
+            ],
+        )
+        self.assertEqual(len(project.generated_resources), 1)
+        resource = project.generated_resources[0]
+        self.assertEqual(resource.type, "LabelSettings")
+        self.assertEqual(resource.path, "res://ui/title_label_settings.tres")
+        self.assertEqual(resource.id, "LabelSettings_ui_title_label_settings_tres")
+        self.assertEqual(resource.props, {"font_size": 32, "font_color": Color(1, 1, 1)})

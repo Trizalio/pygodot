@@ -1,0 +1,21 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="LabelSettings" path="res://ui/title_label_settings.tres" id="LabelSettings_ui_title_label_settings_tres"]
+
+[node name="Main" type="Node2D"]
+
+[node name="Background" type="ColorRect" parent="."]
+color = Color(0.04, 0.07, 0.09, 1.0)
+position = Vector2(0, 0)
+size = Vector2(640, 360)
+
+[node name="Title" type="Label" parent="."]
+label_settings = ExtResource("LabelSettings_ui_title_label_settings_tres")
+position = Vector2(96, 128)
+text = "Generated LabelSettings .tres"
+
+[node name="Caption" type="Label" parent="."]
+position = Vector2(98, 190)
+text = "The scene references a generated native Godot resource."
+theme_override_colors = {"font_color": Color(0.72, 0.82, 0.88, 1.0)}
+theme_override_font_sizes = {"font_size": 18}

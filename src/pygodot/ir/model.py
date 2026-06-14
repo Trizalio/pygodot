@@ -33,6 +33,14 @@ class IRExternalResource:
 
 
 @dataclass(slots=True, frozen=True)
+class IRGeneratedResource:
+    type: str
+    path: str
+    id: str
+    props: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass(slots=True, frozen=True)
 class IRExternalResourceRef:
     resource_id: str
 
@@ -97,5 +105,6 @@ class IRProject:
     name: str
     main_scene: str
     scenes: tuple[IRScene, ...] = ()
+    generated_resources: tuple[IRGeneratedResource, ...] = ()
     input_actions: tuple[IRInputAction, ...] = ()
     window: IRWindowSettings | None = None

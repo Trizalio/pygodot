@@ -17,6 +17,7 @@ class ManifestResource:
 @dataclass(slots=True)
 class BuildManifest:
     generated_files: list[str] = field(default_factory=list)
+    generated_resources: list[str] = field(default_factory=list)
     generated_scenes: list[str] = field(default_factory=list)
     generated_scripts: list[str] = field(default_factory=list)
     external_resources: list[ManifestResource] = field(default_factory=list)
@@ -24,6 +25,7 @@ class BuildManifest:
     def to_json(self) -> str:
         data = {
             "generated_files": sorted(self.generated_files),
+            "generated_resources": sorted(self.generated_resources),
             "generated_scenes": sorted(self.generated_scenes),
             "generated_scripts": sorted(self.generated_scripts),
             "external_resources": [

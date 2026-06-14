@@ -8,7 +8,7 @@ from pathlib import Path
 from pygodot import Label, Node2D, Scene
 from pygodot.emitters.tscn import TscnEmitter
 from pygodot.ir.normalize import normalize_scene
-from tests.helpers import SnapshotTestCase, _build_example_script, _find_scene, _load_example_game
+from tests.helpers import SnapshotTestCase, _build_example_file, _build_example_script, _find_scene, _load_example_game
 
 
 class ExampleSnapshotTests(SnapshotTestCase):
@@ -184,6 +184,23 @@ class ExampleSnapshotTests(SnapshotTestCase):
         self.assert_matches_snapshot(
             "flappy_script.gd",
             _build_example_script(flappy.game, "scripts/main.gd"),
+        )
+
+    def test_generated_tres_scene_file_snapshot(self) -> None:
+        generated_tres = _load_example_game("generated_tres")
+        scene = generated_tres.game.scenes[0]
+
+        self.assert_matches_snapshot(
+            "generated_tres_scene.tscn",
+            TscnEmitter().emit(normalize_scene(scene)),
+        )
+
+    def test_generated_tres_resource_file_snapshot(self) -> None:
+        generated_tres = _load_example_game("generated_tres")
+
+        self.assert_matches_snapshot(
+            "generated_tres_title_label_settings.tres",
+            _build_example_file(generated_tres.game, "ui/title_label_settings.tres"),
         )
 
 
@@ -603,3 +620,34 @@ class ExampleBuildTests(unittest.TestCase):
             self.assertIn('"keycode":32', project_text)
             self.assertIn('"keycode":4194320', project_text)
             self.assertIn("restart={", project_text)
+
+    def test_generated_tres_example_builds_label_settings_resource(self) -> None:
+        generated_tres = _load_example_game("generated_tres")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            build_dir = Path(tmp) / "godot_project"
+            generated_tres.game.build_dir = build_dir
+
+            result = generated_tres.game.build()
+
+            generated_resource = build_dir / "ui" / "title_label_settings.tres"
+            self.assertEqual(result.generated_resources, [generated_resource])
+            self.assertEqual(
+                sorted(path.relative_to(build_dir).as_posix() for path in result.written_files),
+                [
+                    ".pygodot/manifest.json",
+                    "project.godot",
+                    "scenes/main.tscn",
+                    "ui/title_label_settings.tres",
+                ],
+            )
+            self.assertTrue(generated_resource.exists())
+
+            scene_text = (build_dir / "scenes" / "main.tscn").read_text(encoding="utf-8")
+            resource_text = generated_resource.read_text(encoding="utf-8")
+            self.assertIn('label_settings = ExtResource("LabelSettings_ui_title_label_settings_tres")', scene_text)
+            self.assertIn('[gd_resource type="LabelSettings" format=3]', resource_text)
+            self.assertIn("font_size = 36", resource_text)
+
+            manifest = json.loads((build_dir / ".pygodot" / "manifest.json").read_text(encoding="utf-8"))
+            self.assertEqual(manifest["generated_resources"], ["ui/title_label_settings.tres"])

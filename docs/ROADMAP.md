@@ -25,8 +25,9 @@ Implemented:
 - generic generated scene sub-resources through `sub_resource(...)`;
 - generated shape resources through `rectangle_shape_2d(...)` and
   `circle_shape_2d(...)`;
+- generated `LabelSettings` `.tres` resources through `label_settings(...)`;
 - generated, file-backed, templated, and referenced GDScript;
-- direct `.tscn`, `.gd`, and `project.godot` emitters;
+- direct `.tscn`, `.gd`, `.tres`, and `project.godot` emitters;
 - keyboard-only InputMap generation;
 - minimal display/window size settings;
 - build manifest at `.pygodot/manifest.json`;
@@ -43,7 +44,8 @@ Implemented:
 - a font resource `examples/font`;
 - a generated AnimationPlayer `examples/animation`;
 - a 2D collision shape `examples/physics`;
-- a small playable `examples/flappy`.
+- a small playable `examples/flappy`;
+- a generated `.tres` `examples/generated_tres`.
 
 ## Next: ergonomics
 
@@ -58,7 +60,8 @@ that example needs.
 
 Likely candidates:
 
-- direct or Godot-assisted `.tres` resources that examples justify.
+- direct or Godot-assisted resources beyond the current generated
+  `LabelSettings` `.tres` support, when examples justify them.
 
 ## Non-goals for the near term
 

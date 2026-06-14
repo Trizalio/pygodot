@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from pygodot.dsl.generated_resources import GeneratedResource
 from pygodot.dsl.input import InputAction
 from pygodot.dsl.nodes import Node
 from pygodot.dsl.resources import ExternalResource
@@ -15,6 +16,7 @@ from pygodot.dsl.subresources import SubResource
 from pygodot.ir.model import (
     IRExternalResource,
     IRExternalResourceRef,
+    IRGeneratedResource,
     IRInputAction,
     IRNode,
     IRPackedFloat32Array,
@@ -30,15 +32,20 @@ from pygodot.ir.model import (
 from pygodot.input_keys import normalize_key_name
 
 
-def normalize_scene(scene: Scene) -> IRScene:
+def normalize_scene(
+    scene: Scene,
+    generated_resources: dict[tuple[str, str], IRGeneratedResource] | None = None,
+) -> IRScene:
     resources: dict[tuple[str, str], IRExternalResource] = {}
     sub_resources: dict[str, IRSubResource] = {}
+    generated_resources = generated_resources if generated_resources is not None else {}
     root = _normalize_node(
         scene.root,
         node_path=".",
         parent_path=None,
         resources=resources,
         sub_resources=sub_resources,
+        generated_resources=generated_resources,
     )
     return IRScene(
         path=scene.path,
@@ -56,10 +63,12 @@ def normalize_project(
     input_actions: list[InputAction] | None = None,
     window: WindowSettings | None = None,
 ) -> IRProject:
+    generated_resources: dict[tuple[str, str], IRGeneratedResource] = {}
     return IRProject(
         name=name,
         main_scene=main_scene,
-        scenes=tuple(normalize_scene(scene) for scene in scenes),
+        scenes=tuple(normalize_scene(scene, generated_resources) for scene in scenes),
+        generated_resources=tuple(generated_resources[key] for key in sorted(generated_resources)),
         input_actions=tuple(_normalize_input_action(action) for action in input_actions or []),
         window=_normalize_window(window),
     )
@@ -85,10 +94,11 @@ def _normalize_node(
     parent_path: str | None,
     resources: dict[tuple[str, str], IRExternalResource],
     sub_resources: dict[str, IRSubResource],
+    generated_resources: dict[tuple[str, str], IRGeneratedResource],
 ) -> IRNode:
     script = _normalize_script(node.script, resources)
     props = {
-        key: _normalize_value(value, resources, sub_resources)
+        key: _normalize_value(value, resources, sub_resources, generated_resources)
         for key, value in node.props.items()
     }
     props.update(_normalize_animation_libraries(node, sub_resources))
@@ -108,6 +118,7 @@ def _normalize_node(
             parent_path=_child_parent_path(node, parent_path),
             resources=resources,
             sub_resources=sub_resources,
+            generated_resources=generated_resources,
         )
         for child in node.children
     )
@@ -197,7 +208,14 @@ def _normalize_value(
     value: Any,
     resources: dict[tuple[str, str], IRExternalResource],
     sub_resources: dict[str, IRSubResource] | None = None,
+    generated_resources: dict[tuple[str, str], IRGeneratedResource] | None = None,
 ) -> Any:
+    if isinstance(value, GeneratedResource):
+        if generated_resources is None:
+            raise TypeError("Generated resources require a project generated resource registry.")
+        resource = _register_generated_resource(resources, generated_resources, value)
+        return IRExternalResourceRef(resource_id=resource.id)
+
     if isinstance(value, ExternalResource):
         resource = _register_external_resource(resources, value)
         return IRExternalResourceRef(resource_id=resource.id)
@@ -209,17 +227,18 @@ def _normalize_value(
         return _register_sub_resource(resources, sub_resources, sub_resource_value)
 
     if isinstance(value, list):
-        return [_normalize_value(item, resources, sub_resources) for item in value]
+        return [_normalize_value(item, resources, sub_resources, generated_resources) for item in value]
 
     if isinstance(value, tuple):
-        return tuple(_normalize_value(item, resources, sub_resources) for item in value)
+        return tuple(_normalize_value(item, resources, sub_resources, generated_resources) for item in value)
 
     if isinstance(value, dict):
         return {
-            _normalize_value(key, resources, sub_resources): _normalize_value(
+            _normalize_value(key, resources, sub_resources, generated_resources): _normalize_value(
                 item,
                 resources,
                 sub_resources,
+                generated_resources,
             )
             for key, item in value.items()
         }
@@ -256,6 +275,35 @@ def _register_sub_resource(
         ),
     )
     return IRSubResourceRef(resource_id)
+
+
+def _register_generated_resource(
+    resources: dict[tuple[str, str], IRExternalResource],
+    generated_resources: dict[tuple[str, str], IRGeneratedResource],
+    resource: GeneratedResource,
+) -> IRExternalResource:
+    external_resource = _register_external_resource(
+        resources,
+        ExternalResource(path=resource.path, type=resource.type),
+    )
+    ir_resource = IRGeneratedResource(
+        type=resource.type,
+        path=resource.path,
+        id=external_resource.id,
+        props={
+            key: _normalize_value(value, resources, None, generated_resources)
+            for key, value in resource.props.items()
+        },
+    )
+    key = (resource.type, resource.path)
+    existing = generated_resources.get(key)
+    if existing is not None and existing != ir_resource:
+        raise ValueError(
+            f"Generated resource declared more than once with different properties: "
+            f"type={resource.type!r}, path={resource.path!r}."
+        )
+    generated_resources[key] = ir_resource
+    return external_resource
 
 
 def _normalize_instance(

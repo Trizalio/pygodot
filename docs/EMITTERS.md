@@ -6,7 +6,8 @@ Current emitters:
 
 - `ProjectEmitter` for `project.godot`;
 - `TscnEmitter` for `.tscn` scene files;
-- `GdScriptEmitter` for `.gd` script files.
+- `GdScriptEmitter` for `.gd` script files;
+- `TresEmitter` for narrow generated `.tres` resources.
 
 ## Design Rules
 
@@ -130,6 +131,23 @@ For `Script.from_template(...)`, `Game.build()` reads the template from
 normalized script to the emitter.
 
 Manual scripts are referenced with `Script.reference(...)` and are not emitted.
+
+## `.tres`
+
+The `.tres` emitter is intentionally narrow. It currently supports generated
+`LabelSettings` resources only:
+
+```text
+[gd_resource type="LabelSettings" format=3]
+
+[resource]
+font_color = Color(1, 1, 1, 1.0)
+font_size = 32
+```
+
+Generated `.tres` files are written by `Game.build()`, recorded in the manifest
+under `generated_resources`, and referenced from scenes through ordinary
+`ExtResource(...)` entries.
 
 ## Godot-assisted Emission
 

@@ -15,6 +15,7 @@ from pygodot.dsl.values import Vec2
 from pygodot.errors import BuildError
 from pygodot.emitters.gdscript import GdScriptEmitter
 from pygodot.emitters.project import ProjectEmitter
+from pygodot.emitters.tres import TresEmitter
 from pygodot.emitters.tscn import TscnEmitter
 from pygodot.godot_cli import GodotRunResult, check_project_run, import_project, run_project
 from pygodot.ir.model import IRExternalResource, IRNode, IRProject, IRScript
@@ -30,6 +31,7 @@ class BuildResult:
     written_files: list[Path]
     generated_scenes: list[Path]
     generated_scripts: list[Path]
+    generated_resources: list[Path] = field(default_factory=list)
     copied_resources: list[Path] = field(default_factory=list)
     manifest_path: Path | None = None
 
@@ -70,16 +72,26 @@ class Game:
         project_emitter = ProjectEmitter()
         scene_emitter = TscnEmitter()
         script_emitter = GdScriptEmitter()
+        tres_emitter = TresEmitter()
 
         written_files: list[Path] = []
         generated_scenes: list[Path] = []
         generated_scripts: list[Path] = []
+        generated_resources: list[Path] = []
         copied_resources: list[Path] = []
         manifest = BuildManifest()
 
         project_file = writer.write_text(Path("project.godot"), project_emitter.emit(project))
         written_files.append(project_file)
         manifest.generated_files.append(_rel_to_project(self.build_dir, project_file))
+
+        for resource in project.generated_resources:
+            resource_path = writer.write_text(_res_to_rel(resource.path), tres_emitter.emit(resource))
+            written_files.append(resource_path)
+            generated_resources.append(resource_path)
+            rel_resource_path = _rel_to_project(self.build_dir, resource_path)
+            manifest.generated_files.append(rel_resource_path)
+            manifest.generated_resources.append(rel_resource_path)
 
         emitted_script_paths: set[str] = set()
         for scene in project.scenes:
@@ -121,6 +133,7 @@ class Game:
             written_files=written_files,
             generated_scenes=generated_scenes,
             generated_scripts=generated_scripts,
+            generated_resources=generated_resources,
             copied_resources=copied_resources,
             manifest_path=manifest_path,
         )
@@ -208,13 +221,17 @@ def _copy_external_resources(
 ) -> list[Path]:
     copied: list[Path] = []
     seen: set[tuple[str, str]] = set()
+    generated_resource_keys = {
+        (resource.type, resource.path)
+        for resource in project.generated_resources
+    }
     for resource in _iter_external_resources(project):
         key = (resource.type, resource.path)
         if key in seen:
             continue
         seen.add(key)
 
-        if resource.type == "Script":
+        if resource.type == "Script" or key in generated_resource_keys:
             manifest.external_resources.append(
                 ManifestResource(
                     type=resource.type,

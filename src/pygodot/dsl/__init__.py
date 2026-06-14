@@ -9,6 +9,7 @@ from pygodot.dsl.animation import (
     value_track,
 )
 from pygodot.dsl.input import InputAction
+from pygodot.dsl.generated_resources import GeneratedResource, label_settings
 from pygodot.dsl.nodes import (
     Area2D,
     AudioStreamPlayer,
@@ -60,6 +61,7 @@ __all__ = [
     "ColorRect",
     "Control",
     "ExternalResource",
+    "GeneratedResource",
     "InputAction",
     "Label",
     "Node",
@@ -84,6 +86,7 @@ __all__ = [
     "external_resource",
     "font",
     "key",
+    "label_settings",
     "node",
     "packed_scene",
     "rectangle_shape_2d",

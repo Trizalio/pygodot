@@ -53,8 +53,9 @@ Current implemented surface includes:
 - Generated value-track animations through `animation(...)`.
 - Generic generated scene sub-resources through `sub_resource(...)`.
 - Generated shape resources through `rectangle_shape_2d(...)` and `circle_shape_2d(...)`.
+- Generated `LabelSettings` `.tres` resources through `label_settings(...)`.
 - Generated inline scripts, file-backed generated scripts, templated generated scripts, and referenced manual scripts.
-- Direct `.tscn`, `.gd`, and `project.godot` emitters.
+- Direct `.tscn`, `.gd`, `.tres`, and `project.godot` emitters.
 - Keyboard-only InputMap generation.
 - Minimal display/window size settings.
 - Build manifest at `.pygodot/manifest.json`.
@@ -73,6 +74,7 @@ Current implemented surface includes:
   - `examples/animation`
   - `examples/physics`
   - `examples/flappy`
+  - `examples/generated_tres`
 
 ## Development rules for Codex
 

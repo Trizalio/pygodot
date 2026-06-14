@@ -23,6 +23,7 @@ Current public concepts:
 - `InputAction`;
 - `Animation`;
 - generated sub-resources;
+- generated external resources;
 - Godot value wrappers;
 - external resource references;
 - scene instances.
@@ -148,6 +149,27 @@ Normalization collects external resources into scene resource tables and
 deduplicates them by `(type, path)`. During `Game.build()`, existing source
 files under `Game.source_root` are copied to matching `res://` paths under
 `build_dir` and recorded in the manifest.
+
+Generated `.tres` resources are intentionally narrow. The current public helper
+is `label_settings(...)`, which writes a native Godot `LabelSettings` resource
+and references it from scenes as an `ExtResource`:
+
+```python
+title_settings = label_settings(
+    "res://ui/title_label_settings.tres",
+    font_size=32,
+    font_color=Color(1, 1, 1),
+)
+
+Label(
+    "Title",
+    text="Generated .tres",
+    label_settings=title_settings,
+)
+```
+
+Use source-owned copied `.tres` files with `ext_resource(...)` or typed helpers
+when pygodot should not generate the resource content.
 
 Generated scenes can also be reused as `PackedScene` instances:
 

@@ -3,6 +3,7 @@
 from pygodot.ir.model import (
     IRExternalResource,
     IRExternalResourceRef,
+    IRGeneratedResource,
     IRNode,
     IRProject,
     IRScene,
@@ -13,6 +14,7 @@ from pygodot.ir.model import (
 __all__ = [
     "IRExternalResource",
     "IRExternalResourceRef",
+    "IRGeneratedResource",
     "IRNode",
     "IRProject",
     "IRScene",

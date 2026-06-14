@@ -5,7 +5,15 @@ from typing import Any
 from pygodot.emitters.values import gd_value
 from pygodot.errors import ValidationError
 from pygodot.input_keys import keycode_for
-from pygodot.ir.model import IRInputAction, IRNode, IRProject, IRScene, IRSubResource, IRWindowSettings
+from pygodot.ir.model import (
+    IRGeneratedResource,
+    IRInputAction,
+    IRNode,
+    IRProject,
+    IRScene,
+    IRSubResource,
+    IRWindowSettings,
+)
 
 
 def validate_project(project: IRProject) -> None:
@@ -25,6 +33,8 @@ def validate_project(project: IRProject) -> None:
         )
     for scene in project.scenes:
         validate_scene(scene)
+    for resource in project.generated_resources:
+        _validate_generated_resource(resource)
     _validate_input_actions(project.input_actions)
     _validate_window(project.window)
 
@@ -69,6 +79,30 @@ def _validate_sub_resource(resource: IRSubResource, *, scene_path: str) -> None:
             value,
             value_path=f"sub-resource {resource.id!r} property {key!r}",
             location=f"scene={scene_path!r}",
+        )
+
+
+def _validate_generated_resource(resource: IRGeneratedResource) -> None:
+    if resource.type != "LabelSettings":
+        raise ValidationError(
+            f"Unsupported generated resource type: "
+            f"resource_path={resource.path!r}, resource_type={resource.type!r}."
+        )
+    if not _is_res_path(resource.path):
+        raise ValidationError(
+            f"Generated resource path must start with res://: "
+            f"resource_type={resource.type!r}, resource_path={resource.path!r}."
+        )
+    if not resource.id:
+        raise ValidationError(
+            f"Generated resource id must not be empty: "
+            f"resource_type={resource.type!r}, resource_path={resource.path!r}."
+        )
+    for key, value in resource.props.items():
+        _validate_supported_value(
+            value,
+            value_path=f"generated resource {resource.path!r} property {key!r}",
+            location=f"resource_type={resource.type!r}",
         )
 
 

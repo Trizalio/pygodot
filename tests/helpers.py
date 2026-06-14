@@ -72,6 +72,10 @@ def _find_scene(game: Game, path: str) -> Scene:
 
 
 def _build_example_script(game: Game, relative_path: str) -> str:
+    return _build_example_file(game, relative_path)
+
+
+def _build_example_file(game: Game, relative_path: str) -> str:
     with tempfile.TemporaryDirectory() as tmp:
         build_dir = Path(tmp) / "godot_project"
         game.build_dir = build_dir

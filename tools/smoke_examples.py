@@ -30,6 +30,7 @@ ALL_EXAMPLES = (
     "animation",
     "physics",
     "flappy",
+    "generated_tres",
 )
 
 
