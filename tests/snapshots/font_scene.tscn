@@ -1,5 +1,6 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
+[ext_resource type="Font" path="res://assets/WDXL_Lubrifont_TC/WDXLLubrifontTC-Regular.ttf" id="Font_assets_WDXL_Lubrifont_TC_WDXLLubrifontTC_Regular_ttf"]
 [ext_resource type="Font" path="res://assets/display_font.tres" id="Font_assets_display_font_tres"]
 
 [node name="Main" type="Node2D"]
@@ -10,12 +11,19 @@ position = Vector2(0, 0)
 size = Vector2(640, 360)
 
 [node name="Title" type="Label" parent="."]
-position = Vector2(126, 120)
-text = "Font resource override"
+position = Vector2(130, 86)
+text = "FontVariation resource"
 theme_override_colors/font_color = Color(1.0, 0.86, 0.38, 1.0)
-theme_override_font_sizes/font_size = 34
+theme_override_font_sizes/font_size = 30
 theme_override_fonts/font = ExtResource("Font_assets_display_font_tres")
 
+[node name="GoogleFontTitle" type="Label" parent="."]
+position = Vector2(130, 155)
+text = "Google Fonts .ttf"
+theme_override_colors/font_color = Color(0.58, 0.95, 1.0, 1.0)
+theme_override_font_sizes/font_size = 34
+theme_override_fonts/font = ExtResource("Font_assets_WDXL_Lubrifont_TC_WDXLLubrifontTC_Regular_ttf")
+
 [node name="Caption" type="Label" parent="."]
-position = Vector2(150, 205)
-text = "FontVariation .tres copied from source_root/assets"
+position = Vector2(130, 240)
+text = "Both font resources are copied from source_root/assets"

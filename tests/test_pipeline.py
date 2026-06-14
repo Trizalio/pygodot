@@ -1269,24 +1269,39 @@ func _ready() -> void:
 
             result = font_example.game.build()
 
-            copied_font = build_dir / "assets" / "display_font.tres"
-            self.assertEqual(result.copied_resources, [copied_font])
+            copied_ttf = build_dir / "assets" / "WDXL_Lubrifont_TC" / "WDXLLubrifontTC-Regular.ttf"
+            copied_tres = build_dir / "assets" / "display_font.tres"
+            self.assertEqual(result.copied_resources, [copied_ttf, copied_tres])
             self.assertEqual(
                 sorted(path.relative_to(build_dir).as_posix() for path in result.written_files),
                 [".pygodot/manifest.json", "project.godot", "scenes/main.tscn"],
             )
-            self.assertTrue(copied_font.exists())
+            self.assertTrue(copied_ttf.exists())
+            self.assertTrue(copied_tres.exists())
 
             scene_text = (build_dir / "scenes" / "main.tscn").read_text(encoding="utf-8")
             self.assertIn('[node name="Title" type="Label" parent="."]', scene_text)
             self.assertIn('path="res://assets/display_font.tres"', scene_text)
             self.assertIn('theme_override_fonts/font = ExtResource("Font_assets_display_font_tres")', scene_text)
-            self.assertIn("theme_override_font_sizes/font_size = 34", scene_text)
+            self.assertIn("theme_override_font_sizes/font_size = 30", scene_text)
+            self.assertIn('[node name="GoogleFontTitle" type="Label" parent="."]', scene_text)
+            self.assertIn('path="res://assets/WDXL_Lubrifont_TC/WDXLLubrifontTC-Regular.ttf"', scene_text)
+            self.assertIn(
+                'theme_override_fonts/font = '
+                'ExtResource("Font_assets_WDXL_Lubrifont_TC_WDXLLubrifontTC_Regular_ttf")',
+                scene_text,
+            )
 
             manifest = json.loads((build_dir / ".pygodot" / "manifest.json").read_text(encoding="utf-8"))
             self.assertEqual(
                 manifest["external_resources"],
                 [
+                    {
+                        "copied": True,
+                        "id": "Font_assets_WDXL_Lubrifont_TC_WDXLLubrifontTC_Regular_ttf",
+                        "path": "res://assets/WDXL_Lubrifont_TC/WDXLLubrifontTC-Regular.ttf",
+                        "type": "Font",
+                    },
                     {
                         "copied": True,
                         "id": "Font_assets_display_font_tres",

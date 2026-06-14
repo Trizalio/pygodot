@@ -32,17 +32,30 @@ game.add_scene(
                     name="Title",
                     type="Label",
                     props={
-                        "text": "Font resource override",
-                        "position": Vec2(126, 120),
+                        "text": "FontVariation resource",
+                        "position": Vec2(130, 86),
                         "theme_override_fonts/font": font("res://assets/display_font.tres"),
-                        "theme_override_font_sizes/font_size": 34,
+                        "theme_override_font_sizes/font_size": 30,
                         "theme_override_colors/font_color": Color(1.0, 0.86, 0.38),
+                    },
+                ),
+                Node(
+                    name="GoogleFontTitle",
+                    type="Label",
+                    props={
+                        "text": "Google Fonts .ttf",
+                        "position": Vec2(130, 155),
+                        "theme_override_fonts/font": font(
+                            "res://assets/WDXL_Lubrifont_TC/WDXLLubrifontTC-Regular.ttf"
+                        ),
+                        "theme_override_font_sizes/font_size": 34,
+                        "theme_override_colors/font_color": Color(0.58, 0.95, 1.0),
                     },
                 ),
                 Label(
                     "Caption",
-                    text="FontVariation .tres copied from source_root/assets",
-                    position=Vec2(150, 205),
+                    text="Both font resources are copied from source_root/assets",
+                    position=Vec2(130, 240),
                 ),
             ],
         ),
