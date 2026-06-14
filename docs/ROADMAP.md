@@ -19,7 +19,8 @@ Implemented:
 - typed value wrappers: `Vec2`, `Vec3`, `Rect2`, `Color`, `NodePath`;
 - external resources through `ext_resource(...)`, `texture(...)`,
   `audio_stream(...)`, `font(...)`, and `packed_scene(...)`;
-- scene instances through `scene_instance(...)`;
+- scene instances through `scene_instance(...)` and generated scene references
+  through `Scene.as_packed_scene()`;
 - generated value-track animations through `animation(...)`;
 - generic generated scene sub-resources through `sub_resource(...)`;
 - generated shape resources through `rectangle_shape_2d(...)` and

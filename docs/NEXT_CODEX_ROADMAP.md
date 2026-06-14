@@ -49,7 +49,7 @@ Current implemented surface includes:
   - `audio_stream(...)`
   - `font(...)`
   - `packed_scene(...)`
-- Scene instances through `scene_instance(...)`.
+- Scene instances through `scene_instance(...)` and generated scene references through `Scene.as_packed_scene()`.
 - Generated value-track animations through `animation(...)`.
 - Generic generated scene sub-resources through `sub_resource(...)`.
 - Generated shape resources through `rectangle_shape_2d(...)` and `circle_shape_2d(...)`.

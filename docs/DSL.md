@@ -152,19 +152,24 @@ files under `Game.source_root` are copied to matching `res://` paths under
 Generated scenes can also be reused as `PackedScene` instances:
 
 ```python
-gem_scene = packed_scene("res://scenes/gem.tscn")
+gem_scene = Scene(
+    path="res://scenes/gem.tscn",
+    root=Node2D("Gem"),
+)
 
 Node2D(
     "Main",
     children=[
-        scene_instance("GemA", gem_scene, position=Vec2(220, 190)),
-        scene_instance("GemB", gem_scene, position=Vec2(320, 150)),
+        scene_instance("GemA", gem_scene.as_packed_scene(), position=Vec2(220, 190)),
+        scene_instance("GemB", gem_scene.as_packed_scene(), position=Vec2(320, 150)),
     ],
 )
 ```
 
-`scene_instance(...)` expects a `PackedScene` resource, normally created with
-`packed_scene(...)`.
+`scene_instance(...)` expects a `PackedScene` resource. For generated scenes,
+prefer `scene.as_packed_scene()` so the resource path stays attached to the
+scene declaration. `packed_scene(...)` remains available for manual or external
+scene references.
 
 Simple generated scene sub-resources can be declared directly:
 

@@ -15,6 +15,7 @@ from pygodot import (
     Node2D,
     Rect2,
     RectangleShape2D,
+    Scene,
     Script,
     Sprite2D,
     SubResource,
@@ -191,6 +192,11 @@ class DslNodeTests(unittest.TestCase):
         self.assertEqual(instance.type, "")
         self.assertIs(instance.instance, resource)
         self.assertEqual(instance.props, {"position": Vec2(220, 190)})
+
+    def test_scene_as_packed_scene_returns_packed_scene_resource(self) -> None:
+        scene = Scene(path="res://scenes/gem.tscn", root=Node2D("Gem"))
+
+        self.assertEqual(scene.as_packed_scene(), packed_scene("res://scenes/gem.tscn"))
 
     def test_scene_instance_requires_packed_scene_resource(self) -> None:
         with self.assertRaisesRegex(ValueError, "PackedScene"):
