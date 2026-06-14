@@ -17,6 +17,7 @@ The repository currently has:
 - a font resource example under `examples/font`;
 - a generated AnimationPlayer example under `examples/animation`;
 - a 2D collision shape example under `examples/physics`;
+- a small playable Flappy-style example under `examples/flappy`;
 - generated GDScript gameplay;
 - generated script bodies from source `.gd` files;
 - external texture resources copied from `source_root`;
@@ -26,6 +27,7 @@ The repository currently has:
 - built-in Timer node signals;
 - generated animation sub-resources;
 - generated `RectangleShape2D` shape sub-resources;
+- reusable pipe/collision gameplay with generated shape sub-resources;
 - keyboard-only InputMap DSL;
 - minimal window size settings;
 - deterministic snapshots for example scenes/scripts;

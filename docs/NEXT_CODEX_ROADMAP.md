@@ -71,6 +71,7 @@ Current implemented surface includes:
   - `examples/font`
   - `examples/animation`
   - `examples/physics`
+  - `examples/flappy`
 
 ## Development rules for Codex
 

@@ -40,7 +40,8 @@ Implemented:
 - an audio resource `examples/audio`;
 - a font resource `examples/font`;
 - a generated AnimationPlayer `examples/animation`;
-- a 2D collision shape `examples/physics`.
+- a 2D collision shape `examples/physics`;
+- a small playable `examples/flappy`.
 
 ## Next: script templates
 

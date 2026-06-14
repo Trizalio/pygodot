@@ -1,0 +1,102 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="Script_scripts_main_gd"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_rectangle_34_26"]
+size = Vector2(34, 26)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_rectangle_480_80"]
+size = Vector2(480, 80)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_rectangle_60_480"]
+size = Vector2(60, 480)
+
+[node name="Main" type="Node2D"]
+script = ExtResource("Script_scripts_main_gd")
+
+[node name="Background" type="ColorRect" parent="."]
+color = Color(0.08, 0.12, 0.18, 1.0)
+position = Vector2(0, 0)
+size = Vector2(480, 720)
+
+[node name="Bird" type="Area2D" parent="."]
+position = Vector2(140, 310)
+
+[node name="BirdVisual" type="ColorRect" parent="Bird"]
+color = Color(1.0, 0.82, 0.24, 1.0)
+position = Vector2(-17, -13)
+size = Vector2(34, 26)
+
+[node name="BirdShape" type="CollisionShape2D" parent="Bird"]
+shape = SubResource("RectangleShape2D_rectangle_34_26")
+
+[node name="Ground" type="Area2D" parent="."]
+position = Vector2(240, 680)
+
+[node name="GroundVisual" type="ColorRect" parent="Ground"]
+color = Color(0.32, 0.48, 0.26, 1.0)
+position = Vector2(-240.0, -40.0)
+size = Vector2(480, 80)
+
+[node name="GroundShape" type="CollisionShape2D" parent="Ground"]
+shape = SubResource("RectangleShape2D_rectangle_480_80")
+
+[node name="PipeTopA" type="Area2D" parent="."]
+position = Vector2(560, 60)
+
+[node name="PipeTopAVisual" type="ColorRect" parent="PipeTopA"]
+color = Color(0.16, 0.74, 0.36, 1.0)
+position = Vector2(-30.0, -240.0)
+size = Vector2(60, 480)
+
+[node name="PipeTopAShape" type="CollisionShape2D" parent="PipeTopA"]
+shape = SubResource("RectangleShape2D_rectangle_60_480")
+
+[node name="PipeBottomA" type="Area2D" parent="."]
+position = Vector2(560, 560)
+
+[node name="PipeBottomAVisual" type="ColorRect" parent="PipeBottomA"]
+color = Color(0.16, 0.74, 0.36, 1.0)
+position = Vector2(-30.0, -240.0)
+size = Vector2(60, 480)
+
+[node name="PipeBottomAShape" type="CollisionShape2D" parent="PipeBottomA"]
+shape = SubResource("RectangleShape2D_rectangle_60_480")
+
+[node name="PipeTopB" type="Area2D" parent="."]
+position = Vector2(850, 120)
+
+[node name="PipeTopBVisual" type="ColorRect" parent="PipeTopB"]
+color = Color(0.12, 0.63, 0.42, 1.0)
+position = Vector2(-30.0, -240.0)
+size = Vector2(60, 480)
+
+[node name="PipeTopBShape" type="CollisionShape2D" parent="PipeTopB"]
+shape = SubResource("RectangleShape2D_rectangle_60_480")
+
+[node name="PipeBottomB" type="Area2D" parent="."]
+position = Vector2(850, 620)
+
+[node name="PipeBottomBVisual" type="ColorRect" parent="PipeBottomB"]
+color = Color(0.12, 0.63, 0.42, 1.0)
+position = Vector2(-30.0, -240.0)
+size = Vector2(60, 480)
+
+[node name="PipeBottomBShape" type="CollisionShape2D" parent="PipeBottomB"]
+shape = SubResource("RectangleShape2D_rectangle_60_480")
+
+[node name="ScoreLabel" type="Label" parent="."]
+position = Vector2(24, 22)
+text = "Score: 0"
+
+[node name="StateLabel" type="Label" parent="."]
+position = Vector2(158, 330)
+text = "Space/Up to flap"
+
+[node name="SpawnTimer" type="Timer" parent="."]
+autostart = true
+wait_time = 1.0
+
+
+[connection signal="area_entered" from="Bird" to="." method="_on_bird_area_entered"]
+[connection signal="timeout" from="SpawnTimer" to="." method="_on_spawn_timer_timeout"]

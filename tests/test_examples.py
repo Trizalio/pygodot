@@ -169,6 +169,23 @@ class ExampleSnapshotTests(SnapshotTestCase):
             _build_example_script(physics.game, "scripts/main.gd"),
         )
 
+    def test_flappy_scene_file_snapshot(self) -> None:
+        flappy = _load_example_game("flappy")
+        scene = flappy.game.scenes[0]
+
+        self.assert_matches_snapshot(
+            "flappy_scene.tscn",
+            TscnEmitter().emit(normalize_scene(scene)),
+        )
+
+    def test_flappy_script_file_snapshot(self) -> None:
+        flappy = _load_example_game("flappy")
+
+        self.assert_matches_snapshot(
+            "flappy_script.gd",
+            _build_example_script(flappy.game, "scripts/main.gd"),
+        )
+
 
 class ExampleBuildTests(unittest.TestCase):
     def test_pong_example_builds_menu_and_game_scenes(self) -> None:
@@ -536,3 +553,53 @@ class ExampleBuildTests(unittest.TestCase):
             script_text = (build_dir / "scripts" / "main.gd").read_text(encoding="utf-8")
             self.assertIn("func _physics_process(delta: float) -> void:", script_text)
             self.assertIn("pygodot_physics_area_entered", script_text)
+
+    def test_flappy_example_builds_playable_collision_scene(self) -> None:
+        flappy = _load_example_game("flappy")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            build_dir = Path(tmp) / "godot_project"
+            flappy.game.build_dir = build_dir
+
+            result = flappy.game.build()
+
+            self.assertEqual(
+                sorted(path.relative_to(build_dir).as_posix() for path in result.written_files),
+                [
+                    ".pygodot/manifest.json",
+                    "project.godot",
+                    "scenes/main.tscn",
+                    "scripts/main.gd",
+                ],
+            )
+
+            scene_text = (build_dir / "scenes" / "main.tscn").read_text(encoding="utf-8")
+            script_text = (build_dir / "scripts" / "main.gd").read_text(encoding="utf-8")
+            project_text = (build_dir / "project.godot").read_text(encoding="utf-8")
+
+            self.assertIn('[node name="Bird" type="Area2D" parent="."]', scene_text)
+            self.assertIn('[node name="Ground" type="Area2D" parent="."]', scene_text)
+            self.assertIn('[node name="PipeTopA" type="Area2D" parent="."]', scene_text)
+            self.assertIn('[node name="BirdShape" type="CollisionShape2D" parent="Bird"]', scene_text)
+            self.assertIn('[node name="SpawnTimer" type="Timer" parent="."]', scene_text)
+            self.assertIn('shape = SubResource("RectangleShape2D_rectangle_34_26")', scene_text)
+            self.assertIn(
+                '[connection signal="area_entered" from="Bird" to="." method="_on_bird_area_entered"]',
+                scene_text,
+            )
+            self.assertIn(
+                '[connection signal="timeout" from="SpawnTimer" to="." method="_on_spawn_timer_timeout"]',
+                scene_text,
+            )
+            self.assertIn("func _physics_process(delta: float) -> void:", script_text)
+            self.assertIn('Input.is_action_just_pressed("flap")', script_text)
+            self.assertIn('Input.is_action_just_pressed("restart")', script_text)
+            self.assertIn("func game_over() -> void:", script_text)
+            self.assertIn('[display]', project_text)
+            self.assertIn("window/size/viewport_width=480", project_text)
+            self.assertIn("window/size/viewport_height=720", project_text)
+            self.assertIn("[input]", project_text)
+            self.assertIn("flap={", project_text)
+            self.assertIn('"keycode":32', project_text)
+            self.assertIn('"keycode":4194320', project_text)
+            self.assertIn("restart={", project_text)
