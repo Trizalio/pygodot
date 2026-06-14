@@ -13,7 +13,7 @@ Implemented:
 - library-first `Game` API with `build()`, `run()`, and `check_run()`;
 - public scene/node/script DSL;
 - generic `node(...)` helper and selected node constructors: `Node2D`,
-  `Control`, `ColorRect`, `Sprite2D`, `Label`, `Button`;
+  `Control`, `ColorRect`, `Sprite2D`, `Label`, `Button`, `Timer`;
 - typed value wrappers: `Vec2`, `Vec3`, `Rect2`, `Color`, `NodePath`;
 - external resources through `ext_resource(...)`, `texture(...)`, and
   `packed_scene(...)`;
@@ -29,7 +29,8 @@ Implemented:
 - a playable two-scene `examples/pong`;
 - a draw-based `examples/snake`;
 - a source-asset `examples/resources`;
-- a generated PackedScene instancing `examples/instancing`.
+- a generated PackedScene instancing `examples/instancing`;
+- a signal-connected timer `examples/timer`.
 
 ## Next: script templates
 
@@ -48,7 +49,6 @@ that example needs.
 
 Likely candidates:
 
-- `Timer`;
 - shape resources for physics examples;
 - simple audio or font resources;
 - Godot-assisted emission for resources that are brittle to write by hand.

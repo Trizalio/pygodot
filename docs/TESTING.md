@@ -38,6 +38,7 @@ Current snapshots cover:
 - generated Snake script.
 - resources scene with copied texture resource.
 - instancing scenes with a generated `PackedScene` resource.
+- timer scene/script with a built-in `timeout` signal connection.
 
 Snapshot tests protect:
 

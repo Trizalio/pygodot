@@ -33,7 +33,8 @@ Node constructors/helpers:
 - `ColorRect`;
 - `Sprite2D`;
 - `Label`;
-- `Button`.
+- `Button`;
+- `Timer`.
 
 ## Example Scene
 
@@ -100,6 +101,7 @@ ColorRect("Panel", color=Color(1, 1, 1), size=Vec2(200, 80))
 Sprite2D("Logo", texture=texture("res://assets/logo.svg"))
 Label("Title", text="Hello")
 Button("Start", text="Start")
+Timer("PulseTimer", wait_time=0.5, autostart=True)
 ```
 
 Do not add broad wrappers for the whole Godot API. Add small constructors only
@@ -159,6 +161,19 @@ Button(
     text="Start",
     signals=[
         signal("pressed", target=".", method="_on_start_pressed"),
+    ],
+)
+```
+
+Built-in node signals use the same connection form:
+
+```python
+Timer(
+    "PulseTimer",
+    wait_time=0.5,
+    autostart=True,
+    signals=[
+        signal("timeout", target=".", method="_on_pulse_timer_timeout"),
     ],
 )
 ```

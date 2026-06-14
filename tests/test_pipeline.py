@@ -23,6 +23,7 @@ from pygodot import (
     Scene,
     Script,
     Sprite2D,
+    Timer,
     Vec2,
     Vec3,
     WindowSettings,
@@ -150,6 +151,19 @@ class DslNodeTests(unittest.TestCase):
     def test_scene_instance_requires_packed_scene_resource(self) -> None:
         with self.assertRaisesRegex(ValueError, "PackedScene"):
             scene_instance("Logo", texture("res://assets/logo.svg"))
+
+    def test_timer_constructor_creates_timer_node(self) -> None:
+        timer = Timer(
+            "PulseTimer",
+            wait_time=0.5,
+            autostart=True,
+            signals=[signal("timeout", target=".", method="_on_timeout")],
+        )
+
+        self.assertEqual(timer.name, "PulseTimer")
+        self.assertEqual(timer.type, "Timer")
+        self.assertEqual(timer.props, {"wait_time": 0.5, "autostart": True})
+        self.assertEqual(timer.signals[0].signal, "timeout")
 
     def test_script_from_file_declares_generated_source(self) -> None:
         script = Script.from_file(
@@ -381,6 +395,23 @@ text = "Click me"
         self.assert_matches_snapshot(
             "instancing_main_scene.tscn",
             TscnEmitter().emit(normalize_scene(scene)),
+        )
+
+    def test_timer_scene_file_snapshot(self) -> None:
+        timer = _load_example_game("timer")
+        scene = timer.game.scenes[0]
+
+        self.assert_matches_snapshot(
+            "timer_scene.tscn",
+            TscnEmitter().emit(normalize_scene(scene)),
+        )
+
+    def test_timer_script_file_snapshot(self) -> None:
+        timer = _load_example_game("timer")
+
+        self.assert_matches_snapshot(
+            "timer_script.gd",
+            _build_example_script(timer.game, "scripts/main.gd"),
         )
 
     def test_tscn_emitter_snapshot_with_external_resource_property(self) -> None:
@@ -1094,6 +1125,35 @@ func _ready() -> void:
                         "type": "PackedScene",
                     }
                 ],
+            )
+
+    def test_timer_example_builds_signal_connected_timer(self) -> None:
+        timer = _load_example_game("timer")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            build_dir = Path(tmp) / "godot_project"
+            timer.game.build_dir = build_dir
+
+            result = timer.game.build()
+
+            self.assertEqual(
+                sorted(path.relative_to(build_dir).as_posix() for path in result.written_files),
+                [
+                    ".pygodot/manifest.json",
+                    "project.godot",
+                    "scenes/main.tscn",
+                    "scripts/main.gd",
+                ],
+            )
+
+            scene_text = (build_dir / "scenes" / "main.tscn").read_text(encoding="utf-8")
+            self.assertIn('[node name="PulseTimer" type="Timer" parent="."]', scene_text)
+            self.assertIn("wait_time = 0.5", scene_text)
+            self.assertIn("autostart = true", scene_text)
+            self.assertIn(
+                '[connection signal="timeout" from="PulseTimer" to="." '
+                'method="_on_pulse_timer_timeout"]',
+                scene_text,
             )
 
 

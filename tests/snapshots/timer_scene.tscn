@@ -1,0 +1,27 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="Script_scripts_main_gd"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("Script_scripts_main_gd")
+
+[node name="Background" type="ColorRect" parent="."]
+color = Color(0.04, 0.05, 0.08, 1.0)
+position = Vector2(0, 0)
+size = Vector2(640, 360)
+
+[node name="Pulse" type="ColorRect" parent="."]
+color = Color(0.2, 0.85, 1.0, 1.0)
+position = Vector2(270, 125)
+size = Vector2(100, 100)
+
+[node name="Counter" type="Label" parent="."]
+position = Vector2(285, 245)
+text = "ticks: 0"
+
+[node name="PulseTimer" type="Timer" parent="."]
+autostart = true
+wait_time = 0.5
+
+
+[connection signal="timeout" from="PulseTimer" to="." method="_on_pulse_timer_timeout"]

@@ -1,0 +1,17 @@
+var ticks := 0
+var highlighted := false
+
+func _ready() -> void:
+    update_display()
+
+func _on_pulse_timer_timeout() -> void:
+    ticks += 1
+    highlighted = not highlighted
+    update_display()
+
+func update_display() -> void:
+    $Counter.text = "ticks: %s" % ticks
+    if highlighted:
+        $Pulse.color = Color(1.0, 0.82, 0.28)
+    else:
+        $Pulse.color = Color(0.2, 0.85, 1.0)

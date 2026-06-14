@@ -40,7 +40,7 @@ Current public concepts include:
 - `Scene`;
 - `Node` and `node(...)`;
 - node constructors: `Node2D`, `Control`, `ColorRect`, `Sprite2D`,
-  `Label`, `Button`;
+  `Label`, `Button`, `Timer`;
 - `Script` and `Script.reference(...)`;
 - `signal(...)`;
 - `InputAction` through `Game.add_input_action(...)`;

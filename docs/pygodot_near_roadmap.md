@@ -12,10 +12,12 @@ The repository currently has:
 - a one-scene Snake example under `examples/snake`;
 - a source-asset resources example under `examples/resources`;
 - a generated PackedScene instancing example under `examples/instancing`;
+- a signal-connected timer example under `examples/timer`;
 - generated GDScript gameplay;
 - generated script bodies from source `.gd` files;
 - external texture resources copied from `source_root`;
 - scene instances through `scene_instance(...)`;
+- built-in Timer node signals;
 - keyboard-only InputMap DSL;
 - minimal window size settings;
 - deterministic snapshots for example scenes/scripts;
@@ -25,5 +27,5 @@ The repository currently has:
 ## Next - Next Example
 
 Pick the next example first, then add only the Godot surface that example needs.
-Good candidates are timers, simple audio, font resources, or a tiny physics
+Good candidates are simple audio, font resources, animation, or a tiny physics
 example.
