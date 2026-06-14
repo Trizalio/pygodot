@@ -100,7 +100,11 @@ def _validate_node(node: IRNode, *, scene_path: str) -> None:
             raise ValidationError(
                 f"Generated script body must not be empty: {location}, script_path={node.script.path!r}."
             )
-        if not node.script.generated and (node.script.body.strip() or node.script.source is not None):
+        if not node.script.generated and (
+            node.script.body.strip()
+            or node.script.source is not None
+            or node.script.template_context is not None
+        ):
             raise ValidationError(
                 f"Referenced manual script must not define generated content: "
                 f"{location}, script_path={node.script.path!r}."

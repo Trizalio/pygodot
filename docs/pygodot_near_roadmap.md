@@ -20,6 +20,7 @@ The repository currently has:
 - a small playable Flappy-style example under `examples/flappy`;
 - generated GDScript gameplay;
 - generated script bodies from source `.gd` files;
+- generated script bodies from template files;
 - external texture resources copied from `source_root`;
 - external audio stream resources copied from `source_root`;
 - external font resources copied from `source_root`;

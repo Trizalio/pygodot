@@ -53,7 +53,7 @@ Current implemented surface includes:
 - Generated value-track animations through `animation(...)`.
 - Generic generated scene sub-resources through `sub_resource(...)`.
 - Generated shape resources through `rectangle_shape_2d(...)` and `circle_shape_2d(...)`.
-- Generated inline scripts, file-backed generated scripts, and referenced manual scripts.
+- Generated inline scripts, file-backed generated scripts, templated generated scripts, and referenced manual scripts.
 - Direct `.tscn`, `.gd`, and `project.godot` emitters.
 - Keyboard-only InputMap generation.
 - Minimal display/window size settings.

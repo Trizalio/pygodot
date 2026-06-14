@@ -24,7 +24,7 @@ Implemented:
 - generic generated scene sub-resources through `sub_resource(...)`;
 - generated shape resources through `rectangle_shape_2d(...)` and
   `circle_shape_2d(...)`;
-- generated, file-backed, and referenced GDScript;
+- generated, file-backed, templated, and referenced GDScript;
 - direct `.tscn`, `.gd`, and `project.godot` emitters;
 - keyboard-only InputMap generation;
 - minimal display/window size settings;
@@ -44,15 +44,11 @@ Implemented:
 - a 2D collision shape `examples/physics`;
 - a small playable `examples/flappy`.
 
-## Next: script templates
+## Next: ergonomics
 
-Generated raw script bodies and `Script.from_file(...)` cover the current
-examples. Larger examples may need a little more ergonomics:
-
-- simple template support;
-- clearer error reporting for generated GDScript smoke checks.
-
-This is still not Python-to-GDScript transpilation.
+Upcoming near-term work should stay library-first and example-backed. Script
+templates are deliberately small and do not change the runtime strategy: this
+is still not Python-to-GDScript transpilation.
 
 ## Next: richer examples
 

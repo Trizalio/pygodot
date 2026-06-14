@@ -31,9 +31,10 @@ Allowed:
 - generated `.gd` files;
 - raw GDScript body strings in Python DSL;
 - generated script bodies loaded from files under `source_root`;
+- generated script bodies rendered from standard-library templates under
+  `source_root`;
 - user-authored manual GDScript files referenced by Python DSL;
 - generated signal connections;
-- future script template helpers.
 
 ## Manual Scripts
 

@@ -284,6 +284,20 @@ Script.from_file(
 The source file should contain the script body; `extends` is still declared in
 Python and emitted by pygodot.
 
+Generated scripts can also use standard-library `string.Template` files:
+
+```python
+Script.from_template(
+    source="scripts/player.gd.tmpl",
+    path="res://scripts/player.gd",
+    extends="Node2D",
+    context={"speed": 300},
+)
+```
+
+Template placeholders use `$name` syntax. Literal Godot node shorthand such as
+`$Player` must be escaped as `$$Player` inside template files.
+
 Manual scripts are referenced without generation:
 
 ```python

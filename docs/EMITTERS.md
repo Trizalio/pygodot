@@ -108,6 +108,12 @@ The GDScript emitter wraps generated bodies with an `extends` line:
 ```python
 Script(path="res://scripts/main.gd", extends="Node2D", body="...")
 Script.from_file(source="scripts/main.gd", path="res://scripts/main.gd", extends="Node2D")
+Script.from_template(
+    source="scripts/main.gd.tmpl",
+    path="res://scripts/main.gd",
+    extends="Node2D",
+    context={"speed": 300},
+)
 ```
 
 Output:
@@ -118,8 +124,10 @@ extends Node2D
 ...
 ```
 
-For `Script.from_file(...)`, `Game.build()` reads the body from `source_root`
-before passing the normalized script to the emitter.
+For `Script.from_file(...)`, `Game.build()` reads the body from `source_root`.
+For `Script.from_template(...)`, `Game.build()` reads the template from
+`source_root` and renders it with `string.Template` before passing the
+normalized script to the emitter.
 
 Manual scripts are referenced with `Script.reference(...)` and are not emitted.
 

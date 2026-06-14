@@ -42,6 +42,8 @@ or generated GDScript bodies:
 - generated scene files such as `res://scenes/main.tscn`;
 - generated scripts from `Script(path=..., body=...)`;
 - generated scripts from `Script.from_file(source=..., path=..., extends=...)`;
+- generated scripts from
+  `Script.from_template(source=..., path=..., extends=..., context=...)`;
 - future generated resources such as `.tres`;
 - `.pygodot/manifest.json`.
 
@@ -51,9 +53,9 @@ silently overwriting manual files when overwrite protection is enabled.
 
 ## Manual scripts
 
-`Script.from_file(...)` is still generated output. The source `.gd` file is
-user-owned input under `source_root`, and pygodot writes the generated `.gd`
-file under `build_dir`.
+`Script.from_file(...)` and `Script.from_template(...)` are still generated
+output. Their source files are user-owned input under `source_root`, and
+pygodot writes the generated `.gd` file under `build_dir`.
 
 Manual scripts should be referenced explicitly:
 

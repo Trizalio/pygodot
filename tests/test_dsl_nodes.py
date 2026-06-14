@@ -221,3 +221,18 @@ class DslNodeTests(unittest.TestCase):
         self.assertEqual(script.extends, "Node2D")
         self.assertEqual(script.body, "")
         self.assertTrue(script.generated)
+
+    def test_script_from_template_declares_generated_template(self) -> None:
+        script = Script.from_template(
+            source="scripts/player.gd.tmpl",
+            path="res://scripts/player.gd",
+            extends="Node2D",
+            context={"speed": 300},
+        )
+
+        self.assertEqual(script.source, "scripts/player.gd.tmpl")
+        self.assertEqual(script.path, "res://scripts/player.gd")
+        self.assertEqual(script.extends, "Node2D")
+        self.assertEqual(script.body, "")
+        self.assertEqual(script.template_context, {"speed": 300})
+        self.assertTrue(script.generated)

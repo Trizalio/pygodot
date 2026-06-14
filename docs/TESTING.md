@@ -12,6 +12,7 @@ Unit tests cover:
 - validation errors;
 - project, scene, and script emitters;
 - generated/manual build behavior;
+- generated script template rendering;
 - manifest contents;
 - Godot CLI command construction.
 

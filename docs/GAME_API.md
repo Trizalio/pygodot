@@ -37,13 +37,21 @@ Set the generated project window size:
 game.set_window(size=Vec2(800, 600))
 ```
 
-Generated scripts can use inline bodies or source files under `source_root`:
+Generated scripts can use inline bodies, source files under `source_root`, or
+simple template files:
 
 ```python
 Script.from_file(
     source="scripts/main.gd",
     path="res://scripts/main.gd",
     extends="Node2D",
+)
+
+Script.from_template(
+    source="scripts/player.gd.tmpl",
+    path="res://scripts/player.gd",
+    extends="Node2D",
+    context={"speed": 300},
 )
 ```
 

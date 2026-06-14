@@ -25,14 +25,13 @@ Current answer:
 - not yet;
 - examples and direct emitter stability come first.
 
-## Q003 - Script Template Ergonomics
+## Q003 - Script Ergonomics
 
-Raw GDScript bodies inside Python strings and `Script.from_file(...)` work for
-current examples.
+Raw GDScript bodies, `Script.from_file(...)`, and `Script.from_template(...)`
+cover current examples.
 
 Open options:
 
-- simple templates;
 - generated helper snippets;
 - better smoke-check error presentation.
 

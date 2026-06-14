@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
+from string import Template
 
 from pygodot.build.manifest import BuildManifest, ManifestResource
 from pygodot.build.writer import GeneratedFileWriter
@@ -156,12 +157,16 @@ def _resolve_generated_script(script: IRScript, source_root: Path) -> IRScript:
     source_path = _source_to_rel(script.source)
     absolute_source = source_root / source_path
     if not absolute_source.is_file():
+        source_kind = "template file" if script.template_context is not None else "source file"
         raise BuildError(
-            f"Generated script source file does not exist: "
+            f"Generated script {source_kind} does not exist: "
             f"script_path={script.path!r}, source={script.source!r}."
         )
 
     body = absolute_source.read_text(encoding="utf-8")
+    if script.template_context is not None:
+        body = _render_template_body(script, body)
+
     if not body.strip():
         raise BuildError(
             f"Generated script source must not be empty: "
@@ -175,7 +180,24 @@ def _resolve_generated_script(script: IRScript, source_root: Path) -> IRScript:
         resource_id=script.resource_id,
         generated=script.generated,
         source=script.source,
+        template_context=script.template_context,
     )
+
+
+def _render_template_body(script: IRScript, body: str) -> str:
+    try:
+        return Template(body).substitute(script.template_context or {})
+    except KeyError as exc:
+        missing_key = exc.args[0]
+        raise BuildError(
+            f"Generated script template is missing context value: "
+            f"script_path={script.path!r}, source={script.source!r}, key={missing_key!r}."
+        ) from exc
+    except ValueError as exc:
+        raise BuildError(
+            f"Generated script template is invalid: "
+            f"script_path={script.path!r}, source={script.source!r}, error={exc}."
+        ) from exc
 
 
 def _copy_external_resources(

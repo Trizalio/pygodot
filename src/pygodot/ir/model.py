@@ -22,6 +22,7 @@ class IRScript:
     resource_id: str
     generated: bool = True
     source: str | None = None
+    template_context: dict[str, Any] | None = None
 
 
 @dataclass(slots=True, frozen=True)
