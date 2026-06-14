@@ -40,13 +40,13 @@ Current public concepts include:
 - `Scene`;
 - `Node` and `node(...)`;
 - node constructors: `Node2D`, `Control`, `ColorRect`, `Sprite2D`,
-  `Label`, `Button`, `Timer`;
+  `Label`, `Button`, `Timer`, `AudioStreamPlayer`;
 - `Script` and `Script.reference(...)`;
 - `signal(...)`;
 - `InputAction` through `Game.add_input_action(...)`;
 - values: `Vec2`, `Vec3`, `Rect2`, `Color`, `NodePath`;
 - external resources: `ext_resource(...)`, `texture(...)`,
-  `packed_scene(...)`;
+  `audio_stream(...)`, `packed_scene(...)`;
 - scene instances: `scene_instance(...)`.
 
 The DSL should stay explicit and boring. Avoid hidden global scene stacks,

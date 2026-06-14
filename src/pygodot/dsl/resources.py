@@ -21,5 +21,9 @@ def texture(path: str) -> ExternalResource:
     return ext_resource(path, type="Texture2D")
 
 
+def audio_stream(path: str) -> ExternalResource:
+    return ext_resource(path, type="AudioStream")
+
+
 def packed_scene(path: str) -> ExternalResource:
     return ext_resource(path, type="PackedScene")

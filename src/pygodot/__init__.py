@@ -1,6 +1,7 @@
 """Public package surface for pygodot."""
 
 from pygodot.dsl import (
+    AudioStreamPlayer,
     Button,
     Color,
     ColorRect,
@@ -20,6 +21,7 @@ from pygodot.dsl import (
     Vec2,
     Vec3,
     WindowSettings,
+    audio_stream,
     ext_resource,
     external_resource,
     node,
@@ -32,6 +34,7 @@ from pygodot.game import BuildResult, Game
 from pygodot.godot_cli import GodotRunResult
 
 __all__ = [
+    "AudioStreamPlayer",
     "BuildResult",
     "Button",
     "Color",
@@ -54,6 +57,7 @@ __all__ = [
     "Vec2",
     "Vec3",
     "WindowSettings",
+    "audio_stream",
     "ext_resource",
     "external_resource",
     "node",

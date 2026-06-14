@@ -72,7 +72,8 @@ generated and belongs to pygodot.
 ## External resources
 
 External resources declared with helpers such as `texture(...)`,
-`packed_scene(...)`, or `ext_resource(...)` are source-owned resources.
+`audio_stream(...)`, `packed_scene(...)`, or `ext_resource(...)` are
+source-owned resources.
 
 During a build, if the resource path exists under `source_root`, pygodot copies
 it to the same `res://` relative path under `build_dir`. If the file does not

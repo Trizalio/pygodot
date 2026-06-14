@@ -1,0 +1,33 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="AudioStream" path="res://assets/tone.wav" id="AudioStream_assets_tone_wav"]
+[ext_resource type="Script" path="res://scripts/main.gd" id="Script_scripts_main_gd"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("Script_scripts_main_gd")
+
+[node name="Background" type="ColorRect" parent="."]
+color = Color(0.04, 0.05, 0.08, 1.0)
+position = Vector2(0, 0)
+size = Vector2(640, 360)
+
+[node name="Title" type="Label" parent="."]
+position = Vector2(180, 90)
+text = "Audio resource copied from source_root"
+
+[node name="Status" type="Label" parent="."]
+position = Vector2(292, 145)
+text = "ready"
+
+[node name="PlayButton" type="Button" parent="."]
+position = Vector2(255, 205)
+size = Vector2(130, 44)
+text = "Play tone"
+
+[node name="Player" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("AudioStream_assets_tone_wav")
+volume_db = -8
+
+
+[connection signal="pressed" from="PlayButton" to="." method="_on_play_button_pressed"]
+[connection signal="finished" from="Player" to="." method="_on_player_finished"]

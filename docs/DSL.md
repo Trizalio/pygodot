@@ -34,7 +34,8 @@ Node constructors/helpers:
 - `Sprite2D`;
 - `Label`;
 - `Button`;
-- `Timer`.
+- `Timer`;
+- `AudioStreamPlayer`.
 
 ## Example Scene
 
@@ -102,6 +103,7 @@ Sprite2D("Logo", texture=texture("res://assets/logo.svg"))
 Label("Title", text="Hello")
 Button("Start", text="Start")
 Timer("PulseTimer", wait_time=0.5, autostart=True)
+AudioStreamPlayer("Player", stream=audio_stream("res://assets/tone.wav"))
 ```
 
 Do not add broad wrappers for the whole Godot API. Add small constructors only
@@ -126,6 +128,7 @@ External resources are referenced explicitly:
 
 ```python
 Sprite2D("Logo", texture=texture("res://assets/logo.svg"))
+AudioStreamPlayer("Player", stream=audio_stream("res://assets/tone.wav"))
 Node2D("Other", resource=ext_resource("res://assets/data.tres", type="Resource"))
 ```
 

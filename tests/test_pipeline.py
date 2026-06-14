@@ -9,6 +9,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from pygodot import (
+    AudioStreamPlayer,
     Button,
     Color,
     ColorRect,
@@ -27,6 +28,7 @@ from pygodot import (
     Vec2,
     Vec3,
     WindowSettings,
+    audio_stream,
     ext_resource,
     signal,
     node,
@@ -77,6 +79,23 @@ def make_scene() -> Scene:
 
 
 class DslNodeTests(unittest.TestCase):
+    def test_audio_stream_player_constructor_creates_audio_node(self) -> None:
+        player = AudioStreamPlayer(
+            "Player",
+            stream=audio_stream("res://assets/tone.wav"),
+            volume_db=-8,
+        )
+
+        self.assertEqual(player.name, "Player")
+        self.assertEqual(player.type, "AudioStreamPlayer")
+        self.assertEqual(
+            player.props,
+            {
+                "stream": audio_stream("res://assets/tone.wav"),
+                "volume_db": -8,
+            },
+        )
+
     def test_node_helper_creates_generic_node(self) -> None:
         script = Script(
             path="res://scripts/panel.gd",
@@ -414,6 +433,23 @@ text = "Click me"
             _build_example_script(timer.game, "scripts/main.gd"),
         )
 
+    def test_audio_scene_file_snapshot(self) -> None:
+        audio = _load_example_game("audio")
+        scene = audio.game.scenes[0]
+
+        self.assert_matches_snapshot(
+            "audio_scene.tscn",
+            TscnEmitter().emit(normalize_scene(scene)),
+        )
+
+    def test_audio_script_file_snapshot(self) -> None:
+        audio = _load_example_game("audio")
+
+        self.assert_matches_snapshot(
+            "audio_script.gd",
+            _build_example_script(audio.game, "scripts/main.gd"),
+        )
+
     def test_tscn_emitter_snapshot_with_external_resource_property(self) -> None:
         scene = normalize_scene(
             Scene(
@@ -504,6 +540,7 @@ script = ExtResource("Script_manual_player_gd")
                 path="res://scenes/main.tscn",
                 root=Node2D(
                     "Main",
+                    sound=audio_stream("res://assets/tone.wav"),
                     icon=texture("res://assets/icon.svg"),
                     next_scene=packed_scene("res://scenes/menu.tscn"),
                 ),
@@ -513,6 +550,7 @@ script = ExtResource("Script_manual_player_gd")
         self.assertEqual(
             [(resource.type, resource.path, resource.id) for resource in scene.external_resources],
             [
+                ("AudioStream", "res://assets/tone.wav", "AudioStream_assets_tone_wav"),
                 ("PackedScene", "res://scenes/menu.tscn", "PackedScene_scenes_menu_tscn"),
                 ("Texture2D", "res://assets/icon.svg", "Texture2D_assets_icon_svg"),
             ],
@@ -1154,6 +1192,60 @@ func _ready() -> void:
                 '[connection signal="timeout" from="PulseTimer" to="." '
                 'method="_on_pulse_timer_timeout"]',
                 scene_text,
+            )
+
+    def test_audio_example_builds_player_and_copies_stream(self) -> None:
+        audio = _load_example_game("audio")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            build_dir = Path(tmp) / "godot_project"
+            audio.game.build_dir = build_dir
+
+            result = audio.game.build()
+
+            copied_asset = build_dir / "assets" / "tone.wav"
+            self.assertEqual(result.copied_resources, [copied_asset])
+            self.assertEqual(
+                sorted(path.relative_to(build_dir).as_posix() for path in result.written_files),
+                [
+                    ".pygodot/manifest.json",
+                    "project.godot",
+                    "scenes/main.tscn",
+                    "scripts/main.gd",
+                ],
+            )
+            self.assertTrue(copied_asset.exists())
+
+            scene_text = (build_dir / "scenes" / "main.tscn").read_text(encoding="utf-8")
+            self.assertIn('[node name="Player" type="AudioStreamPlayer" parent="."]', scene_text)
+            self.assertIn('path="res://assets/tone.wav"', scene_text)
+            self.assertIn('stream = ExtResource("AudioStream_assets_tone_wav")', scene_text)
+            self.assertIn(
+                '[connection signal="pressed" from="PlayButton" to="." method="_on_play_button_pressed"]',
+                scene_text,
+            )
+            self.assertIn(
+                '[connection signal="finished" from="Player" to="." method="_on_player_finished"]',
+                scene_text,
+            )
+
+            manifest = json.loads((build_dir / ".pygodot" / "manifest.json").read_text(encoding="utf-8"))
+            self.assertEqual(
+                manifest["external_resources"],
+                [
+                    {
+                        "copied": True,
+                        "id": "AudioStream_assets_tone_wav",
+                        "path": "res://assets/tone.wav",
+                        "type": "AudioStream",
+                    },
+                    {
+                        "copied": False,
+                        "id": "Script_scripts_main_gd",
+                        "path": "res://scripts/main.gd",
+                        "type": "Script",
+                    },
+                ],
             )
 
 

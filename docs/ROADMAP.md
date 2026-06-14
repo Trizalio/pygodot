@@ -13,10 +13,11 @@ Implemented:
 - library-first `Game` API with `build()`, `run()`, and `check_run()`;
 - public scene/node/script DSL;
 - generic `node(...)` helper and selected node constructors: `Node2D`,
-  `Control`, `ColorRect`, `Sprite2D`, `Label`, `Button`, `Timer`;
+  `Control`, `ColorRect`, `Sprite2D`, `Label`, `Button`, `Timer`,
+  `AudioStreamPlayer`;
 - typed value wrappers: `Vec2`, `Vec3`, `Rect2`, `Color`, `NodePath`;
-- external resources through `ext_resource(...)`, `texture(...)`, and
-  `packed_scene(...)`;
+- external resources through `ext_resource(...)`, `texture(...)`,
+  `audio_stream(...)`, and `packed_scene(...)`;
 - scene instances through `scene_instance(...)`;
 - generated, file-backed, and referenced GDScript;
 - direct `.tscn`, `.gd`, and `project.godot` emitters;
@@ -30,7 +31,8 @@ Implemented:
 - a draw-based `examples/snake`;
 - a source-asset `examples/resources`;
 - a generated PackedScene instancing `examples/instancing`;
-- a signal-connected timer `examples/timer`.
+- a signal-connected timer `examples/timer`;
+- an audio resource `examples/audio`.
 
 ## Next: script templates
 
@@ -50,7 +52,7 @@ that example needs.
 Likely candidates:
 
 - shape resources for physics examples;
-- simple audio or font resources;
+- font resources;
 - Godot-assisted emission for resources that are brittle to write by hand.
 
 ## Non-goals for the near term
