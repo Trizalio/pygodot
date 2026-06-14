@@ -49,6 +49,17 @@ $env:PYTHONPATH = "src"
 python -c "from examples.pong.game import game; game.check_run(frames=20)"
 ```
 
+To run optional smoke checks for multiple examples:
+
+```powershell
+$env:PYTHONPATH = "src"
+python tools/smoke_examples.py --examples minimal,pong,snake,timer,physics,flappy
+python tools/smoke_examples.py --all --frames 20
+```
+
+If Godot is not available, the smoke runner skips by default. Use
+`--require-godot` when missing Godot should fail the command.
+
 Generated Godot projects are build output, not the source of truth. See
 `docs/GENERATED_BOUNDARY.md` for the generated/manual file ownership policy.
 

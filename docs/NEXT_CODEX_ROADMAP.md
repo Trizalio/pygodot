@@ -59,6 +59,7 @@ Current implemented surface includes:
 - Minimal display/window size settings.
 - Build manifest at `.pygodot/manifest.json`.
 - Generated/manual overwrite boundary.
+- Optional real Godot example smoke runner at `tools/smoke_examples.py`.
 - Snapshot tests.
 - Examples:
   - `examples/minimal`

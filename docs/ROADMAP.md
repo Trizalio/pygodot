@@ -30,6 +30,7 @@ Implemented:
 - minimal display/window size settings;
 - build manifest at `.pygodot/manifest.json`;
 - generated/manual overwrite boundary;
+- optional real Godot example smoke runner at `tools/smoke_examples.py`;
 - deterministic snapshot tests;
 - `examples/minimal`;
 - a playable two-scene `examples/pong`;

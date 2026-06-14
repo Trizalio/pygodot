@@ -32,6 +32,7 @@ The repository currently has:
 - minimal window size settings;
 - deterministic snapshots for example scenes/scripts;
 - Godot smoke checks through `Game.check_run(...)`;
+- optional multi-example smoke checks through `tools/smoke_examples.py`;
 - documented generated/manual ownership boundaries.
 
 ## Next - Next Example

@@ -77,11 +77,20 @@ $env:PYTHONPATH = "src"
 python -c "from examples.pong.game import game; game.check_run(frames=20)"
 ```
 
+Multiple examples can be checked with:
+
+```powershell
+$env:PYTHONPATH = "src"
+python tools/smoke_examples.py --examples minimal,pong,snake,timer,physics,flappy
+python tools/smoke_examples.py --all --frames 20
+```
+
 `check_run(...)` runs Godot headless for a fixed number of frames, captures logs,
 and raises if Godot reports script or parse errors.
 
 Godot smoke checks are useful before committing example changes, but they are
-not required for normal unit test runs.
+not required for normal unit test runs. The smoke runner skips cleanly when
+Godot is unavailable unless `--require-godot` is passed.
 
 ## Validation Cases
 
