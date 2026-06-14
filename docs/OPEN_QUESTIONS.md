@@ -47,8 +47,8 @@ Open question:
 - when should pygodot introduce direct `.tres` emission or a Godot-assisted
   emitter?
 
-Likely trigger examples include physics shapes, TileSet, Theme, ShaderMaterial,
-or Mesh data.
+Likely trigger examples include TileSet, Theme, ShaderMaterial, Mesh data, or
+richer physics resources beyond simple rectangle shapes.
 
 ## Q005 - CLI Shape
 

@@ -14,12 +14,13 @@ Implemented:
 - public scene/node/script DSL;
 - generic `node(...)` helper and selected node constructors: `Node2D`,
   `Control`, `ColorRect`, `Sprite2D`, `Label`, `Button`, `Timer`,
-  `AnimationPlayer`, `AudioStreamPlayer`;
+  `AnimationPlayer`, `AudioStreamPlayer`, `Area2D`, `CollisionShape2D`;
 - typed value wrappers: `Vec2`, `Vec3`, `Rect2`, `Color`, `NodePath`;
 - external resources through `ext_resource(...)`, `texture(...)`,
   `audio_stream(...)`, `font(...)`, and `packed_scene(...)`;
 - scene instances through `scene_instance(...)`;
 - generated value-track animations through `animation(...)`;
+- generated `RectangleShape2D` resources through `rectangle_shape_2d(...)`;
 - generated, file-backed, and referenced GDScript;
 - direct `.tscn`, `.gd`, and `project.godot` emitters;
 - keyboard-only InputMap generation;
@@ -35,7 +36,8 @@ Implemented:
 - a signal-connected timer `examples/timer`;
 - an audio resource `examples/audio`;
 - a font resource `examples/font`;
-- a generated AnimationPlayer `examples/animation`.
+- a generated AnimationPlayer `examples/animation`;
+- a 2D collision shape `examples/physics`.
 
 ## Next: script templates
 
@@ -54,7 +56,6 @@ that example needs.
 
 Likely candidates:
 
-- shape resources for physics examples;
 - direct or Godot-assisted `.tres` resources that examples justify.
 
 ## Non-goals for the near term
@@ -64,4 +65,4 @@ Likely candidates:
 - generated wrappers for the entire Godot API;
 - visual editor replacement;
 - ECS;
-- broad physics/resource DSL before examples justify it.
+- broad physics/resource DSL beyond examples that justify it.

@@ -10,10 +10,12 @@ from unittest.mock import patch
 
 from pygodot import (
     AnimationPlayer,
+    Area2D,
     AudioStreamPlayer,
     Button,
     Color,
     ColorRect,
+    CollisionShape2D,
     Game,
     Label,
     Node2D,
@@ -22,6 +24,7 @@ from pygodot import (
     InputAction,
     packed_scene,
     Rect2,
+    RectangleShape2D,
     Scene,
     Script,
     Sprite2D,
@@ -34,6 +37,7 @@ from pygodot import (
     ext_resource,
     font,
     key,
+    rectangle_shape_2d,
     signal,
     node,
     scene_instance,
@@ -122,6 +126,26 @@ class DslNodeTests(unittest.TestCase):
                 "volume_db": -8,
             },
         )
+
+    def test_area_and_collision_shape_constructors_create_physics_nodes(self) -> None:
+        shape = rectangle_shape_2d(size=Vec2(32, 48))
+        collision = CollisionShape2D("Hitbox", shape=shape)
+        area = Area2D(
+            "Trigger",
+            position=Vec2(10, 20),
+            signals=[signal("area_entered", target=".", method="_on_area_entered")],
+            children=[collision],
+        )
+
+        self.assertEqual(shape, RectangleShape2D(size=Vec2(32, 48)))
+        self.assertEqual(collision.name, "Hitbox")
+        self.assertEqual(collision.type, "CollisionShape2D")
+        self.assertEqual(collision.props, {"shape": shape})
+        self.assertEqual(area.name, "Trigger")
+        self.assertEqual(area.type, "Area2D")
+        self.assertEqual(area.props, {"position": Vec2(10, 20)})
+        self.assertEqual(area.signals[0].signal, "area_entered")
+        self.assertEqual(area.children, [collision])
 
     def test_node_helper_creates_generic_node(self) -> None:
         script = Script(
@@ -495,6 +519,23 @@ text = "Click me"
             TscnEmitter().emit(normalize_scene(scene)),
         )
 
+    def test_physics_scene_file_snapshot(self) -> None:
+        physics = _load_example_game("physics")
+        scene = physics.game.scenes[0]
+
+        self.assert_matches_snapshot(
+            "physics_scene.tscn",
+            TscnEmitter().emit(normalize_scene(scene)),
+        )
+
+    def test_physics_script_file_snapshot(self) -> None:
+        physics = _load_example_game("physics")
+
+        self.assert_matches_snapshot(
+            "physics_script.gd",
+            _build_example_script(physics.game, "scripts/main.gd"),
+        )
+
     def test_tscn_emitter_snapshot_with_external_resource_property(self) -> None:
         scene = normalize_scene(
             Scene(
@@ -602,6 +643,29 @@ script = ExtResource("Script_manual_player_gd")
                 ("Texture2D", "res://assets/icon.svg", "Texture2D_assets_icon_svg"),
             ],
         )
+
+    def test_rectangle_shape_property_becomes_sub_resource(self) -> None:
+        scene = normalize_scene(
+            Scene(
+                path="res://scenes/main.tscn",
+                root=Node2D(
+                    "Main",
+                    children=[
+                        CollisionShape2D(
+                            "Hitbox",
+                            shape=rectangle_shape_2d(size=Vec2(24, 32)),
+                        )
+                    ],
+                ),
+            )
+        )
+
+        self.assertEqual(len(scene.sub_resources), 1)
+        resource = scene.sub_resources[0]
+        self.assertEqual(resource.type, "RectangleShape2D")
+        self.assertEqual(resource.id, "RectangleShape2D_rectangle_24_32")
+        self.assertEqual(resource.props, {"size": Vec2(24, 32)})
+        self.assertEqual(scene.root.children[0].props["shape"].resource_id, resource.id)
 
     def assert_matches_snapshot(self, snapshot_name: str, actual: str) -> None:
         expected = (SNAPSHOTS_DIR / snapshot_name).read_text(encoding="utf-8")
@@ -1369,6 +1433,46 @@ func _ready() -> void:
             self.assertIn('[node name="Animator" type="AnimationPlayer" parent="."]', scene_text)
             self.assertIn('autoplay = "pulse"', scene_text)
             self.assertIn('libraries = {&"": SubResource("AnimationLibrary_Animator")}', scene_text)
+
+    def test_physics_example_builds_collision_shape_subresources(self) -> None:
+        physics = _load_example_game("physics")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            build_dir = Path(tmp) / "godot_project"
+            physics.game.build_dir = build_dir
+
+            result = physics.game.build()
+
+            self.assertEqual(
+                sorted(path.relative_to(build_dir).as_posix() for path in result.written_files),
+                [
+                    ".pygodot/manifest.json",
+                    "project.godot",
+                    "scenes/main.tscn",
+                    "scripts/main.gd",
+                ],
+            )
+
+            scene_text = (build_dir / "scenes" / "main.tscn").read_text(encoding="utf-8")
+            self.assertIn(
+                '[sub_resource type="RectangleShape2D" id="RectangleShape2D_rectangle_64_64"]',
+                scene_text,
+            )
+            self.assertIn(
+                '[sub_resource type="RectangleShape2D" id="RectangleShape2D_rectangle_90_90"]',
+                scene_text,
+            )
+            self.assertIn('[node name="Probe" type="Area2D" parent="."]', scene_text)
+            self.assertIn('[node name="ProbeShape" type="CollisionShape2D" parent="Probe"]', scene_text)
+            self.assertIn('shape = SubResource("RectangleShape2D_rectangle_64_64")', scene_text)
+            self.assertIn(
+                '[connection signal="area_entered" from="Probe" to="." method="_on_probe_area_entered"]',
+                scene_text,
+            )
+
+            script_text = (build_dir / "scripts" / "main.gd").read_text(encoding="utf-8")
+            self.assertIn("func _physics_process(delta: float) -> void:", script_text)
+            self.assertIn("pygodot_physics_area_entered", script_text)
 
 
 def _read_generated_files(build_dir: Path) -> dict[str, str]:

@@ -9,6 +9,7 @@ from pygodot.dsl.nodes import Node
 from pygodot.dsl.resources import ExternalResource
 from pygodot.dsl.scene import Scene
 from pygodot.dsl.settings import WindowSettings
+from pygodot.dsl.shapes import RectangleShape2D
 from pygodot.dsl.script import Script
 from pygodot.ir.model import (
     IRExternalResource,
@@ -85,7 +86,10 @@ def _normalize_node(
     sub_resources: dict[str, IRSubResource],
 ) -> IRNode:
     script = _normalize_script(node.script, resources)
-    props = {key: _normalize_value(value, resources) for key, value in node.props.items()}
+    props = {
+        key: _normalize_value(value, resources, sub_resources)
+        for key, value in node.props.items()
+    }
     props.update(_normalize_animation_libraries(node, sub_resources))
     signals = tuple(
         IRSignalConnection(
@@ -187,24 +191,56 @@ def _normalize_script(
     )
 
 
-def _normalize_value(value: Any, resources: dict[tuple[str, str], IRExternalResource]) -> Any:
+def _normalize_value(
+    value: Any,
+    resources: dict[tuple[str, str], IRExternalResource],
+    sub_resources: dict[str, IRSubResource] | None = None,
+) -> Any:
     if isinstance(value, ExternalResource):
         resource = _register_external_resource(resources, value)
         return IRExternalResourceRef(resource_id=resource.id)
 
+    if isinstance(value, RectangleShape2D):
+        if sub_resources is None:
+            raise TypeError("Shape resources require a scene sub-resource registry.")
+        return _register_rectangle_shape_2d(sub_resources, value)
+
     if isinstance(value, list):
-        return [_normalize_value(item, resources) for item in value]
+        return [_normalize_value(item, resources, sub_resources) for item in value]
 
     if isinstance(value, tuple):
-        return tuple(_normalize_value(item, resources) for item in value)
+        return tuple(_normalize_value(item, resources, sub_resources) for item in value)
 
     if isinstance(value, dict):
         return {
-            _normalize_value(key, resources): _normalize_value(item, resources)
+            _normalize_value(key, resources, sub_resources): _normalize_value(
+                item,
+                resources,
+                sub_resources,
+            )
             for key, item in value.items()
         }
 
     return value
+
+
+def _register_rectangle_shape_2d(
+    sub_resources: dict[str, IRSubResource],
+    shape: RectangleShape2D,
+) -> IRSubResourceRef:
+    resource_id = resource_id_for_path(
+        f"rectangle_{shape.size.x}_{shape.size.y}",
+        prefix="RectangleShape2D",
+    )
+    sub_resources.setdefault(
+        resource_id,
+        IRSubResource(
+            type="RectangleShape2D",
+            id=resource_id,
+            props={"size": shape.size},
+        ),
+    )
+    return IRSubResourceRef(resource_id)
 
 
 def _normalize_instance(

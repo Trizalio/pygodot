@@ -10,9 +10,11 @@ from pygodot.dsl.animation import (
 )
 from pygodot.dsl.input import InputAction
 from pygodot.dsl.nodes import (
+    Area2D,
     AudioStreamPlayer,
     AnimationPlayer,
     Button,
+    CollisionShape2D,
     ColorRect,
     Control,
     Label,
@@ -34,6 +36,7 @@ from pygodot.dsl.resources import (
 )
 from pygodot.dsl.scene import Scene
 from pygodot.dsl.settings import WindowSettings
+from pygodot.dsl.shapes import RectangleShape2D, rectangle_shape_2d
 from pygodot.dsl.script import Script
 from pygodot.dsl.signal import SignalConnection, signal
 from pygodot.dsl.values import Color, NodePath, Rect2, Vec2, Vec3
@@ -42,8 +45,10 @@ __all__ = [
     "Animation",
     "AnimationKey",
     "AnimationPlayer",
+    "Area2D",
     "AudioStreamPlayer",
     "Button",
+    "CollisionShape2D",
     "Color",
     "ColorRect",
     "Control",
@@ -54,6 +59,7 @@ __all__ = [
     "Node2D",
     "NodePath",
     "Rect2",
+    "RectangleShape2D",
     "Scene",
     "Script",
     "SignalConnection",
@@ -71,6 +77,7 @@ __all__ = [
     "key",
     "node",
     "packed_scene",
+    "rectangle_shape_2d",
     "scene_instance",
     "signal",
     "texture",

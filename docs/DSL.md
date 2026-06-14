@@ -22,6 +22,7 @@ Current public concepts:
 - `SignalConnection`;
 - `InputAction`;
 - `Animation`;
+- generated shape resources;
 - Godot value wrappers;
 - external resource references;
 - scene instances.
@@ -37,7 +38,9 @@ Node constructors/helpers:
 - `Button`;
 - `Timer`;
 - `AnimationPlayer`;
-- `AudioStreamPlayer`.
+- `AudioStreamPlayer`;
+- `Area2D`;
+- `CollisionShape2D`.
 
 ## Example Scene
 
@@ -107,6 +110,7 @@ Button("Start", text="Start")
 Timer("PulseTimer", wait_time=0.5, autostart=True)
 AnimationPlayer("Animator", autoplay="pulse", animations=[pulse_animation])
 AudioStreamPlayer("Player", stream=audio_stream("res://assets/tone.wav"))
+Area2D("Trigger", children=[CollisionShape2D("Hitbox", shape=hitbox_shape)])
 ```
 
 Do not add broad wrappers for the whole Godot API. Add small constructors only
@@ -161,6 +165,23 @@ Node2D(
 
 `scene_instance(...)` expects a `PackedScene` resource, normally created with
 `packed_scene(...)`.
+
+Generated shape resources can be attached to collision nodes:
+
+```python
+hitbox_shape = rectangle_shape_2d(size=Vec2(64, 64))
+
+Area2D(
+    "Probe",
+    signals=[signal("area_entered", target=".", method="_on_probe_area_entered")],
+    children=[
+        CollisionShape2D("ProbeShape", shape=hitbox_shape),
+    ],
+)
+```
+
+The current shape DSL intentionally covers only `RectangleShape2D`, generated
+as a scene sub-resource.
 
 ## Animations
 

@@ -22,7 +22,7 @@ The direct `.tscn` emitter supports:
 
 - `[gd_scene format=3]` headers;
 - `[ext_resource ...]` entries for scripts and external resources;
-- `[sub_resource ...]` entries for generated animations;
+- `[sub_resource ...]` entries for generated animations and shape resources;
 - `[node ...]` sections;
 - scene instance nodes with `instance=ExtResource(...)`;
 - node properties;
@@ -54,6 +54,17 @@ Scene instances are emitted with a `PackedScene` external resource:
 position = Vector2(220, 190)
 ```
 
+Generated shape resources are emitted as scene sub-resources and referenced by
+collision nodes:
+
+```text
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_rectangle_64_64"]
+size = Vector2(64, 64)
+
+[node name="ProbeShape" type="CollisionShape2D" parent="Probe"]
+shape = SubResource("RectangleShape2D_rectangle_64_64")
+```
+
 ## Values
 
 Supported values include:
@@ -62,7 +73,7 @@ Supported values include:
 - `Vec2`, `Vec3`, `Rect2`, `Color`, `NodePath`;
 - two- and three-item tuples as temporary Vector2/Vector3 convenience;
 - lists and dictionaries of supported values;
-- normalized external resource references.
+- normalized external resource references;
 - normalized sub-resource references and StringName keys used by animations.
 
 Prefer explicit value wrappers in new examples.

@@ -40,7 +40,8 @@ Current public concepts include:
 - `Scene`;
 - `Node` and `node(...)`;
 - node constructors: `Node2D`, `Control`, `ColorRect`, `Sprite2D`,
-  `Label`, `Button`, `Timer`, `AnimationPlayer`, `AudioStreamPlayer`;
+  `Label`, `Button`, `Timer`, `AnimationPlayer`, `AudioStreamPlayer`,
+  `Area2D`, `CollisionShape2D`;
 - `Script` and `Script.reference(...)`;
 - `signal(...)`;
 - `InputAction` through `Game.add_input_action(...)`;
@@ -49,6 +50,7 @@ Current public concepts include:
   `audio_stream(...)`, `font(...)`, `packed_scene(...)`;
 - scene instances: `scene_instance(...)`.
 - animations: `animation(...)`, `value_track(...)`, `key(...)`.
+- shape resources: `rectangle_shape_2d(...)`.
 
 The DSL should stay explicit and boring. Avoid hidden global scene stacks,
 metaclass-heavy APIs, and mandatory context managers.
@@ -63,6 +65,7 @@ Responsibilities:
 - normalize property values;
 - normalize scene instance resources;
 - normalize animation sub-resources;
+- normalize generated shape sub-resources;
 - collect external resources;
 - compute stable resource IDs;
 - carry project-level input actions;

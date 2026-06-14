@@ -16,6 +16,7 @@ The repository currently has:
 - an audio resource example under `examples/audio`;
 - a font resource example under `examples/font`;
 - a generated AnimationPlayer example under `examples/animation`;
+- a 2D collision shape example under `examples/physics`;
 - generated GDScript gameplay;
 - generated script bodies from source `.gd` files;
 - external texture resources copied from `source_root`;
@@ -24,6 +25,7 @@ The repository currently has:
 - scene instances through `scene_instance(...)`;
 - built-in Timer node signals;
 - generated animation sub-resources;
+- generated `RectangleShape2D` shape sub-resources;
 - keyboard-only InputMap DSL;
 - minimal window size settings;
 - deterministic snapshots for example scenes/scripts;
@@ -33,4 +35,5 @@ The repository currently has:
 ## Next - Next Example
 
 Pick the next example first, then add only the Godot surface that example needs.
-Good candidates are a tiny physics example or direct `.tres` resource emission.
+Good candidates are direct `.tres` resource emission or another small example
+that exercises a missing Godot surface.

@@ -42,6 +42,7 @@ Current snapshots cover:
 - audio scene/script with a copied `AudioStream` resource.
 - font scene with a copied `Font` resource.
 - animation scene with generated `Animation` and `AnimationLibrary` sub-resources.
+- physics scene/script with generated `RectangleShape2D` sub-resources.
 
 Snapshot tests protect:
 

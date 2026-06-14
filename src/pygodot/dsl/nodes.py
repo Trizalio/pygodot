@@ -86,6 +86,42 @@ def Node2D(
     )
 
 
+def Area2D(
+    name: str,
+    *,
+    children: list[Node] | None = None,
+    script: Script | None = None,
+    signals: list[SignalConnection] | None = None,
+    **props: Any,
+) -> Node:
+    return Node(
+        name=name,
+        type="Area2D",
+        props=props,
+        children=children or [],
+        script=script,
+        signals=signals or [],
+    )
+
+
+def CollisionShape2D(
+    name: str,
+    *,
+    children: list[Node] | None = None,
+    script: Script | None = None,
+    signals: list[SignalConnection] | None = None,
+    **props: Any,
+) -> Node:
+    return Node(
+        name=name,
+        type="CollisionShape2D",
+        props=props,
+        children=children or [],
+        script=script,
+        signals=signals or [],
+    )
+
+
 def Control(
     name: str,
     *,
