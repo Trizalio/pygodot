@@ -124,6 +124,7 @@ def _normalize_script(
         body=script.body,
         resource_id=resource.id,
         generated=script.generated,
+        source=str(script.source) if script.source is not None else None,
     )
 
 

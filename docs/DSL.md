@@ -157,6 +157,21 @@ func _ready() -> void:
 )
 ```
 
+Generated script bodies can also come from source files under
+`Game.source_root`:
+
+```python
+Script.from_file(
+    source="scripts/player.gd",
+    path="res://scripts/player.gd",
+    extends="Node2D",
+)
+```
+
+`source` is user-owned input. `path` is the generated Godot project destination.
+The source file should contain the script body; `extends` is still declared in
+Python and emitted by pygodot.
+
 Manual scripts are referenced without generation:
 
 ```python

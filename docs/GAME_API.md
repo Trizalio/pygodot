@@ -37,6 +37,16 @@ Set the generated project window size:
 game.set_window(size=Vec2(800, 600))
 ```
 
+Generated scripts can use inline bodies or source files under `source_root`:
+
+```python
+Script.from_file(
+    source="scripts/main.gd",
+    path="res://scripts/main.gd",
+    extends="Node2D",
+)
+```
+
 Build or run:
 
 ```python

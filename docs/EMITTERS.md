@@ -79,10 +79,11 @@ The project emitter currently writes:
 
 ## GDScript
 
-The GDScript emitter wraps raw generated bodies with an `extends` line:
+The GDScript emitter wraps generated bodies with an `extends` line:
 
 ```python
 Script(path="res://scripts/main.gd", extends="Node2D", body="...")
+Script.from_file(source="scripts/main.gd", path="res://scripts/main.gd", extends="Node2D")
 ```
 
 Output:
@@ -92,6 +93,9 @@ extends Node2D
 
 ...
 ```
+
+For `Script.from_file(...)`, `Game.build()` reads the body from `source_root`
+before passing the normalized script to the emitter.
 
 Manual scripts are referenced with `Script.reference(...)` and are not emitted.
 

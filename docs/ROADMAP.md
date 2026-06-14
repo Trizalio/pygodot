@@ -17,7 +17,7 @@ Implemented:
 - typed value wrappers: `Vec2`, `Vec3`, `Rect2`, `Color`, `NodePath`;
 - external resources through `ext_resource(...)`, `texture(...)`, and
   `packed_scene(...)`;
-- generated and referenced GDScript;
+- generated, file-backed, and referenced GDScript;
 - direct `.tscn`, `.gd`, and `project.godot` emitters;
 - keyboard-only InputMap generation;
 - minimal display/window size settings;
@@ -28,12 +28,11 @@ Implemented:
 - a playable two-scene `examples/pong`;
 - a draw-based `examples/snake`.
 
-## Next: script sources and templates
+## Next: script templates
 
-Generated raw script bodies are enough for the current examples, but larger
-examples will need better ergonomics:
+Generated raw script bodies and `Script.from_file(...)` cover the current
+examples. Larger examples may need a little more ergonomics:
 
-- `Script.from_file(...)`;
 - simple template support;
 - clearer error reporting for generated GDScript smoke checks.
 

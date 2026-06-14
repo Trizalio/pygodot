@@ -41,6 +41,7 @@ or generated GDScript bodies:
 - `project.godot`;
 - generated scene files such as `res://scenes/main.tscn`;
 - generated scripts from `Script(path=..., body=...)`;
+- generated scripts from `Script.from_file(source=..., path=..., extends=...)`;
 - future generated resources such as `.tres`;
 - `.pygodot/manifest.json`.
 
@@ -49,6 +50,10 @@ supports a comment header. The generated file writer uses this marker to avoid
 silently overwriting manual files when overwrite protection is enabled.
 
 ## Manual scripts
+
+`Script.from_file(...)` is still generated output. The source `.gd` file is
+user-owned input under `source_root`, and pygodot writes the generated `.gd`
+file under `build_dir`.
 
 Manual scripts should be referenced explicitly:
 

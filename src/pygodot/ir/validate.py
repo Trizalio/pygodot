@@ -70,13 +70,19 @@ def _validate_node(node: IRNode, *, scene_path: str) -> None:
             raise ValidationError(
                 f"Script extends must not be empty: {location}, script_path={node.script.path!r}."
             )
-        if node.script.generated and not node.script.body.strip():
+        if node.script.generated and node.script.source is not None and node.script.body.strip():
+            raise ValidationError(
+                f"Generated script must use either body or source, not both: "
+                f"{location}, script_path={node.script.path!r}."
+            )
+        if node.script.generated and node.script.source is None and not node.script.body.strip():
             raise ValidationError(
                 f"Generated script body must not be empty: {location}, script_path={node.script.path!r}."
             )
-        if not node.script.generated and node.script.body.strip():
+        if not node.script.generated and (node.script.body.strip() or node.script.source is not None):
             raise ValidationError(
-                f"Referenced manual script body must be empty: {location}, script_path={node.script.path!r}."
+                f"Referenced manual script must not define generated content: "
+                f"{location}, script_path={node.script.path!r}."
             )
     for key, value in node.props.items():
         _validate_supported_value(value, value_path=f"property {key!r}", location=location)

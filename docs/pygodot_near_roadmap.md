@@ -11,36 +11,14 @@ The repository currently has:
 - a two-scene Pong example under `examples/pong`;
 - a one-scene Snake example under `examples/snake`;
 - generated GDScript gameplay;
+- generated script bodies from source `.gd` files;
 - keyboard-only InputMap DSL;
 - minimal window size settings;
 - deterministic snapshots for example scenes/scripts;
 - Godot smoke checks through `Game.check_run(...)`;
 - documented generated/manual ownership boundaries.
 
-## Milestone A - Script Ergonomics
-
-Snake makes the raw Python string body noticeably large. Add a narrow way to
-load generated script bodies from source files while keeping ownership explicit.
-
-Possible API:
-
-```python
-Script.from_file(
-    source="scripts/snake.gd",
-    path="res://scripts/snake.gd",
-    extends="Node2D",
-)
-```
-
-Acceptance criteria:
-
-- source `.gd` files live under `source_root`;
-- generated `.gd` files are still written into `build_dir`;
-- manual `Script.reference(...)` remains distinct from generated script sources;
-- snapshots remain deterministic;
-- Pong and Snake can move large script bodies out of Python strings where useful.
-
-## Milestone B - Example-Driven Resource Work
+## Next - Example-Driven Resource Work
 
 Do not add physics/resource abstractions yet. Pick the next example first, then
 add only the resource support that example needs.

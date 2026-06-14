@@ -21,6 +21,7 @@ class IRScript:
     body: str
     resource_id: str
     generated: bool = True
+    source: str | None = None
 
 
 @dataclass(slots=True, frozen=True)

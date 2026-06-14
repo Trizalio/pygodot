@@ -88,7 +88,10 @@ class Game:
                 if script.path in emitted_script_paths:
                     continue
                 emitted_script_paths.add(script.path)
-                script_path = writer.write_text(_res_to_rel(script.path), script_emitter.emit(script))
+                script_path = writer.write_text(
+                    _res_to_rel(script.path),
+                    script_emitter.emit(_resolve_generated_script(script, self.source_root)),
+                )
                 written_files.append(script_path)
                 generated_scripts.append(script_path)
                 rel_script_path = _rel_to_project(self.build_dir, script_path)
@@ -146,6 +149,35 @@ def _iter_scripts(node: IRNode) -> list[IRScript]:
     return scripts
 
 
+def _resolve_generated_script(script: IRScript, source_root: Path) -> IRScript:
+    if script.source is None:
+        return script
+
+    source_path = _source_to_rel(script.source)
+    absolute_source = source_root / source_path
+    if not absolute_source.is_file():
+        raise BuildError(
+            f"Generated script source file does not exist: "
+            f"script_path={script.path!r}, source={script.source!r}."
+        )
+
+    body = absolute_source.read_text(encoding="utf-8")
+    if not body.strip():
+        raise BuildError(
+            f"Generated script source must not be empty: "
+            f"script_path={script.path!r}, source={script.source!r}."
+        )
+
+    return IRScript(
+        path=script.path,
+        extends=script.extends,
+        body=body,
+        resource_id=script.resource_id,
+        generated=script.generated,
+        source=script.source,
+    )
+
+
 def _copy_external_resources(
     project: IRProject,
     writer: GeneratedFileWriter,
@@ -159,6 +191,17 @@ def _copy_external_resources(
         if key in seen:
             continue
         seen.add(key)
+
+        if resource.type == "Script":
+            manifest.external_resources.append(
+                ManifestResource(
+                    type=resource.type,
+                    path=resource.path,
+                    id=resource.id,
+                    copied=False,
+                )
+            )
+            continue
 
         relative_path = _res_to_rel(resource.path)
         source = source_root / relative_path
@@ -197,4 +240,13 @@ def _res_to_rel(path: str) -> Path:
         raise BuildError(f"Unsafe res:// path cannot leave project root: path={path!r}.")
     if not relative.parts:
         raise BuildError(f"Expected non-empty res:// path, got {path!r}.")
+    return relative
+
+
+def _source_to_rel(path: str) -> Path:
+    relative = Path(path)
+    if relative.is_absolute() or ".." in relative.parts:
+        raise BuildError(f"Unsafe script source path cannot leave source root: source={path!r}.")
+    if not relative.parts:
+        raise BuildError(f"Expected non-empty script source path, got {path!r}.")
     return relative
