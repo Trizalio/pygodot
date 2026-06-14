@@ -75,8 +75,7 @@ The project emitter currently writes:
 - application name;
 - main scene;
 - keyboard-only input map actions.
-
-Future project settings should be added only when examples need them.
+- display window size.
 
 ## GDScript
 

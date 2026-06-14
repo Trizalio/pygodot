@@ -140,6 +140,7 @@ game.add_input_action("left_down", keys=["S"])
 game.add_input_action("right_up", keys=["UP"])
 game.add_input_action("right_down", keys=["DOWN"])
 game.add_input_action("restart", keys=["SPACE"])
+game.set_window(size=Vec2(800, 600))
 
 game.add_scene(
     Scene(

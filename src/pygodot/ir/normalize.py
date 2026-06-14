@@ -8,6 +8,7 @@ from pygodot.dsl.input import InputAction
 from pygodot.dsl.nodes import Node
 from pygodot.dsl.resources import ExternalResource
 from pygodot.dsl.scene import Scene
+from pygodot.dsl.settings import WindowSettings
 from pygodot.dsl.script import Script
 from pygodot.ir.model import (
     IRExternalResource,
@@ -18,6 +19,7 @@ from pygodot.ir.model import (
     IRScene,
     IRScript,
     IRSignalConnection,
+    IRWindowSettings,
 )
 from pygodot.input_keys import normalize_key_name
 
@@ -43,12 +45,14 @@ def normalize_project(
     main_scene: str,
     scenes: list[Scene],
     input_actions: list[InputAction] | None = None,
+    window: WindowSettings | None = None,
 ) -> IRProject:
     return IRProject(
         name=name,
         main_scene=main_scene,
         scenes=tuple(normalize_scene(scene) for scene in scenes),
         input_actions=tuple(_normalize_input_action(action) for action in input_actions or []),
+        window=_normalize_window(window),
     )
 
 
@@ -57,6 +61,12 @@ def _normalize_input_action(action: InputAction) -> IRInputAction:
         name=action.name,
         keys=tuple(normalize_key_name(key) for key in action.keys),
     )
+
+
+def _normalize_window(window: WindowSettings | None) -> IRWindowSettings | None:
+    if window is None:
+        return None
+    return IRWindowSettings(width=int(window.size.x), height=int(window.size.y))
 
 
 def _normalize_node(

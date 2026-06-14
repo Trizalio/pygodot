@@ -9,6 +9,8 @@ from pygodot.build.manifest import BuildManifest, ManifestResource
 from pygodot.build.writer import GeneratedFileWriter
 from pygodot.dsl.input import InputAction
 from pygodot.dsl.scene import Scene
+from pygodot.dsl.settings import WindowSettings
+from pygodot.dsl.values import Vec2
 from pygodot.errors import BuildError
 from pygodot.emitters.gdscript import GdScriptEmitter
 from pygodot.emitters.project import ProjectEmitter
@@ -42,6 +44,7 @@ class Game:
     godot_bin: str = "godot"
     scenes: list[Scene] = field(default_factory=list)
     input_actions: list[InputAction] = field(default_factory=list)
+    window: WindowSettings | None = None
 
     def add_scene(self, scene: Scene) -> None:
         self.scenes.append(scene)
@@ -49,12 +52,16 @@ class Game:
     def add_input_action(self, name: str, *, keys: list[str]) -> None:
         self.input_actions.append(InputAction(name=name, keys=tuple(keys)))
 
+    def set_window(self, *, size: Vec2) -> None:
+        self.window = WindowSettings(size=size)
+
     def build(self) -> BuildResult:
         project = normalize_project(
             name=self.name,
             main_scene=self.main_scene,
             scenes=self.scenes,
             input_actions=self.input_actions,
+            window=self.window,
         )
         validate_project(project)
 

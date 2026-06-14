@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-from pygodot import Game, Node2D, Scene, Script
+from pygodot import Game, Node2D, Scene, Script, Vec2
 
 ROOT = Path(__file__).parent
 
@@ -143,6 +143,7 @@ game.add_input_action("move_down", keys=["S", "DOWN"])
 game.add_input_action("move_left", keys=["A", "LEFT"])
 game.add_input_action("move_right", keys=["D", "RIGHT"])
 game.add_input_action("restart", keys=["SPACE"])
+game.set_window(size=Vec2(672, 560))
 
 game.add_scene(
     Scene(

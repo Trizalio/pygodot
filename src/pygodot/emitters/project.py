@@ -21,6 +21,16 @@ class ProjectEmitter:
             lines.extend(["", "[input]", ""])
             for action in project.input_actions:
                 lines.extend(_emit_input_action(action.name, action.keys))
+        if project.window is not None:
+            lines.extend(
+                [
+                    "",
+                    "[display]",
+                    "",
+                    f"window/size/viewport_width={project.window.width}",
+                    f"window/size/viewport_height={project.window.height}",
+                ]
+            )
         return "\n".join(lines).rstrip() + "\n"
 
 

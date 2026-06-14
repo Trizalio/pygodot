@@ -185,6 +185,16 @@ Input.is_action_just_pressed("restart")
 
 The current InputMap DSL is keyboard-only.
 
+## Window Settings
+
+Generated project window size is declared on `Game`:
+
+```python
+game.set_window(size=Vec2(800, 600))
+```
+
+The current settings DSL intentionally covers only viewport width and height.
+
 ## Composition
 
 Use normal Python functions for reusable scene fragments:

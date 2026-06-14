@@ -61,8 +61,15 @@ class IRInputAction:
 
 
 @dataclass(slots=True, frozen=True)
+class IRWindowSettings:
+    width: int
+    height: int
+
+
+@dataclass(slots=True, frozen=True)
 class IRProject:
     name: str
     main_scene: str
     scenes: tuple[IRScene, ...] = ()
     input_actions: tuple[IRInputAction, ...] = ()
+    window: IRWindowSettings | None = None

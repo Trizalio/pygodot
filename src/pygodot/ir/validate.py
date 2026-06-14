@@ -5,7 +5,7 @@ from typing import Any
 from pygodot.emitters.values import gd_value
 from pygodot.errors import ValidationError
 from pygodot.input_keys import keycode_for
-from pygodot.ir.model import IRInputAction, IRNode, IRProject, IRScene
+from pygodot.ir.model import IRInputAction, IRNode, IRProject, IRScene, IRWindowSettings
 
 
 def validate_project(project: IRProject) -> None:
@@ -26,6 +26,7 @@ def validate_project(project: IRProject) -> None:
     for scene in project.scenes:
         validate_scene(scene)
     _validate_input_actions(project.input_actions)
+    _validate_window(project.window)
 
 
 def validate_scene(scene: IRScene) -> None:
@@ -136,6 +137,15 @@ def _is_valid_input_action_name(name: str) -> bool:
     if not name:
         return False
     return all(char.isalnum() or char == "_" for char in name)
+
+
+def _validate_window(window: IRWindowSettings | None) -> None:
+    if window is None:
+        return
+    if window.width <= 0 or window.height <= 0:
+        raise ValidationError(
+            f"Window size must be positive: width={window.width!r}, height={window.height!r}."
+        )
 
 
 def _location(scene_path: str, node_path: str) -> str:

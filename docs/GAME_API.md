@@ -31,6 +31,12 @@ game.add_input_action("move_up", keys=["W", "UP"])
 game.add_input_action("restart", keys=["SPACE"])
 ```
 
+Set the generated project window size:
+
+```python
+game.set_window(size=Vec2(800, 600))
+```
+
 Build or run:
 
 ```python
@@ -49,6 +55,7 @@ errors.
 class Game:
     def add_scene(self, scene: Scene) -> None: ...
     def add_input_action(self, name: str, *, keys: list[str]) -> None: ...
+    def set_window(self, *, size: Vec2) -> None: ...
     def build(self) -> BuildResult: ...
     def run(self, scene: str | None = None) -> None: ...
     def check_run(self, *, scene: str | None = None, frames: int = 20) -> GodotRunResult: ...

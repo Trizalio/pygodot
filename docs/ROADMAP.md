@@ -20,6 +20,7 @@ Implemented:
 - generated and referenced GDScript;
 - direct `.tscn`, `.gd`, and `project.godot` emitters;
 - keyboard-only InputMap generation;
+- minimal display/window size settings;
 - build manifest at `.pygodot/manifest.json`;
 - generated/manual overwrite boundary;
 - deterministic snapshot tests;
@@ -27,19 +28,7 @@ Implemented:
 - a playable two-scene `examples/pong`;
 - a draw-based `examples/snake`.
 
-## Next: useful project configuration
-
-Snake and Pong both hard-code their intended viewport in generated scripts and
-nodes. Add small project settings only where examples now need them:
-
-- display/window size;
-- optional window title metadata;
-- maybe application icon once asset copy behavior needs a real example.
-
-Keep this incremental. Do not build a broad settings DSL before examples prove
-the need.
-
-## Then: script sources and templates
+## Next: script sources and templates
 
 Generated raw script bodies are enough for the current examples, but larger
 examples will need better ergonomics:
