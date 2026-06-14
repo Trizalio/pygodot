@@ -23,6 +23,7 @@ from pygodot.dsl import (
     external_resource,
     node,
     packed_scene,
+    scene_instance,
     signal,
     texture,
 )
@@ -55,6 +56,7 @@ __all__ = [
     "external_resource",
     "node",
     "packed_scene",
+    "scene_instance",
     "signal",
     "texture",
 ]

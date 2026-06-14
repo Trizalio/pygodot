@@ -41,14 +41,17 @@ class TscnEmitter:
         return "\n".join(lines).rstrip() + "\n"
 
     def _emit_node(self, lines: list[str], node: Any) -> None:
+        parts = [f"name={gd_string(node.name)}"]
         if node.parent_path is None:
-            lines.append(f"[node name={gd_string(node.name)} type={gd_string(node.type)}]")
+            if node.type:
+                parts.append(f"type={gd_string(node.type)}")
         else:
-            lines.append(
-                f"[node name={gd_string(node.name)} "
-                f"type={gd_string(node.type)} "
-                f"parent={gd_string(node.parent_path)}]"
-            )
+            if node.type:
+                parts.append(f"type={gd_string(node.type)}")
+            parts.append(f"parent={gd_string(node.parent_path)}")
+        if node.instance is not None:
+            parts.append(f"instance={gd_value(node.instance)}")
+        lines.append(f"[node {' '.join(parts)}]")
 
         if node.script is not None:
             lines.append(f"script = {gd_value(IRExternalResourceRef(node.script.resource_id))}")

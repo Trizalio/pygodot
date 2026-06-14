@@ -37,6 +37,7 @@ Current snapshots cover:
 - Snake scene;
 - generated Snake script.
 - resources scene with copied texture resource.
+- instancing scenes with a generated `PackedScene` resource.
 
 Snapshot tests protect:
 

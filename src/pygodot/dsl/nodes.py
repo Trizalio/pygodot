@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
+from pygodot.dsl.resources import ExternalResource
 from pygodot.dsl.script import Script
 from pygodot.dsl.signal import SignalConnection
 
@@ -17,6 +18,7 @@ class Node:
     children: list["Node"] = field(default_factory=list)
     script: Script | None = None
     signals: list[SignalConnection] = field(default_factory=list)
+    instance: ExternalResource | None = None
 
     def add(self, *children: "Node") -> "Node":
         self.children.extend(children)
@@ -30,6 +32,7 @@ def node(
     children: list[Node] | None = None,
     script: Script | None = None,
     signals: list[SignalConnection] | None = None,
+    instance: ExternalResource | None = None,
     **props: Any,
 ) -> Node:
     return Node(
@@ -39,6 +42,27 @@ def node(
         children=children or [],
         script=script,
         signals=signals or [],
+        instance=instance,
+    )
+
+
+def scene_instance(
+    name: str,
+    scene: ExternalResource,
+    *,
+    children: list[Node] | None = None,
+    signals: list[SignalConnection] | None = None,
+    **props: Any,
+) -> Node:
+    if scene.type != "PackedScene":
+        raise ValueError(f"scene_instance requires a PackedScene resource, got {scene.type!r}.")
+    return Node(
+        name=name,
+        type="",
+        props=props,
+        children=children or [],
+        signals=signals or [],
+        instance=scene,
     )
 
 

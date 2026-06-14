@@ -104,6 +104,7 @@ def _normalize_node(
         children=children,
         script=script,
         signals=signals,
+        instance=_normalize_instance(node.instance, resources),
     )
 
 
@@ -146,6 +147,16 @@ def _normalize_value(value: Any, resources: dict[tuple[str, str], IRExternalReso
         }
 
     return value
+
+
+def _normalize_instance(
+    value: ExternalResource | None,
+    resources: dict[tuple[str, str], IRExternalResource],
+) -> IRExternalResourceRef | None:
+    if value is None:
+        return None
+    resource = _register_external_resource(resources, value)
+    return IRExternalResourceRef(resource_id=resource.id)
 
 
 def _register_external_resource(

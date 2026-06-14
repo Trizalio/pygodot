@@ -46,6 +46,7 @@ class IRNode:
     children: tuple["IRNode", ...] = ()
     script: IRScript | None = None
     signals: tuple[IRSignalConnection, ...] = ()
+    instance: IRExternalResourceRef | None = None
 
 
 @dataclass(slots=True, frozen=True)

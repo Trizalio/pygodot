@@ -22,7 +22,8 @@ Current public concepts:
 - `SignalConnection`;
 - `InputAction`;
 - Godot value wrappers;
-- external resource references.
+- external resource references;
+- scene instances.
 
 Node constructors/helpers:
 
@@ -123,7 +124,6 @@ External resources are referenced explicitly:
 
 ```python
 Sprite2D("Logo", texture=texture("res://assets/logo.svg"))
-Node2D("Spawner", next_scene=packed_scene("res://scenes/enemy.tscn"))
 Node2D("Other", resource=ext_resource("res://assets/data.tres", type="Resource"))
 ```
 
@@ -131,6 +131,23 @@ Normalization collects external resources into scene resource tables and
 deduplicates them by `(type, path)`. During `Game.build()`, existing source
 files under `Game.source_root` are copied to matching `res://` paths under
 `build_dir` and recorded in the manifest.
+
+Generated scenes can also be reused as `PackedScene` instances:
+
+```python
+gem_scene = packed_scene("res://scenes/gem.tscn")
+
+Node2D(
+    "Main",
+    children=[
+        scene_instance("GemA", gem_scene, position=Vec2(220, 190)),
+        scene_instance("GemB", gem_scene, position=Vec2(320, 150)),
+    ],
+)
+```
+
+`scene_instance(...)` expects a `PackedScene` resource, normally created with
+`packed_scene(...)`.
 
 ## Signals
 

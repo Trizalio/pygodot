@@ -23,6 +23,7 @@ The direct `.tscn` emitter supports:
 - `[gd_scene format=3]` headers;
 - `[ext_resource ...]` entries for scripts and external resources;
 - `[node ...]` sections;
+- scene instance nodes with `instance=ExtResource(...)`;
 - node properties;
 - signal `[connection ...]` sections;
 - stable resource IDs;
@@ -41,6 +42,15 @@ script = ExtResource("Script_scripts_main_gd")
 [node name="Title" type="Label" parent="."]
 position = Vector2(80, 60)
 text = "Generated scene"
+```
+
+Scene instances are emitted with a `PackedScene` external resource:
+
+```text
+[ext_resource type="PackedScene" path="res://scenes/gem.tscn" id="PackedScene_scenes_gem_tscn"]
+
+[node name="GemA" parent="." instance=ExtResource("PackedScene_scenes_gem_tscn")]
+position = Vector2(220, 190)
 ```
 
 ## Values

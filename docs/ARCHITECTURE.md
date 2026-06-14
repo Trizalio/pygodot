@@ -46,7 +46,8 @@ Current public concepts include:
 - `InputAction` through `Game.add_input_action(...)`;
 - values: `Vec2`, `Vec3`, `Rect2`, `Color`, `NodePath`;
 - external resources: `ext_resource(...)`, `texture(...)`,
-  `packed_scene(...)`.
+  `packed_scene(...)`;
+- scene instances: `scene_instance(...)`.
 
 The DSL should stay explicit and boring. Avoid hidden global scene stacks,
 metaclass-heavy APIs, and mandatory context managers.
@@ -59,6 +60,7 @@ Responsibilities:
 
 - compute node and parent paths;
 - normalize property values;
+- normalize scene instance resources;
 - collect external resources;
 - compute stable resource IDs;
 - carry project-level input actions;

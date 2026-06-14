@@ -29,6 +29,7 @@ from pygodot import (
     ext_resource,
     signal,
     node,
+    scene_instance,
     texture,
 )
 from pygodot.emitters.gdscript import GdScriptEmitter
@@ -136,6 +137,19 @@ class DslNodeTests(unittest.TestCase):
                 "position": Vec2(100, 120),
             },
         )
+
+    def test_scene_instance_constructor_creates_instance_node(self) -> None:
+        resource = packed_scene("res://scenes/gem.tscn")
+        instance = scene_instance("GemA", resource, position=Vec2(220, 190))
+
+        self.assertEqual(instance.name, "GemA")
+        self.assertEqual(instance.type, "")
+        self.assertIs(instance.instance, resource)
+        self.assertEqual(instance.props, {"position": Vec2(220, 190)})
+
+    def test_scene_instance_requires_packed_scene_resource(self) -> None:
+        with self.assertRaisesRegex(ValueError, "PackedScene"):
+            scene_instance("Logo", texture("res://assets/logo.svg"))
 
     def test_script_from_file_declares_generated_source(self) -> None:
         script = Script.from_file(
@@ -349,6 +363,24 @@ text = "Click me"
         self.assert_matches_snapshot(
             "resources_scene.tscn",
             TscnEmitter().emit(scene),
+        )
+
+    def test_instancing_gem_scene_file_snapshot(self) -> None:
+        instancing = _load_example_game("instancing")
+        scene = _find_scene(instancing.game, "res://scenes/gem.tscn")
+
+        self.assert_matches_snapshot(
+            "instancing_gem_scene.tscn",
+            TscnEmitter().emit(normalize_scene(scene)),
+        )
+
+    def test_instancing_main_scene_file_snapshot(self) -> None:
+        instancing = _load_example_game("instancing")
+        scene = _find_scene(instancing.game, "res://scenes/main.tscn")
+
+        self.assert_matches_snapshot(
+            "instancing_main_scene.tscn",
+            TscnEmitter().emit(normalize_scene(scene)),
         )
 
     def test_tscn_emitter_snapshot_with_external_resource_property(self) -> None:
@@ -1013,6 +1045,53 @@ func _ready() -> void:
                         "id": "Texture2D_assets_pygodot_mark_svg",
                         "path": "res://assets/pygodot_mark.svg",
                         "type": "Texture2D",
+                    }
+                ],
+            )
+
+    def test_instancing_example_builds_reusable_scene_instances(self) -> None:
+        instancing = _load_example_game("instancing")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            build_dir = Path(tmp) / "godot_project"
+            instancing.game.build_dir = build_dir
+
+            result = instancing.game.build()
+
+            self.assertEqual(
+                sorted(path.relative_to(build_dir).as_posix() for path in result.written_files),
+                [
+                    ".pygodot/manifest.json",
+                    "project.godot",
+                    "scenes/gem.tscn",
+                    "scenes/main.tscn",
+                ],
+            )
+
+            main_scene_text = (build_dir / "scenes" / "main.tscn").read_text(encoding="utf-8")
+            self.assertIn(
+                '[ext_resource type="PackedScene" path="res://scenes/gem.tscn" '
+                'id="PackedScene_scenes_gem_tscn"]',
+                main_scene_text,
+            )
+            self.assertIn(
+                '[node name="GemA" parent="." instance=ExtResource("PackedScene_scenes_gem_tscn")]',
+                main_scene_text,
+            )
+            self.assertIn(
+                '[node name="GemB" parent="." instance=ExtResource("PackedScene_scenes_gem_tscn")]',
+                main_scene_text,
+            )
+
+            manifest = json.loads((build_dir / ".pygodot" / "manifest.json").read_text(encoding="utf-8"))
+            self.assertEqual(
+                manifest["external_resources"],
+                [
+                    {
+                        "copied": False,
+                        "id": "PackedScene_scenes_gem_tscn",
+                        "path": "res://scenes/gem.tscn",
+                        "type": "PackedScene",
                     }
                 ],
             )

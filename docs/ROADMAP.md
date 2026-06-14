@@ -17,6 +17,7 @@ Implemented:
 - typed value wrappers: `Vec2`, `Vec3`, `Rect2`, `Color`, `NodePath`;
 - external resources through `ext_resource(...)`, `texture(...)`, and
   `packed_scene(...)`;
+- scene instances through `scene_instance(...)`;
 - generated, file-backed, and referenced GDScript;
 - direct `.tscn`, `.gd`, and `project.godot` emitters;
 - keyboard-only InputMap generation;
@@ -27,7 +28,8 @@ Implemented:
 - `examples/minimal`;
 - a playable two-scene `examples/pong`;
 - a draw-based `examples/snake`;
-- a source-asset `examples/resources`.
+- a source-asset `examples/resources`;
+- a generated PackedScene instancing `examples/instancing`.
 
 ## Next: script templates
 
@@ -47,7 +49,6 @@ that example needs.
 Likely candidates:
 
 - `Timer`;
-- scene instancing through `PackedScene`;
 - shape resources for physics examples;
 - simple audio or font resources;
 - Godot-assisted emission for resources that are brittle to write by hand.

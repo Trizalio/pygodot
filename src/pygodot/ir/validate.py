@@ -59,7 +59,7 @@ def _validate_node(node: IRNode, *, scene_path: str) -> None:
         raise ValidationError(
             f"Node name must not contain '/': {location}, node_name={node.name!r}."
         )
-    if not node.type:
+    if not node.type and node.instance is None:
         raise ValidationError(f"Node type must not be empty: {location}.")
     if node.script is not None:
         if not _is_res_path(node.script.path):
