@@ -30,6 +30,7 @@ Node constructors/helpers:
 - `Node2D`;
 - `Control`;
 - `ColorRect`;
+- `Sprite2D`;
 - `Label`;
 - `Button`.
 
@@ -95,6 +96,7 @@ Use convenience constructors when they exist:
 ```python
 Node2D("Main")
 ColorRect("Panel", color=Color(1, 1, 1), size=Vec2(200, 80))
+Sprite2D("Logo", texture=texture("res://assets/logo.svg"))
 Label("Title", text="Hello")
 Button("Start", text="Start")
 ```
@@ -120,13 +122,15 @@ explicit wrappers.
 External resources are referenced explicitly:
 
 ```python
-Node2D("IconOwner", icon=texture("res://assets/icon.svg"))
+Sprite2D("Logo", texture=texture("res://assets/logo.svg"))
 Node2D("Spawner", next_scene=packed_scene("res://scenes/enemy.tscn"))
 Node2D("Other", resource=ext_resource("res://assets/data.tres", type="Resource"))
 ```
 
 Normalization collects external resources into scene resource tables and
-deduplicates them by `(type, path)`.
+deduplicates them by `(type, path)`. During `Game.build()`, existing source
+files under `Game.source_root` are copied to matching `res://` paths under
+`build_dir` and recorded in the manifest.
 
 ## Signals
 

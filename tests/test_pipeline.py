@@ -22,6 +22,7 @@ from pygodot import (
     Rect2,
     Scene,
     Script,
+    Sprite2D,
     Vec2,
     Vec3,
     WindowSettings,
@@ -116,6 +117,23 @@ class DslNodeTests(unittest.TestCase):
                 "position": Vec2(10, 20),
                 "size": Vec2(200, 80),
                 "color": Color(0.1, 0.2, 0.3),
+            },
+        )
+
+    def test_sprite2d_constructor_creates_sprite_node(self) -> None:
+        sprite = Sprite2D(
+            "Logo",
+            texture=texture("res://assets/logo.svg"),
+            position=Vec2(100, 120),
+        )
+
+        self.assertEqual(sprite.name, "Logo")
+        self.assertEqual(sprite.type, "Sprite2D")
+        self.assertEqual(
+            sprite.props,
+            {
+                "texture": texture("res://assets/logo.svg"),
+                "position": Vec2(100, 120),
             },
         )
 
@@ -322,6 +340,15 @@ text = "Click me"
         self.assert_matches_snapshot(
             "snake_script.gd",
             _build_example_script(snake.game, "scripts/snake.gd"),
+        )
+
+    def test_resources_scene_file_snapshot(self) -> None:
+        resources = _load_example_game("resources")
+        scene = normalize_scene(resources.game.scenes[0])
+
+        self.assert_matches_snapshot(
+            "resources_scene.tscn",
+            TscnEmitter().emit(scene),
         )
 
     def test_tscn_emitter_snapshot_with_external_resource_property(self) -> None:
@@ -950,6 +977,45 @@ func _ready() -> void:
             self.assertIn("window/size/viewport_height=560", project_text)
             self.assertIn("move_left={", project_text)
             self.assertIn('"keycode":65', project_text)
+
+    def test_resources_example_builds_scene_and_copies_texture(self) -> None:
+        resources = _load_example_game("resources")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            build_dir = Path(tmp) / "godot_project"
+            resources.game.build_dir = build_dir
+
+            result = resources.game.build()
+
+            copied_asset = build_dir / "assets" / "pygodot_mark.svg"
+            self.assertEqual(result.copied_resources, [copied_asset])
+            self.assertEqual(
+                sorted(path.relative_to(build_dir).as_posix() for path in result.written_files),
+                [
+                    ".pygodot/manifest.json",
+                    "project.godot",
+                    "scenes/resources.tscn",
+                ],
+            )
+            self.assertTrue(copied_asset.exists())
+
+            scene_text = (build_dir / "scenes" / "resources.tscn").read_text(encoding="utf-8")
+            self.assertIn('[node name="Logo" type="Sprite2D" parent="."]', scene_text)
+            self.assertIn('path="res://assets/pygodot_mark.svg"', scene_text)
+            self.assertIn('texture = ExtResource("Texture2D_assets_pygodot_mark_svg")', scene_text)
+
+            manifest = json.loads((build_dir / ".pygodot" / "manifest.json").read_text(encoding="utf-8"))
+            self.assertEqual(
+                manifest["external_resources"],
+                [
+                    {
+                        "copied": True,
+                        "id": "Texture2D_assets_pygodot_mark_svg",
+                        "path": "res://assets/pygodot_mark.svg",
+                        "type": "Texture2D",
+                    }
+                ],
+            )
 
 
 def _read_generated_files(build_dir: Path) -> dict[str, str]:

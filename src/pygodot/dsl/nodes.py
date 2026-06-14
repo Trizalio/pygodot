@@ -96,6 +96,24 @@ def ColorRect(
     )
 
 
+def Sprite2D(
+    name: str,
+    *,
+    children: list[Node] | None = None,
+    script: Script | None = None,
+    signals: list[SignalConnection] | None = None,
+    **props: Any,
+) -> Node:
+    return Node(
+        name=name,
+        type="Sprite2D",
+        props=props,
+        children=children or [],
+        script=script,
+        signals=signals or [],
+    )
+
+
 def Label(
     name: str,
     *,

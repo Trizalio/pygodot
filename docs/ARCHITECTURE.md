@@ -39,7 +39,8 @@ Current public concepts include:
 - `Game`;
 - `Scene`;
 - `Node` and `node(...)`;
-- node constructors: `Node2D`, `Control`, `ColorRect`, `Label`, `Button`;
+- node constructors: `Node2D`, `Control`, `ColorRect`, `Sprite2D`,
+  `Label`, `Button`;
 - `Script` and `Script.reference(...)`;
 - `signal(...)`;
 - `InputAction` through `Game.add_input_action(...)`;
@@ -61,6 +62,7 @@ Responsibilities:
 - collect external resources;
 - compute stable resource IDs;
 - carry project-level input actions;
+- carry project-level window settings;
 - prepare emitter-friendly objects.
 
 Validation should not mutate public DSL objects.
@@ -100,6 +102,8 @@ the build layer.
 ## Build layer
 
 `Game.build()` writes a generated Godot project under `build_dir`.
+It also copies existing source-owned external resources from `source_root` to
+matching `res://` paths under `build_dir`.
 
 Current build output:
 

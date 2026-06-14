@@ -13,7 +13,7 @@ Implemented:
 - library-first `Game` API with `build()`, `run()`, and `check_run()`;
 - public scene/node/script DSL;
 - generic `node(...)` helper and selected node constructors: `Node2D`,
-  `Control`, `ColorRect`, `Label`, `Button`;
+  `Control`, `ColorRect`, `Sprite2D`, `Label`, `Button`;
 - typed value wrappers: `Vec2`, `Vec3`, `Rect2`, `Color`, `NodePath`;
 - external resources through `ext_resource(...)`, `texture(...)`, and
   `packed_scene(...)`;
@@ -26,7 +26,8 @@ Implemented:
 - deterministic snapshot tests;
 - `examples/minimal`;
 - a playable two-scene `examples/pong`;
-- a draw-based `examples/snake`.
+- a draw-based `examples/snake`;
+- a source-asset `examples/resources`.
 
 ## Next: script templates
 
@@ -38,15 +39,17 @@ examples. Larger examples may need a little more ergonomics:
 
 This is still not Python-to-GDScript transpilation.
 
-## Later: richer resources
+## Next: richer examples
 
-Delay complex Godot resources until an example needs them.
+Pick the next small playable or visual example, then add only the Godot surface
+that example needs.
 
 Likely candidates:
 
 - `Timer`;
 - scene instancing through `PackedScene`;
 - shape resources for physics examples;
+- simple audio or font resources;
 - Godot-assisted emission for resources that are brittle to write by hand.
 
 ## Non-goals for the near term

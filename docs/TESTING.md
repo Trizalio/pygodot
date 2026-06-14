@@ -36,6 +36,7 @@ Current snapshots cover:
 - generated Pong script.
 - Snake scene;
 - generated Snake script.
+- resources scene with copied texture resource.
 
 Snapshot tests protect:
 
