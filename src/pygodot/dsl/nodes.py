@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
+from pygodot.dsl.animation import Animation
 from pygodot.dsl.resources import ExternalResource
 from pygodot.dsl.script import Script
 from pygodot.dsl.signal import SignalConnection
@@ -19,6 +20,7 @@ class Node:
     script: Script | None = None
     signals: list[SignalConnection] = field(default_factory=list)
     instance: ExternalResource | None = None
+    animations: list[Animation] = field(default_factory=list)
 
     def add(self, *children: "Node") -> "Node":
         self.children.extend(children)
@@ -207,4 +209,24 @@ def AudioStreamPlayer(
         children=children or [],
         script=script,
         signals=signals or [],
+    )
+
+
+def AnimationPlayer(
+    name: str,
+    *,
+    animations: list[Animation] | None = None,
+    children: list[Node] | None = None,
+    script: Script | None = None,
+    signals: list[SignalConnection] | None = None,
+    **props: Any,
+) -> Node:
+    return Node(
+        name=name,
+        type="AnimationPlayer",
+        props=props,
+        children=children or [],
+        script=script,
+        signals=signals or [],
+        animations=animations or [],
     )

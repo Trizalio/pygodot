@@ -21,6 +21,7 @@ Current public concepts:
 - `Script`;
 - `SignalConnection`;
 - `InputAction`;
+- `Animation`;
 - Godot value wrappers;
 - external resource references;
 - scene instances.
@@ -35,6 +36,7 @@ Node constructors/helpers:
 - `Label`;
 - `Button`;
 - `Timer`;
+- `AnimationPlayer`;
 - `AudioStreamPlayer`.
 
 ## Example Scene
@@ -103,6 +105,7 @@ Sprite2D("Logo", texture=texture("res://assets/logo.svg"))
 Label("Title", text="Hello")
 Button("Start", text="Start")
 Timer("PulseTimer", wait_time=0.5, autostart=True)
+AnimationPlayer("Animator", autoplay="pulse", animations=[pulse_animation])
 AudioStreamPlayer("Player", stream=audio_stream("res://assets/tone.wav"))
 ```
 
@@ -158,6 +161,33 @@ Node2D(
 
 `scene_instance(...)` expects a `PackedScene` resource, normally created with
 `packed_scene(...)`.
+
+## Animations
+
+Generated `AnimationPlayer` nodes can contain value-track animations:
+
+```python
+pulse_animation = animation(
+    "pulse",
+    length=1.2,
+    loop=True,
+    tracks=[
+        value_track(
+            "Pulse:scale",
+            keys=[
+                key(0.0, Vec2(1, 1)),
+                key(0.6, Vec2(1.35, 1.35)),
+                key(1.2, Vec2(1, 1)),
+            ],
+        ),
+    ],
+)
+
+AnimationPlayer("Animator", autoplay="pulse", animations=[pulse_animation])
+```
+
+The current animation DSL is intentionally narrow: generated `Animation` and
+`AnimationLibrary` sub-resources, value tracks, and explicit keyframes.
 
 ## Signals
 

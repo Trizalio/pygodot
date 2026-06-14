@@ -1,8 +1,17 @@
 """Public DSL objects."""
 
+from pygodot.dsl.animation import (
+    Animation,
+    AnimationKey,
+    ValueTrack,
+    animation,
+    key,
+    value_track,
+)
 from pygodot.dsl.input import InputAction
 from pygodot.dsl.nodes import (
     AudioStreamPlayer,
+    AnimationPlayer,
     Button,
     ColorRect,
     Control,
@@ -30,6 +39,9 @@ from pygodot.dsl.signal import SignalConnection, signal
 from pygodot.dsl.values import Color, NodePath, Rect2, Vec2, Vec3
 
 __all__ = [
+    "Animation",
+    "AnimationKey",
+    "AnimationPlayer",
     "AudioStreamPlayer",
     "Button",
     "Color",
@@ -47,16 +59,20 @@ __all__ = [
     "SignalConnection",
     "Sprite2D",
     "Timer",
+    "ValueTrack",
     "Vec2",
     "Vec3",
     "WindowSettings",
     "audio_stream",
+    "animation",
     "ext_resource",
     "external_resource",
     "font",
+    "key",
     "node",
     "packed_scene",
     "scene_instance",
     "signal",
     "texture",
+    "value_track",
 ]

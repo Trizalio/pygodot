@@ -37,6 +37,28 @@ class IRExternalResourceRef:
 
 
 @dataclass(slots=True, frozen=True)
+class IRSubResourceRef:
+    resource_id: str
+
+
+@dataclass(slots=True, frozen=True)
+class IRStringName:
+    value: str
+
+
+@dataclass(slots=True, frozen=True)
+class IRPackedFloat32Array:
+    values: tuple[float, ...]
+
+
+@dataclass(slots=True, frozen=True)
+class IRSubResource:
+    type: str
+    id: str
+    props: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass(slots=True, frozen=True)
 class IRNode:
     name: str
     type: str
@@ -54,6 +76,7 @@ class IRScene:
     path: str
     root: IRNode
     external_resources: tuple[IRExternalResource, ...] = ()
+    sub_resources: tuple[IRSubResource, ...] = ()
 
 
 @dataclass(slots=True, frozen=True)

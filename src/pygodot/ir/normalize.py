@@ -15,10 +15,14 @@ from pygodot.ir.model import (
     IRExternalResourceRef,
     IRInputAction,
     IRNode,
+    IRPackedFloat32Array,
     IRProject,
     IRScene,
     IRScript,
     IRSignalConnection,
+    IRStringName,
+    IRSubResource,
+    IRSubResourceRef,
     IRWindowSettings,
 )
 from pygodot.input_keys import normalize_key_name
@@ -26,16 +30,19 @@ from pygodot.input_keys import normalize_key_name
 
 def normalize_scene(scene: Scene) -> IRScene:
     resources: dict[tuple[str, str], IRExternalResource] = {}
+    sub_resources: dict[str, IRSubResource] = {}
     root = _normalize_node(
         scene.root,
         node_path=".",
         parent_path=None,
         resources=resources,
+        sub_resources=sub_resources,
     )
     return IRScene(
         path=scene.path,
         root=root,
         external_resources=tuple(resources[key] for key in sorted(resources)),
+        sub_resources=tuple(sub_resources.values()),
     )
 
 
@@ -75,8 +82,11 @@ def _normalize_node(
     node_path: str,
     parent_path: str | None,
     resources: dict[tuple[str, str], IRExternalResource],
+    sub_resources: dict[str, IRSubResource],
 ) -> IRNode:
     script = _normalize_script(node.script, resources)
+    props = {key: _normalize_value(value, resources) for key, value in node.props.items()}
+    props.update(_normalize_animation_libraries(node, sub_resources))
     signals = tuple(
         IRSignalConnection(
             signal=conn.signal,
@@ -92,6 +102,7 @@ def _normalize_node(
             node_path=child.name if node_path == "." else f"{node_path}/{child.name}",
             parent_path=_child_parent_path(node, parent_path),
             resources=resources,
+            sub_resources=sub_resources,
         )
         for child in node.children
     )
@@ -100,12 +111,59 @@ def _normalize_node(
         type=node.type,
         path=node_path,
         parent_path=parent_path,
-        props={key: _normalize_value(value, resources) for key, value in node.props.items()},
+        props=props,
         children=children,
         script=script,
         signals=signals,
         instance=_normalize_instance(node.instance, resources),
     )
+
+
+def _normalize_animation_libraries(
+    node: Node,
+    sub_resources: dict[str, IRSubResource],
+) -> dict[str, Any]:
+    if not node.animations:
+        return {}
+
+    library_data: dict[IRStringName, IRSubResourceRef] = {}
+    for anim in node.animations:
+        animation_id = resource_id_for_path(f"{node.name}_{anim.name}", prefix="Animation")
+        track_props: dict[str, Any] = {}
+        for index, track in enumerate(anim.tracks):
+            track_props[f"tracks/{index}/type"] = "value"
+            track_props[f"tracks/{index}/imported"] = False
+            track_props[f"tracks/{index}/enabled"] = True
+            track_props[f"tracks/{index}/path"] = track.path
+            track_props[f"tracks/{index}/interp"] = track.interp
+            track_props[f"tracks/{index}/loop_wrap"] = track.loop_wrap
+            track_props[f"tracks/{index}/keys"] = {
+                "times": IRPackedFloat32Array(tuple(key.time for key in track.keys)),
+                "transitions": IRPackedFloat32Array(tuple(key.transition for key in track.keys)),
+                "update": track.update,
+                "values": [_normalize_value(key.value, {}) for key in track.keys],
+            }
+
+        sub_resources[animation_id] = IRSubResource(
+            type="Animation",
+            id=animation_id,
+            props={
+                "resource_name": anim.name,
+                "length": anim.length,
+                "loop_mode": 1 if anim.loop else 0,
+                "step": 0.1,
+                **track_props,
+            },
+        )
+        library_data[IRStringName(anim.name)] = IRSubResourceRef(animation_id)
+
+    library_id = resource_id_for_path(node.name, prefix="AnimationLibrary")
+    sub_resources[library_id] = IRSubResource(
+        type="AnimationLibrary",
+        id=library_id,
+        props={"_data": library_data},
+    )
+    return {"libraries": {IRStringName(""): IRSubResourceRef(library_id)}}
 
 
 def _normalize_script(

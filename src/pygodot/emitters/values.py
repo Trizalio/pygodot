@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from pygodot.dsl.values import Color, NodePath, Rect2, Vec2, Vec3
-from pygodot.ir.model import IRExternalResourceRef
+from pygodot.ir.model import IRExternalResourceRef, IRPackedFloat32Array, IRStringName, IRSubResourceRef
 
 
 def gd_string(value: str) -> str:
@@ -15,6 +15,15 @@ def gd_string(value: str) -> str:
 def gd_value(value: Any) -> str:
     if isinstance(value, IRExternalResourceRef):
         return f"ExtResource({gd_string(value.resource_id)})"
+
+    if isinstance(value, IRSubResourceRef):
+        return f"SubResource({gd_string(value.resource_id)})"
+
+    if isinstance(value, IRStringName):
+        return "&" + gd_string(value.value)
+
+    if isinstance(value, IRPackedFloat32Array):
+        return "PackedFloat32Array(" + ", ".join(gd_value(item) for item in value.values) + ")"
 
     if isinstance(value, str):
         return gd_string(value)

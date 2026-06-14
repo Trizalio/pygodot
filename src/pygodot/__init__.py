@@ -1,6 +1,9 @@
 """Public package surface for pygodot."""
 
 from pygodot.dsl import (
+    Animation,
+    AnimationKey,
+    AnimationPlayer,
     AudioStreamPlayer,
     Button,
     Color,
@@ -18,23 +21,30 @@ from pygodot.dsl import (
     SignalConnection,
     Sprite2D,
     Timer,
+    ValueTrack,
     Vec2,
     Vec3,
     WindowSettings,
     audio_stream,
+    animation,
     ext_resource,
     external_resource,
     font,
+    key,
     node,
     packed_scene,
     scene_instance,
     signal,
     texture,
+    value_track,
 )
 from pygodot.game import BuildResult, Game
 from pygodot.godot_cli import GodotRunResult
 
 __all__ = [
+    "Animation",
+    "AnimationKey",
+    "AnimationPlayer",
     "AudioStreamPlayer",
     "BuildResult",
     "Button",
@@ -55,16 +65,20 @@ __all__ = [
     "SignalConnection",
     "Sprite2D",
     "Timer",
+    "ValueTrack",
     "Vec2",
     "Vec3",
     "WindowSettings",
     "audio_stream",
+    "animation",
     "ext_resource",
     "external_resource",
     "font",
+    "key",
     "node",
     "packed_scene",
     "scene_instance",
     "signal",
     "texture",
+    "value_track",
 ]

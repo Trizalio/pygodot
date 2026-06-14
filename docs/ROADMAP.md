@@ -14,11 +14,12 @@ Implemented:
 - public scene/node/script DSL;
 - generic `node(...)` helper and selected node constructors: `Node2D`,
   `Control`, `ColorRect`, `Sprite2D`, `Label`, `Button`, `Timer`,
-  `AudioStreamPlayer`;
+  `AnimationPlayer`, `AudioStreamPlayer`;
 - typed value wrappers: `Vec2`, `Vec3`, `Rect2`, `Color`, `NodePath`;
 - external resources through `ext_resource(...)`, `texture(...)`,
   `audio_stream(...)`, `font(...)`, and `packed_scene(...)`;
 - scene instances through `scene_instance(...)`;
+- generated value-track animations through `animation(...)`;
 - generated, file-backed, and referenced GDScript;
 - direct `.tscn`, `.gd`, and `project.godot` emitters;
 - keyboard-only InputMap generation;
@@ -33,7 +34,8 @@ Implemented:
 - a generated PackedScene instancing `examples/instancing`;
 - a signal-connected timer `examples/timer`;
 - an audio resource `examples/audio`;
-- a font resource `examples/font`.
+- a font resource `examples/font`;
+- a generated AnimationPlayer `examples/animation`.
 
 ## Next: script templates
 
@@ -53,7 +55,7 @@ that example needs.
 Likely candidates:
 
 - shape resources for physics examples;
-- Godot-assisted emission for resources that are brittle to write by hand.
+- direct or Godot-assisted `.tres` resources that examples justify.
 
 ## Non-goals for the near term
 

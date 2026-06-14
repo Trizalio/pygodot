@@ -9,6 +9,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from pygodot import (
+    AnimationPlayer,
     AudioStreamPlayer,
     Button,
     Color,
@@ -29,12 +30,15 @@ from pygodot import (
     Vec3,
     WindowSettings,
     audio_stream,
+    animation,
     ext_resource,
     font,
+    key,
     signal,
     node,
     scene_instance,
     texture,
+    value_track,
 )
 from pygodot.emitters.gdscript import GdScriptEmitter
 from pygodot.emitters.project import ProjectEmitter
@@ -80,6 +84,28 @@ def make_scene() -> Scene:
 
 
 class DslNodeTests(unittest.TestCase):
+    def test_animation_player_constructor_creates_animation_player_node(self) -> None:
+        pulse = animation(
+            "pulse",
+            length=1.0,
+            loop=True,
+            tracks=[
+                value_track(
+                    "Target:scale",
+                    keys=[
+                        key(0.0, Vec2(1, 1)),
+                        key(1.0, Vec2(2, 2)),
+                    ],
+                )
+            ],
+        )
+        player = AnimationPlayer("Animator", autoplay="pulse", animations=[pulse])
+
+        self.assertEqual(player.name, "Animator")
+        self.assertEqual(player.type, "AnimationPlayer")
+        self.assertEqual(player.props, {"autoplay": "pulse"})
+        self.assertEqual(player.animations, [pulse])
+
     def test_audio_stream_player_constructor_creates_audio_node(self) -> None:
         player = AudioStreamPlayer(
             "Player",
@@ -457,6 +483,15 @@ text = "Click me"
 
         self.assert_matches_snapshot(
             "font_scene.tscn",
+            TscnEmitter().emit(normalize_scene(scene)),
+        )
+
+    def test_animation_scene_file_snapshot(self) -> None:
+        animation_example = _load_example_game("animation")
+        scene = animation_example.game.scenes[0]
+
+        self.assert_matches_snapshot(
+            "animation_scene.tscn",
             TscnEmitter().emit(normalize_scene(scene)),
         )
 
@@ -1310,6 +1345,30 @@ func _ready() -> void:
                     }
                 ],
             )
+
+    def test_animation_example_builds_animation_player_subresources(self) -> None:
+        animation_example = _load_example_game("animation")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            build_dir = Path(tmp) / "godot_project"
+            animation_example.game.build_dir = build_dir
+
+            result = animation_example.game.build()
+
+            self.assertEqual(
+                sorted(path.relative_to(build_dir).as_posix() for path in result.written_files),
+                [".pygodot/manifest.json", "project.godot", "scenes/main.tscn"],
+            )
+
+            scene_text = (build_dir / "scenes" / "main.tscn").read_text(encoding="utf-8")
+            self.assertIn('[sub_resource type="Animation" id="Animation_Animator_pulse"]', scene_text)
+            self.assertIn(
+                '[sub_resource type="AnimationLibrary" id="AnimationLibrary_Animator"]',
+                scene_text,
+            )
+            self.assertIn('[node name="Animator" type="AnimationPlayer" parent="."]', scene_text)
+            self.assertIn('autoplay = "pulse"', scene_text)
+            self.assertIn('libraries = {&"": SubResource("AnimationLibrary_Animator")}', scene_text)
 
 
 def _read_generated_files(build_dir: Path) -> dict[str, str]:

@@ -41,6 +41,7 @@ Current snapshots cover:
 - timer scene/script with a built-in `timeout` signal connection.
 - audio scene/script with a copied `AudioStream` resource.
 - font scene with a copied `Font` resource.
+- animation scene with generated `Animation` and `AnimationLibrary` sub-resources.
 
 Snapshot tests protect:
 

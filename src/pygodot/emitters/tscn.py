@@ -13,8 +13,8 @@ class TscnEmitter:
     def emit(self, scene: IRScene) -> str:
         lines: list[str] = []
 
-        load_steps = len(scene.external_resources) + 1
-        if scene.external_resources:
+        load_steps = len(scene.external_resources) + len(scene.sub_resources) + 1
+        if scene.external_resources or scene.sub_resources:
             lines.append(f"[gd_scene load_steps={load_steps} format=3]")
         else:
             lines.append("[gd_scene format=3]")
@@ -27,7 +27,14 @@ class TscnEmitter:
                 f"id={gd_string(resource.id)}]"
             )
 
-        if scene.external_resources:
+        for resource in scene.sub_resources:
+            if lines[-1] != "":
+                lines.append("")
+            lines.append(f"[sub_resource type={gd_string(resource.type)} id={gd_string(resource.id)}]")
+            for key in resource.props:
+                lines.append(f"{key} = {gd_value(resource.props[key])}")
+
+        if scene.external_resources or scene.sub_resources:
             lines.append("")
 
         self._emit_node(lines, scene.root)

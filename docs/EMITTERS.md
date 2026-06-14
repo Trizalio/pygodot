@@ -22,6 +22,7 @@ The direct `.tscn` emitter supports:
 
 - `[gd_scene format=3]` headers;
 - `[ext_resource ...]` entries for scripts and external resources;
+- `[sub_resource ...]` entries for generated animations;
 - `[node ...]` sections;
 - scene instance nodes with `instance=ExtResource(...)`;
 - node properties;
@@ -62,6 +63,7 @@ Supported values include:
 - two- and three-item tuples as temporary Vector2/Vector3 convenience;
 - lists and dictionaries of supported values;
 - normalized external resource references.
+- normalized sub-resource references and StringName keys used by animations.
 
 Prefer explicit value wrappers in new examples.
 
@@ -113,5 +115,4 @@ Manual scripts are referenced with `Script.reference(...)` and are not emitted.
 
 Direct text emission is enough for current simple scenes. Add a Godot-assisted
 emitter later only for resources that are brittle to write by hand, such as
-AnimationPlayer data, TileSets, Themes, ShaderMaterials, complex Mesh data, or
-imported resources.
+TileSets, Themes, ShaderMaterials, complex Mesh data, or imported resources.
