@@ -1,0 +1,96 @@
+# API Surface Policy
+
+This document describes when `pygodot` should grow its public Python API.
+
+The project should stay explicit, typed where useful, and example-driven. A
+small public surface is easier to document, test, and keep stable than a broad
+wrapper for all of Godot.
+
+## Public API
+
+Public API is anything users are expected to import from `pygodot` or
+`pygodot.dsl`, including:
+
+- `Game`, `Scene`, `Script`, and public DSL dataclasses;
+- node constructors such as `Node2D`, `Label`, `Timer`, and `Area2D`;
+- resource helpers such as `texture(...)`, `packed_scene(...)`, and
+  `rectangle_shape_2d(...)`;
+- value wrappers such as `Vec2`, `Color`, and `NodePath`;
+- functions exported from `pygodot.__init__` or `pygodot.dsl.__init__`.
+
+Public API must be kept backward-compatible unless the user explicitly approves
+a breaking change.
+
+## Internal API
+
+Internal API includes modules that implement normalization, validation,
+emission, file writing, and Godot CLI integration:
+
+- `pygodot.ir.*`;
+- `pygodot.emitters.*`;
+- private helper functions;
+- build-manifest implementation details;
+- test helpers under `tests/`.
+
+Internal APIs may change when needed, but generated output should remain
+deterministic and covered by tests.
+
+## Adding Convenience Helpers
+
+Add a new public helper or constructor only when all of these are true:
+
+1. A concrete example or test needs it.
+2. It improves ergonomics over `node(...)` or an existing generic helper.
+3. It is exported from both `pygodot.dsl.__init__` and `pygodot.__init__`.
+4. It has direct unit coverage.
+5. Its generated output has a snapshot or build assertion when applicable.
+6. The relevant docs mention the new surface.
+
+Good candidates are common Godot concepts that appear repeatedly in examples,
+such as `Timer`, `Area2D`, or a narrow resource helper.
+
+## Using `node(...)`
+
+Use generic `node(name, type, ...)` when a Godot class is uncommon, appears in
+only one local experiment, or does not need special typing or behavior.
+
+Prefer `node(...)` for:
+
+- one-off Godot node classes;
+- exploratory examples;
+- nodes whose only benefit would be avoiding the `type` string;
+- broad Godot API coverage without a specific example-backed reason.
+
+If a `node(...)` use becomes repeated or awkward in real examples, it can
+graduate into a convenience constructor later.
+
+## Required Tests
+
+New public API must have tests appropriate to its behavior:
+
+- constructor/helper tests for public DSL objects;
+- normalization tests when the helper maps to IR resources or references;
+- emitter snapshots for deterministic generated text;
+- example build tests when an example depends on the new surface.
+
+Ordinary unit tests must not require a Godot binary. Real Godot checks should
+remain optional smoke tests.
+
+## Example-Backed Surface
+
+Examples justify API growth. Add only the Godot surface needed by the current
+example or milestone, then stop.
+
+Do not add adjacent helpers merely because they are similar. For example, a
+`CircleShape2D` milestone may justify `circle_shape_2d(...)`, but not a full
+physics resource hierarchy.
+
+## Non-Goals
+
+The public API must not become:
+
+- a generated wrapper for the entire Godot API;
+- a metaclass or context-manager DSL;
+- a Python runtime inside Godot;
+- a Python-to-GDScript transpiler;
+- a broad resource system before examples require it.

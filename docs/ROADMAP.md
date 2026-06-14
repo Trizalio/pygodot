@@ -12,6 +12,7 @@ Implemented:
 
 - library-first `Game` API with `build()`, `run()`, and `check_run()`;
 - public scene/node/script DSL;
+- documented public API surface policy in `docs/API_SURFACE_POLICY.md`;
 - generic `node(...)` helper and selected node constructors: `Node2D`,
   `Control`, `ColorRect`, `Sprite2D`, `Label`, `Button`, `Timer`,
   `AnimationPlayer`, `AudioStreamPlayer`, `Area2D`, `CollisionShape2D`;
