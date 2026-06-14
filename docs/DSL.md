@@ -129,6 +129,11 @@ External resources are referenced explicitly:
 ```python
 Sprite2D("Logo", texture=texture("res://assets/logo.svg"))
 AudioStreamPlayer("Player", stream=audio_stream("res://assets/tone.wav"))
+Node(
+    name="Title",
+    type="Label",
+    props={"theme_override_fonts/font": font("res://assets/display_font.tres")},
+)
 Node2D("Other", resource=ext_resource("res://assets/data.tres", type="Resource"))
 ```
 

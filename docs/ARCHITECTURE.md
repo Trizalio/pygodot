@@ -46,7 +46,7 @@ Current public concepts include:
 - `InputAction` through `Game.add_input_action(...)`;
 - values: `Vec2`, `Vec3`, `Rect2`, `Color`, `NodePath`;
 - external resources: `ext_resource(...)`, `texture(...)`,
-  `audio_stream(...)`, `packed_scene(...)`;
+  `audio_stream(...)`, `font(...)`, `packed_scene(...)`;
 - scene instances: `scene_instance(...)`.
 
 The DSL should stay explicit and boring. Avoid hidden global scene stacks,

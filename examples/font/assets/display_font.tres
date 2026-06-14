@@ -1,0 +1,6 @@
+[gd_resource type="FontVariation" format=3]
+
+[resource]
+variation_embolden = 0.8
+spacing_glyph = 2
+spacing_space = 8

@@ -19,6 +19,7 @@ from pygodot.dsl.resources import (
     audio_stream,
     ext_resource,
     external_resource,
+    font,
     packed_scene,
     texture,
 )
@@ -52,6 +53,7 @@ __all__ = [
     "audio_stream",
     "ext_resource",
     "external_resource",
+    "font",
     "node",
     "packed_scene",
     "scene_instance",

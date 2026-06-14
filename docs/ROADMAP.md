@@ -17,7 +17,7 @@ Implemented:
   `AudioStreamPlayer`;
 - typed value wrappers: `Vec2`, `Vec3`, `Rect2`, `Color`, `NodePath`;
 - external resources through `ext_resource(...)`, `texture(...)`,
-  `audio_stream(...)`, and `packed_scene(...)`;
+  `audio_stream(...)`, `font(...)`, and `packed_scene(...)`;
 - scene instances through `scene_instance(...)`;
 - generated, file-backed, and referenced GDScript;
 - direct `.tscn`, `.gd`, and `project.godot` emitters;
@@ -32,7 +32,8 @@ Implemented:
 - a source-asset `examples/resources`;
 - a generated PackedScene instancing `examples/instancing`;
 - a signal-connected timer `examples/timer`;
-- an audio resource `examples/audio`.
+- an audio resource `examples/audio`;
+- a font resource `examples/font`.
 
 ## Next: script templates
 
@@ -52,7 +53,6 @@ that example needs.
 Likely candidates:
 
 - shape resources for physics examples;
-- font resources;
 - Godot-assisted emission for resources that are brittle to write by hand.
 
 ## Non-goals for the near term

@@ -40,6 +40,7 @@ Current snapshots cover:
 - instancing scenes with a generated `PackedScene` resource.
 - timer scene/script with a built-in `timeout` signal connection.
 - audio scene/script with a copied `AudioStream` resource.
+- font scene with a copied `Font` resource.
 
 Snapshot tests protect:
 

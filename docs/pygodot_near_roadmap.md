@@ -14,10 +14,12 @@ The repository currently has:
 - a generated PackedScene instancing example under `examples/instancing`;
 - a signal-connected timer example under `examples/timer`;
 - an audio resource example under `examples/audio`;
+- a font resource example under `examples/font`;
 - generated GDScript gameplay;
 - generated script bodies from source `.gd` files;
 - external texture resources copied from `source_root`;
 - external audio stream resources copied from `source_root`;
+- external font resources copied from `source_root`;
 - scene instances through `scene_instance(...)`;
 - built-in Timer node signals;
 - keyboard-only InputMap DSL;
@@ -29,4 +31,5 @@ The repository currently has:
 ## Next - Next Example
 
 Pick the next example first, then add only the Godot surface that example needs.
-Good candidates are font resources, animation, or a tiny physics example.
+Good candidates are animation, a tiny physics example, or direct `.tres`
+resource emission.

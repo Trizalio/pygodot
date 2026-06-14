@@ -30,6 +30,7 @@ from pygodot import (
     WindowSettings,
     audio_stream,
     ext_resource,
+    font,
     signal,
     node,
     scene_instance,
@@ -450,6 +451,15 @@ text = "Click me"
             _build_example_script(audio.game, "scripts/main.gd"),
         )
 
+    def test_font_scene_file_snapshot(self) -> None:
+        font_example = _load_example_game("font")
+        scene = font_example.game.scenes[0]
+
+        self.assert_matches_snapshot(
+            "font_scene.tscn",
+            TscnEmitter().emit(normalize_scene(scene)),
+        )
+
     def test_tscn_emitter_snapshot_with_external_resource_property(self) -> None:
         scene = normalize_scene(
             Scene(
@@ -541,6 +551,7 @@ script = ExtResource("Script_manual_player_gd")
                 root=Node2D(
                     "Main",
                     sound=audio_stream("res://assets/tone.wav"),
+                    display_font=font("res://assets/display_font.tres"),
                     icon=texture("res://assets/icon.svg"),
                     next_scene=packed_scene("res://scenes/menu.tscn"),
                 ),
@@ -551,6 +562,7 @@ script = ExtResource("Script_manual_player_gd")
             [(resource.type, resource.path, resource.id) for resource in scene.external_resources],
             [
                 ("AudioStream", "res://assets/tone.wav", "AudioStream_assets_tone_wav"),
+                ("Font", "res://assets/display_font.tres", "Font_assets_display_font_tres"),
                 ("PackedScene", "res://scenes/menu.tscn", "PackedScene_scenes_menu_tscn"),
                 ("Texture2D", "res://assets/icon.svg", "Texture2D_assets_icon_svg"),
             ],
@@ -1245,6 +1257,42 @@ func _ready() -> void:
                         "path": "res://scripts/main.gd",
                         "type": "Script",
                     },
+                ],
+            )
+
+    def test_font_example_builds_label_and_copies_font_resource(self) -> None:
+        font_example = _load_example_game("font")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            build_dir = Path(tmp) / "godot_project"
+            font_example.game.build_dir = build_dir
+
+            result = font_example.game.build()
+
+            copied_font = build_dir / "assets" / "display_font.tres"
+            self.assertEqual(result.copied_resources, [copied_font])
+            self.assertEqual(
+                sorted(path.relative_to(build_dir).as_posix() for path in result.written_files),
+                [".pygodot/manifest.json", "project.godot", "scenes/main.tscn"],
+            )
+            self.assertTrue(copied_font.exists())
+
+            scene_text = (build_dir / "scenes" / "main.tscn").read_text(encoding="utf-8")
+            self.assertIn('[node name="Title" type="Label" parent="."]', scene_text)
+            self.assertIn('path="res://assets/display_font.tres"', scene_text)
+            self.assertIn('theme_override_fonts/font = ExtResource("Font_assets_display_font_tres")', scene_text)
+            self.assertIn("theme_override_font_sizes/font_size = 34", scene_text)
+
+            manifest = json.loads((build_dir / ".pygodot" / "manifest.json").read_text(encoding="utf-8"))
+            self.assertEqual(
+                manifest["external_resources"],
+                [
+                    {
+                        "copied": True,
+                        "id": "Font_assets_display_font_tres",
+                        "path": "res://assets/display_font.tres",
+                        "type": "Font",
+                    }
                 ],
             )
 

@@ -1,0 +1,21 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Font" path="res://assets/display_font.tres" id="Font_assets_display_font_tres"]
+
+[node name="Main" type="Node2D"]
+
+[node name="Background" type="ColorRect" parent="."]
+color = Color(0.04, 0.05, 0.08, 1.0)
+position = Vector2(0, 0)
+size = Vector2(640, 360)
+
+[node name="Title" type="Label" parent="."]
+position = Vector2(126, 120)
+text = "Font resource override"
+theme_override_colors/font_color = Color(1.0, 0.86, 0.38, 1.0)
+theme_override_font_sizes/font_size = 34
+theme_override_fonts/font = ExtResource("Font_assets_display_font_tres")
+
+[node name="Caption" type="Label" parent="."]
+position = Vector2(150, 205)
+text = "FontVariation .tres copied from source_root/assets"
