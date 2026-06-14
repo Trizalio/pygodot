@@ -16,6 +16,7 @@ from pygodot import (
     texture,
 )
 from pygodot.errors import ValidationError
+from pygodot.ir.model import IRNode, IRScene, IRSubResource
 from pygodot.ir.normalize import normalize_project, normalize_scene
 from pygodot.ir.validate import validate_project, validate_scene
 from tests.helpers import make_scene
@@ -147,3 +148,22 @@ class ValidationTests(unittest.TestCase):
 
         with self.assertRaisesRegex(ValidationError, "either body or source"):
             validate_scene(normalize_scene(scene))
+
+    def test_sub_resource_props_are_validated(self) -> None:
+        scene = IRScene(
+            path="res://scenes/main.tscn",
+            root=IRNode(name="Main", type="Node2D", path=".", parent_path=None),
+            sub_resources=(
+                IRSubResource(
+                    type="RectangleShape2D",
+                    id="RectangleShape2D_bad",
+                    props={"metadata": object()},
+                ),
+            ),
+        )
+
+        with self.assertRaisesRegex(
+            ValidationError,
+            "Unsupported value for sub-resource 'RectangleShape2D_bad' property 'metadata'",
+        ):
+            validate_scene(scene)

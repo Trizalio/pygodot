@@ -48,9 +48,10 @@ Current public concepts include:
 - values: `Vec2`, `Vec3`, `Rect2`, `Color`, `NodePath`;
 - external resources: `ext_resource(...)`, `texture(...)`,
   `audio_stream(...)`, `font(...)`, `packed_scene(...)`;
-- scene instances: `scene_instance(...)`.
-- animations: `animation(...)`, `value_track(...)`, `key(...)`.
-- shape resources: `rectangle_shape_2d(...)`.
+- scene instances: `scene_instance(...)`;
+- animations: `animation(...)`, `value_track(...)`, `key(...)`;
+- generated sub-resources: `sub_resource(...)`, `rectangle_shape_2d(...)`,
+  `circle_shape_2d(...)`.
 
 The DSL should stay explicit and boring. Avoid hidden global scene stacks,
 metaclass-heavy APIs, and mandatory context managers.
@@ -65,7 +66,7 @@ Responsibilities:
 - normalize property values;
 - normalize scene instance resources;
 - normalize animation sub-resources;
-- normalize generated shape sub-resources;
+- normalize generated sub-resources;
 - collect external resources;
 - compute stable resource IDs;
 - carry project-level input actions;

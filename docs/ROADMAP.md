@@ -21,7 +21,9 @@ Implemented:
   `audio_stream(...)`, `font(...)`, and `packed_scene(...)`;
 - scene instances through `scene_instance(...)`;
 - generated value-track animations through `animation(...)`;
-- generated `RectangleShape2D` resources through `rectangle_shape_2d(...)`;
+- generic generated scene sub-resources through `sub_resource(...)`;
+- generated shape resources through `rectangle_shape_2d(...)` and
+  `circle_shape_2d(...)`;
 - generated, file-backed, and referenced GDScript;
 - direct `.tscn`, `.gd`, and `project.godot` emitters;
 - keyboard-only InputMap generation;

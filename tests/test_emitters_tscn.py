@@ -2,7 +2,16 @@ from __future__ import annotations
 
 import unittest
 
-from pygodot import Node2D, Rect2, Scene, Script, ext_resource
+from pygodot import (
+    CollisionShape2D,
+    Node2D,
+    Rect2,
+    Scene,
+    Script,
+    circle_shape_2d,
+    ext_resource,
+    sub_resource,
+)
 from pygodot.emitters.tscn import TscnEmitter
 from pygodot.ir.normalize import normalize_scene
 from tests.helpers import make_scene
@@ -98,5 +107,69 @@ region_rect = Rect2(0, 0, 16, 32)
 
 [node name="Main" type="Node2D"]
 script = ExtResource("Script_manual_player_gd")
+""",
+        )
+
+    def test_tscn_emitter_snapshot_with_circle_shape_sub_resource(self) -> None:
+        scene = normalize_scene(
+            Scene(
+                path="res://scenes/main.tscn",
+                root=Node2D(
+                    "Main",
+                    children=[
+                        CollisionShape2D(
+                            "Hitbox",
+                            shape=circle_shape_2d(radius=12),
+                        )
+                    ],
+                ),
+            )
+        )
+
+        self.assertEqual(
+            TscnEmitter().emit(scene),
+            """[gd_scene load_steps=2 format=3]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_circle_12"]
+radius = 12
+
+[node name="Main" type="Node2D"]
+
+[node name="Hitbox" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_circle_12")
+""",
+        )
+
+    def test_tscn_emitter_snapshot_with_generic_sub_resource(self) -> None:
+        scene = normalize_scene(
+            Scene(
+                path="res://scenes/main.tscn",
+                root=Node2D(
+                    "Main",
+                    children=[
+                        CollisionShape2D(
+                            "Hitbox",
+                            shape=sub_resource(
+                                "RectangleShape2D",
+                                id_hint="player_hitbox",
+                                size=(24, 32),
+                            ),
+                        )
+                    ],
+                ),
+            )
+        )
+
+        self.assertEqual(
+            TscnEmitter().emit(scene),
+            """[gd_scene load_steps=2 format=3]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_player_hitbox"]
+size = Vector2(24, 32)
+
+[node name="Main" type="Node2D"]
+
+[node name="Hitbox" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_player_hitbox")
 """,
         )

@@ -36,9 +36,15 @@ from pygodot.dsl.resources import (
 )
 from pygodot.dsl.scene import Scene
 from pygodot.dsl.settings import WindowSettings
-from pygodot.dsl.shapes import RectangleShape2D, rectangle_shape_2d
+from pygodot.dsl.shapes import (
+    CircleShape2D,
+    RectangleShape2D,
+    circle_shape_2d,
+    rectangle_shape_2d,
+)
 from pygodot.dsl.script import Script
 from pygodot.dsl.signal import SignalConnection, signal
+from pygodot.dsl.subresources import SubResource, sub_resource
 from pygodot.dsl.values import Color, NodePath, Rect2, Vec2, Vec3
 
 __all__ = [
@@ -48,6 +54,7 @@ __all__ = [
     "Area2D",
     "AudioStreamPlayer",
     "Button",
+    "CircleShape2D",
     "CollisionShape2D",
     "Color",
     "ColorRect",
@@ -64,6 +71,7 @@ __all__ = [
     "Script",
     "SignalConnection",
     "Sprite2D",
+    "SubResource",
     "Timer",
     "ValueTrack",
     "Vec2",
@@ -71,6 +79,7 @@ __all__ = [
     "WindowSettings",
     "audio_stream",
     "animation",
+    "circle_shape_2d",
     "ext_resource",
     "external_resource",
     "font",
@@ -80,6 +89,7 @@ __all__ = [
     "rectangle_shape_2d",
     "scene_instance",
     "signal",
+    "sub_resource",
     "texture",
     "value_track",
 ]

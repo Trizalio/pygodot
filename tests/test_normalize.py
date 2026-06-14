@@ -9,10 +9,12 @@ from pygodot import (
     Scene,
     Vec2,
     audio_stream,
+    circle_shape_2d,
     ext_resource,
     font,
     packed_scene,
     rectangle_shape_2d,
+    sub_resource,
     texture,
 )
 from pygodot.ir.normalize import normalize_scene
@@ -82,6 +84,82 @@ class NormalizeTests(unittest.TestCase):
         self.assertEqual(resource.id, "RectangleShape2D_rectangle_24_32")
         self.assertEqual(resource.props, {"size": Vec2(24, 32)})
         self.assertEqual(scene.root.children[0].props["shape"].resource_id, resource.id)
+
+    def test_generic_sub_resource_property_becomes_sub_resource(self) -> None:
+        scene = normalize_scene(
+            Scene(
+                path="res://scenes/main.tscn",
+                root=Node2D(
+                    "Main",
+                    children=[
+                        CollisionShape2D(
+                            "Hitbox",
+                            shape=sub_resource(
+                                "RectangleShape2D",
+                                id_hint="player_hitbox",
+                                size=Vec2(24, 32),
+                            ),
+                        )
+                    ],
+                ),
+            )
+        )
+
+        self.assertEqual(len(scene.sub_resources), 1)
+        resource = scene.sub_resources[0]
+        self.assertEqual(resource.type, "RectangleShape2D")
+        self.assertEqual(resource.id, "RectangleShape2D_player_hitbox")
+        self.assertEqual(resource.props, {"size": Vec2(24, 32)})
+        self.assertEqual(scene.root.children[0].props["shape"].resource_id, resource.id)
+
+    def test_circle_shape_property_becomes_sub_resource(self) -> None:
+        scene = normalize_scene(
+            Scene(
+                path="res://scenes/main.tscn",
+                root=Node2D(
+                    "Main",
+                    children=[
+                        CollisionShape2D(
+                            "Hitbox",
+                            shape=circle_shape_2d(radius=12),
+                        )
+                    ],
+                ),
+            )
+        )
+
+        self.assertEqual(len(scene.sub_resources), 1)
+        resource = scene.sub_resources[0]
+        self.assertEqual(resource.type, "CircleShape2D")
+        self.assertEqual(resource.id, "CircleShape2D_circle_12")
+        self.assertEqual(resource.props, {"radius": 12})
+        self.assertEqual(scene.root.children[0].props["shape"].resource_id, resource.id)
+
+    def test_sub_resources_dedupe_by_type_and_id_hint(self) -> None:
+        scene = normalize_scene(
+            Scene(
+                path="res://scenes/main.tscn",
+                root=Node2D(
+                    "Main",
+                    children=[
+                        CollisionShape2D(
+                            "First",
+                            shape=circle_shape_2d(radius=12),
+                        ),
+                        CollisionShape2D(
+                            "Second",
+                            shape=circle_shape_2d(radius=12),
+                        ),
+                    ],
+                ),
+            )
+        )
+
+        self.assertEqual(len(scene.sub_resources), 1)
+        resource_id = scene.sub_resources[0].id
+        self.assertEqual(resource_id, "CircleShape2D_circle_12")
+        self.assertEqual(scene.root.children[0].props["shape"].resource_id, resource_id)
+        self.assertEqual(scene.root.children[1].props["shape"].resource_id, resource_id)
 
     def test_external_resources_dedupe_by_type_and_path(self) -> None:
         scene = normalize_scene(

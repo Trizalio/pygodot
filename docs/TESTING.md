@@ -43,6 +43,8 @@ Current snapshots cover:
 - font scene with a copied `Font` resource.
 - animation scene with generated `Animation` and `AnimationLibrary` sub-resources.
 - physics scene/script with generated `RectangleShape2D` sub-resources.
+- emitter and normalization coverage for generic generated sub-resources and
+  `CircleShape2D`.
 
 Snapshot tests protect:
 

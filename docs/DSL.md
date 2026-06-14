@@ -22,7 +22,7 @@ Current public concepts:
 - `SignalConnection`;
 - `InputAction`;
 - `Animation`;
-- generated shape resources;
+- generated sub-resources;
 - Godot value wrappers;
 - external resource references;
 - scene instances.
@@ -166,10 +166,26 @@ Node2D(
 `scene_instance(...)` expects a `PackedScene` resource, normally created with
 `packed_scene(...)`.
 
-Generated shape resources can be attached to collision nodes:
+Simple generated scene sub-resources can be declared directly:
+
+```python
+shape = sub_resource(
+    "RectangleShape2D",
+    id_hint="player_hitbox",
+    size=Vec2(64, 64),
+)
+
+CollisionShape2D("ProbeShape", shape=shape)
+```
+
+`id_hint` is combined with the resource type to produce deterministic resource
+IDs such as `RectangleShape2D_player_hitbox`.
+
+Typed shape helpers are available for common collision shapes:
 
 ```python
 hitbox_shape = rectangle_shape_2d(size=Vec2(64, 64))
+sensor_shape = circle_shape_2d(radius=12)
 
 Area2D(
     "Probe",
@@ -180,8 +196,9 @@ Area2D(
 )
 ```
 
-The current shape DSL intentionally covers only `RectangleShape2D`, generated
-as a scene sub-resource.
+The current shape DSL intentionally covers only `RectangleShape2D` and
+`CircleShape2D`, generated as scene sub-resources. Use `sub_resource(...)` for
+other simple sub-resources before adding a new typed helper.
 
 ## Animations
 

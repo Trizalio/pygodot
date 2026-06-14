@@ -22,7 +22,8 @@ The direct `.tscn` emitter supports:
 
 - `[gd_scene format=3]` headers;
 - `[ext_resource ...]` entries for scripts and external resources;
-- `[sub_resource ...]` entries for generated animations and shape resources;
+- `[sub_resource ...]` entries for generated animations and simple generated
+  sub-resources;
 - `[node ...]` sections;
 - scene instance nodes with `instance=ExtResource(...)`;
 - node properties;
@@ -54,8 +55,7 @@ Scene instances are emitted with a `PackedScene` external resource:
 position = Vector2(220, 190)
 ```
 
-Generated shape resources are emitted as scene sub-resources and referenced by
-collision nodes:
+Generated sub-resources are emitted inside the scene and referenced by nodes:
 
 ```text
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rectangle_64_64"]
@@ -86,6 +86,7 @@ Resource IDs are deterministic and readable:
 Script_scripts_main_gd
 Texture2D_assets_player_png
 PackedScene_scenes_menu_tscn
+CircleShape2D_circle_12
 ```
 
 Avoid incremental IDs because they create noisy diffs.

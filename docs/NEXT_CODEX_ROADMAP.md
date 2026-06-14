@@ -51,7 +51,8 @@ Current implemented surface includes:
   - `packed_scene(...)`
 - Scene instances through `scene_instance(...)`.
 - Generated value-track animations through `animation(...)`.
-- Generated `RectangleShape2D` resources through `rectangle_shape_2d(...)`.
+- Generic generated scene sub-resources through `sub_resource(...)`.
+- Generated shape resources through `rectangle_shape_2d(...)` and `circle_shape_2d(...)`.
 - Generated inline scripts, file-backed generated scripts, and referenced manual scripts.
 - Direct `.tscn`, `.gd`, and `project.godot` emitters.
 - Keyboard-only InputMap generation.

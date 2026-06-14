@@ -5,7 +5,7 @@ from typing import Any
 from pygodot.emitters.values import gd_value
 from pygodot.errors import ValidationError
 from pygodot.input_keys import keycode_for
-from pygodot.ir.model import IRInputAction, IRNode, IRProject, IRScene, IRWindowSettings
+from pygodot.ir.model import IRInputAction, IRNode, IRProject, IRScene, IRSubResource, IRWindowSettings
 
 
 def validate_project(project: IRProject) -> None:
@@ -49,6 +49,27 @@ def validate_scene(scene: IRScene) -> None:
                 f"External resource id must not be empty: scene={scene.path!r}, "
                 f"resource_type={resource.type!r}, resource_path={resource.path!r}."
             )
+    for resource in scene.sub_resources:
+        _validate_sub_resource(resource, scene_path=scene.path)
+
+
+def _validate_sub_resource(resource: IRSubResource, *, scene_path: str) -> None:
+    if not resource.type:
+        raise ValidationError(
+            f"Sub-resource type must not be empty: scene={scene_path!r}, "
+            f"resource_id={resource.id!r}."
+        )
+    if not resource.id:
+        raise ValidationError(
+            f"Sub-resource id must not be empty: scene={scene_path!r}, "
+            f"resource_type={resource.type!r}."
+        )
+    for key, value in resource.props.items():
+        _validate_supported_value(
+            value,
+            value_path=f"sub-resource {resource.id!r} property {key!r}",
+            location=f"scene={scene_path!r}",
+        )
 
 
 def _validate_node(node: IRNode, *, scene_path: str) -> None:

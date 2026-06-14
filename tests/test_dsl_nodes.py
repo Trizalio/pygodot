@@ -7,6 +7,7 @@ from pygodot import (
     Area2D,
     AudioStreamPlayer,
     Button,
+    CircleShape2D,
     Color,
     ColorRect,
     CollisionShape2D,
@@ -16,16 +17,19 @@ from pygodot import (
     RectangleShape2D,
     Script,
     Sprite2D,
+    SubResource,
     Timer,
     Vec2,
     audio_stream,
     animation,
+    circle_shape_2d,
     key,
     node,
     packed_scene,
     rectangle_shape_2d,
     scene_instance,
     signal,
+    sub_resource,
     texture,
     value_track,
 )
@@ -90,6 +94,32 @@ class DslNodeTests(unittest.TestCase):
         self.assertEqual(area.props, {"position": Vec2(10, 20)})
         self.assertEqual(area.signals[0].signal, "area_entered")
         self.assertEqual(area.children, [collision])
+
+    def test_sub_resource_helpers_create_generated_resources(self) -> None:
+        generic = sub_resource(
+            "RectangleShape2D",
+            id_hint="player_hitbox",
+            size=Vec2(24, 32),
+        )
+        circle = circle_shape_2d(radius=12)
+
+        self.assertEqual(
+            generic,
+            SubResource(
+                type="RectangleShape2D",
+                id_hint="player_hitbox",
+                props={"size": Vec2(24, 32)},
+            ),
+        )
+        self.assertEqual(circle, CircleShape2D(radius=12))
+        self.assertEqual(
+            circle.as_sub_resource(),
+            SubResource(
+                type="CircleShape2D",
+                id_hint="circle_12",
+                props={"radius": 12},
+            ),
+        )
 
     def test_node_helper_creates_generic_node(self) -> None:
         script = Script(

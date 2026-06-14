@@ -9,8 +9,9 @@ from pygodot.dsl.nodes import Node
 from pygodot.dsl.resources import ExternalResource
 from pygodot.dsl.scene import Scene
 from pygodot.dsl.settings import WindowSettings
-from pygodot.dsl.shapes import RectangleShape2D
+from pygodot.dsl.shapes import CircleShape2D, RectangleShape2D
 from pygodot.dsl.script import Script
+from pygodot.dsl.subresources import SubResource
 from pygodot.ir.model import (
     IRExternalResource,
     IRExternalResourceRef,
@@ -200,10 +201,11 @@ def _normalize_value(
         resource = _register_external_resource(resources, value)
         return IRExternalResourceRef(resource_id=resource.id)
 
-    if isinstance(value, RectangleShape2D):
+    sub_resource_value = _as_sub_resource(value)
+    if sub_resource_value is not None:
         if sub_resources is None:
-            raise TypeError("Shape resources require a scene sub-resource registry.")
-        return _register_rectangle_shape_2d(sub_resources, value)
+            raise TypeError("Sub-resources require a scene sub-resource registry.")
+        return _register_sub_resource(resources, sub_resources, sub_resource_value)
 
     if isinstance(value, list):
         return [_normalize_value(item, resources, sub_resources) for item in value]
@@ -224,20 +226,32 @@ def _normalize_value(
     return value
 
 
-def _register_rectangle_shape_2d(
+def _as_sub_resource(value: Any) -> SubResource | None:
+    if isinstance(value, SubResource):
+        return value
+    if isinstance(value, (RectangleShape2D, CircleShape2D)):
+        return value.as_sub_resource()
+    return None
+
+
+def _register_sub_resource(
+    resources: dict[tuple[str, str], IRExternalResource],
     sub_resources: dict[str, IRSubResource],
-    shape: RectangleShape2D,
+    resource: SubResource,
 ) -> IRSubResourceRef:
     resource_id = resource_id_for_path(
-        f"rectangle_{shape.size.x}_{shape.size.y}",
-        prefix="RectangleShape2D",
+        resource.id_hint,
+        prefix=resource.type,
     )
     sub_resources.setdefault(
         resource_id,
         IRSubResource(
-            type="RectangleShape2D",
+            type=resource.type,
             id=resource_id,
-            props={"size": shape.size},
+            props={
+                key: _normalize_value(value, resources, sub_resources)
+                for key, value in resource.props.items()
+            },
         ),
     )
     return IRSubResourceRef(resource_id)
