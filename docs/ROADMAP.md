@@ -45,7 +45,8 @@ Implemented:
 - a generated AnimationPlayer `examples/animation`;
 - a 2D collision shape `examples/physics`;
 - a small playable `examples/flappy`;
-- a generated `.tres` `examples/generated_tres`.
+- a generated `.tres` `examples/generated_tres`;
+- a static generated `LabelSettings` UI panel `examples/ui_panel`.
 
 ## Next: UI examples and generated resources
 

@@ -31,6 +31,7 @@ ALL_EXAMPLES = (
     "physics",
     "flappy",
     "generated_tres",
+    "ui_panel",
 )
 
 

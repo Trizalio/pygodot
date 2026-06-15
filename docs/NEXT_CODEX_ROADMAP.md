@@ -80,6 +80,7 @@ Current implemented surface includes:
   - `examples/physics`
   - `examples/flappy`
   - `examples/generated_tres`
+  - `examples/ui_panel`
 
 ## Development Rules For Codex
 
