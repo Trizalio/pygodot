@@ -80,7 +80,7 @@ source-owned resources.
 During a build, if the resource path exists under `source_root`, pygodot copies
 it to the same `res://` relative path under `build_dir`. If the file does not
 exist, the generated project still references it and the manifest records it
-with `copied=false`.
+with `ownership="referenced"` and `copied=false`.
 
 Copied resources are not generated content. Edit the source-owned file under
 `source_root`, then rebuild.
@@ -98,8 +98,17 @@ The manifest records:
 - `generated_files`: generated project files written by pygodot;
 - `generated_scenes`: generated `.tscn` files;
 - `generated_scripts`: generated `.gd` files;
-- `external_resources`: external resources, their stable IDs, and whether they
-  were copied from `source_root`.
+- `generated_resources`: generated `.tres` files;
+- `external_resources`: resources referenced through Godot `ExtResource`
+  entries, with stable IDs, `copied`, and explicit `ownership`.
+
+`external_resources[*].ownership` is one of:
+
+- `generated`: emitted by pygodot, such as generated scripts, generated scenes
+  referenced as `PackedScene`, or generated `.tres` resources;
+- `copied`: copied from `source_root` into `build_dir`;
+- `referenced`: referenced but not written or copied by pygodot, such as manual
+  scripts or missing/manual assets managed outside the build.
 
 The manifest is generated metadata. It helps inspect ownership and build output,
 but it is not the source of truth for the game.

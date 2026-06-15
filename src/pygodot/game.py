@@ -225,19 +225,42 @@ def _copy_external_resources(
         (resource.type, resource.path)
         for resource in project.generated_resources
     }
+    generated_scene_keys = {
+        ("PackedScene", scene.path)
+        for scene in project.scenes
+    }
+    generated_script_keys = {
+        ("Script", script.path)
+        for scene in project.scenes
+        for script in _iter_scripts(scene.root)
+        if script.generated
+    }
     for resource in _iter_external_resources(project):
         key = (resource.type, resource.path)
         if key in seen:
             continue
         seen.add(key)
 
-        if resource.type == "Script" or key in generated_resource_keys:
+        if key in generated_resource_keys or key in generated_scene_keys or key in generated_script_keys:
             manifest.external_resources.append(
                 ManifestResource(
                     type=resource.type,
                     path=resource.path,
                     id=resource.id,
                     copied=False,
+                    ownership="generated",
+                )
+            )
+            continue
+
+        if resource.type == "Script":
+            manifest.external_resources.append(
+                ManifestResource(
+                    type=resource.type,
+                    path=resource.path,
+                    id=resource.id,
+                    copied=False,
+                    ownership="referenced",
                 )
             )
             continue
@@ -255,6 +278,7 @@ def _copy_external_resources(
                 path=resource.path,
                 id=resource.id,
                 copied=copied_path is not None,
+                ownership="copied" if copied_path is not None else "referenced",
             )
         )
     return copied

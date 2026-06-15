@@ -25,12 +25,13 @@ Implemented:
 - generic generated scene sub-resources through `sub_resource(...)`;
 - generated shape resources through `rectangle_shape_2d(...)` and
   `circle_shape_2d(...)`;
-- generated `LabelSettings` `.tres` resources through `label_settings(...)`;
+- generated `LabelSettings` `.tres` resources through `label_settings(...)`,
+  including font references;
 - generated, file-backed, templated, and referenced GDScript;
 - direct `.tscn`, `.gd`, `.tres`, and `project.godot` emitters;
 - keyboard-only InputMap generation;
 - minimal display/window size settings;
-- build manifest at `.pygodot/manifest.json`;
+- build manifest at `.pygodot/manifest.json` with explicit resource ownership;
 - generated/manual overwrite boundary;
 - optional real Godot example smoke runner at `tools/smoke_examples.py`;
 - deterministic snapshot tests;
@@ -57,11 +58,8 @@ more resource types.
 Likely candidates:
 
 - a static UI panel/HUD example using generated `LabelSettings`;
-- generated `LabelSettings` with real font references;
 - one narrow generated UI styling resource, such as `StyleBoxFlat`, only if an
   example justifies it;
-- manifest ownership polish once copied, generated, and referenced resources are
-  all exercised.
 
 ## Non-goals for the near term
 

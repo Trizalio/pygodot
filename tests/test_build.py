@@ -92,6 +92,19 @@ class BuildTests(unittest.TestCase):
                 'path="res://manual/player.gd"',
                 (build_dir / "scenes" / "main.tscn").read_text(encoding="utf-8"),
             )
+            manifest = json.loads((build_dir / ".pygodot" / "manifest.json").read_text(encoding="utf-8"))
+            self.assertEqual(
+                manifest["external_resources"],
+                [
+                    {
+                        "copied": False,
+                        "id": "Script_manual_player_gd",
+                        "ownership": "referenced",
+                        "path": "res://manual/player.gd",
+                        "type": "Script",
+                    }
+                ],
+            )
 
     def test_game_build_writes_generated_script_from_source_file(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -363,6 +376,7 @@ func _ready() -> void:
                     {
                         "copied": True,
                         "id": "Texture2D_assets_icon_svg",
+                        "ownership": "copied",
                         "path": "res://assets/icon.svg",
                         "type": "Texture2D",
                     }
@@ -430,6 +444,7 @@ font_size = 32
                     {
                         "copied": False,
                         "id": "LabelSettings_ui_title_label_settings_tres",
+                        "ownership": "generated",
                         "path": "res://ui/title_label_settings.tres",
                         "type": "LabelSettings",
                     }
@@ -499,12 +514,14 @@ font_size = 32
                     {
                         "copied": True,
                         "id": "Font_assets_display_ttf",
+                        "ownership": "copied",
                         "path": "res://assets/display.ttf",
                         "type": "Font",
                     },
                     {
                         "copied": False,
                         "id": "LabelSettings_ui_title_label_settings_tres",
+                        "ownership": "generated",
                         "path": "res://ui/title_label_settings.tres",
                         "type": "LabelSettings",
                     },

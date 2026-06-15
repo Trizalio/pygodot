@@ -148,7 +148,7 @@ Node2D("Other", resource=ext_resource("res://assets/data.tres", type="Resource")
 Normalization collects external resources into scene resource tables and
 deduplicates them by `(type, path)`. During `Game.build()`, existing source
 files under `Game.source_root` are copied to matching `res://` paths under
-`build_dir` and recorded in the manifest.
+`build_dir` and recorded in the manifest with `ownership="copied"`.
 
 Generated `.tres` resources are intentionally narrow. The current public helper
 is `label_settings(...)`, which writes a native Godot `LabelSettings` resource

@@ -66,7 +66,10 @@ Build tests create temporary generated projects and verify:
 - expected files are written;
 - repeated builds are stable;
 - manual script references are not written;
-- existing external resources are copied and recorded in the manifest;
+- existing external resources are copied and recorded in the manifest with
+  explicit ownership;
+- generated resources and referenced manual resources keep distinct manifest
+  ownership;
 - unsafe `res://` paths are rejected.
 
 ## Godot Smoke Checks

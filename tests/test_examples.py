@@ -345,6 +345,7 @@ class ExampleBuildTests(unittest.TestCase):
                     {
                         "copied": True,
                         "id": "Texture2D_assets_pygodot_mark_svg",
+                        "ownership": "copied",
                         "path": "res://assets/pygodot_mark.svg",
                         "type": "Texture2D",
                     }
@@ -392,6 +393,7 @@ class ExampleBuildTests(unittest.TestCase):
                     {
                         "copied": False,
                         "id": "PackedScene_scenes_gem_tscn",
+                        "ownership": "generated",
                         "path": "res://scenes/gem.tscn",
                         "type": "PackedScene",
                     }
@@ -469,12 +471,14 @@ class ExampleBuildTests(unittest.TestCase):
                     {
                         "copied": True,
                         "id": "AudioStream_assets_tone_wav",
+                        "ownership": "copied",
                         "path": "res://assets/tone.wav",
                         "type": "AudioStream",
                     },
                     {
                         "copied": False,
                         "id": "Script_scripts_main_gd",
+                        "ownership": "generated",
                         "path": "res://scripts/main.gd",
                         "type": "Script",
                     },
@@ -520,12 +524,14 @@ class ExampleBuildTests(unittest.TestCase):
                     {
                         "copied": True,
                         "id": "Font_assets_WDXL_Lubrifont_TC_WDXLLubrifontTC_Regular_ttf",
+                        "ownership": "copied",
                         "path": "res://assets/WDXL_Lubrifont_TC/WDXLLubrifontTC-Regular.ttf",
                         "type": "Font",
                     },
                     {
                         "copied": True,
                         "id": "Font_assets_display_font_tres",
+                        "ownership": "copied",
                         "path": "res://assets/display_font.tres",
                         "type": "Font",
                     }
@@ -725,18 +731,21 @@ class ExampleBuildTests(unittest.TestCase):
                     {
                         "copied": True,
                         "id": "Font_font_assets_WDXL_Lubrifont_TC_WDXLLubrifontTC_Regular_ttf",
+                        "ownership": "copied",
                         "path": "res://font/assets/WDXL_Lubrifont_TC/WDXLLubrifontTC-Regular.ttf",
                         "type": "Font",
                     },
                     {
                         "copied": False,
                         "id": "LabelSettings_ui_section_label_settings_tres",
+                        "ownership": "generated",
                         "path": "res://ui/section_label_settings.tres",
                         "type": "LabelSettings",
                     },
                     {
                         "copied": False,
                         "id": "LabelSettings_ui_title_label_settings_tres",
+                        "ownership": "generated",
                         "path": "res://ui/title_label_settings.tres",
                         "type": "LabelSettings",
                     },

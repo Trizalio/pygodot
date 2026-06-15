@@ -12,6 +12,7 @@ class ManifestResource:
     path: str
     id: str
     copied: bool
+    ownership: str
 
 
 @dataclass(slots=True)
@@ -34,6 +35,7 @@ class BuildManifest:
                     "path": resource.path,
                     "id": resource.id,
                     "copied": resource.copied,
+                    "ownership": resource.ownership,
                 }
                 for resource in sorted(
                     self.external_resources,
