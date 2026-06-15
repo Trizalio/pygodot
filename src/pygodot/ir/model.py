@@ -38,6 +38,7 @@ class IRGeneratedResource:
     path: str
     id: str
     props: dict[str, Any] = field(default_factory=dict)
+    external_resources: tuple[IRExternalResource, ...] = ()
 
 
 @dataclass(slots=True, frozen=True)

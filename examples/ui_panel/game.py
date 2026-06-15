@@ -3,13 +3,14 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-from pygodot import Button, Color, ColorRect, Control, Game, Label, Scene, Vec2, label_settings
+from pygodot import Button, Color, ColorRect, Control, Game, Label, Scene, Vec2, font, label_settings
 
 ROOT = Path(__file__).parent
+EXAMPLES_ROOT = ROOT.parent
 
 game = Game(
     name="PygodotUIPanel",
-    source_root=ROOT,
+    source_root=EXAMPLES_ROOT,
     build_dir=ROOT / "build" / "godot_project",
     main_scene="res://scenes/main.tscn",
     godot_bin=os.environ.get("GODOT_BIN", "godot"),
@@ -18,6 +19,7 @@ game.set_window(size=Vec2(720, 480))
 
 title_settings = label_settings(
     "res://ui/title_label_settings.tres",
+    font=font("res://font/assets/WDXL_Lubrifont_TC/WDXLLubrifontTC-Regular.ttf"),
     font_size=34,
     font_color=Color(0.92, 0.98, 1.0),
 )

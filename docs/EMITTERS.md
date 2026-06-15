@@ -138,16 +138,21 @@ The `.tres` emitter is intentionally narrow. It currently supports generated
 `LabelSettings` resources only:
 
 ```text
-[gd_resource type="LabelSettings" format=3]
+[gd_resource type="LabelSettings" load_steps=2 format=3]
+
+[ext_resource type="Font" path="res://assets/display.ttf" id="Font_assets_display_ttf"]
 
 [resource]
+font = ExtResource("Font_assets_display_ttf")
 font_color = Color(1, 1, 1, 1.0)
 font_size = 32
 ```
 
 Generated `.tres` files are written by `Game.build()`, recorded in the manifest
 under `generated_resources`, and referenced from scenes through ordinary
-`ExtResource(...)` entries.
+`ExtResource(...)` entries. A generated `.tres` can also declare its own
+deterministic `[ext_resource ...]` entries for narrow supported dependencies,
+currently `LabelSettings.font`.
 
 ## Godot-assisted Emission
 

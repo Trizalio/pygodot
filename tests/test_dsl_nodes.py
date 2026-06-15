@@ -24,6 +24,7 @@ from pygodot import (
     audio_stream,
     animation,
     circle_shape_2d,
+    font,
     key,
     label_settings,
     node,
@@ -126,13 +127,21 @@ class DslNodeTests(unittest.TestCase):
     def test_label_settings_helper_creates_generated_resource(self) -> None:
         settings = label_settings(
             "res://ui/title_label_settings.tres",
+            font=font("res://assets/display.ttf"),
             font_size=32,
             font_color=Color(1, 1, 1),
         )
 
         self.assertEqual(settings.path, "res://ui/title_label_settings.tres")
         self.assertEqual(settings.type, "LabelSettings")
-        self.assertEqual(settings.props, {"font_size": 32, "font_color": Color(1, 1, 1)})
+        self.assertEqual(
+            settings.props,
+            {
+                "font": font("res://assets/display.ttf"),
+                "font_size": 32,
+                "font_color": Color(1, 1, 1),
+            },
+        )
 
     def test_node_helper_creates_generic_node(self) -> None:
         script = Script(

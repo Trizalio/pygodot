@@ -286,14 +286,19 @@ def _register_generated_resource(
         resources,
         ExternalResource(path=resource.path, type=resource.type),
     )
+    generated_external_resources: dict[tuple[str, str], IRExternalResource] = {}
     ir_resource = IRGeneratedResource(
         type=resource.type,
         path=resource.path,
         id=external_resource.id,
         props={
-            key: _normalize_value(value, resources, None, generated_resources)
+            key: _normalize_value(value, generated_external_resources, None, generated_resources)
             for key, value in resource.props.items()
         },
+        external_resources=tuple(
+            generated_external_resources[key]
+            for key in sorted(generated_external_resources)
+        ),
     )
     key = (resource.type, resource.path)
     existing = generated_resources.get(key)

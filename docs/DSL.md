@@ -157,6 +157,7 @@ and references it from scenes as an `ExtResource`:
 ```python
 title_settings = label_settings(
     "res://ui/title_label_settings.tres",
+    font=font("res://assets/display.ttf"),
     font_size=32,
     font_color=Color(1, 1, 1),
 )
@@ -167,6 +168,11 @@ Label(
     label_settings=title_settings,
 )
 ```
+
+The optional `font` argument accepts the same `font("res://...")` external
+resource helper used by node properties. `Game.build()` copies an existing font
+file from `source_root` when the font is referenced only from the generated
+`.tres` file, and the `.tres` file declares it as an internal `ExtResource`.
 
 Use source-owned copied `.tres` files with `ext_resource(...)` or typed helpers
 when pygodot should not generate the resource content.

@@ -19,6 +19,7 @@ from pygodot import (
     sub_resource,
     texture,
 )
+from pygodot.ir.model import IRExternalResourceRef
 from pygodot.ir.normalize import normalize_project, normalize_scene
 
 
@@ -205,6 +206,7 @@ class NormalizeTests(unittest.TestCase):
                         "Main",
                         label_settings=label_settings(
                             "res://ui/title_label_settings.tres",
+                            font=font("res://assets/display.ttf"),
                             font_size=32,
                             font_color=Color(1, 1, 1),
                         ),
@@ -228,4 +230,15 @@ class NormalizeTests(unittest.TestCase):
         self.assertEqual(resource.type, "LabelSettings")
         self.assertEqual(resource.path, "res://ui/title_label_settings.tres")
         self.assertEqual(resource.id, "LabelSettings_ui_title_label_settings_tres")
-        self.assertEqual(resource.props, {"font_size": 32, "font_color": Color(1, 1, 1)})
+        self.assertEqual(
+            resource.props,
+            {
+                "font": IRExternalResourceRef("Font_assets_display_ttf"),
+                "font_size": 32,
+                "font_color": Color(1, 1, 1),
+            },
+        )
+        self.assertEqual(
+            [(item.type, item.path, item.id) for item in resource.external_resources],
+            [("Font", "res://assets/display.ttf", "Font_assets_display_ttf")],
+        )

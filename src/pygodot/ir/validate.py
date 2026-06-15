@@ -6,6 +6,7 @@ from pygodot.emitters.values import gd_value
 from pygodot.errors import ValidationError
 from pygodot.input_keys import keycode_for
 from pygodot.ir.model import (
+    IRExternalResource,
     IRGeneratedResource,
     IRInputAction,
     IRNode,
@@ -44,21 +45,7 @@ def validate_scene(scene: IRScene) -> None:
         raise ValidationError(f"Scene path must start with res://: scene={scene.path!r}.")
     _validate_node(scene.root, scene_path=scene.path)
     for resource in scene.external_resources:
-        if not resource.type:
-            raise ValidationError(
-                f"External resource type must not be empty: scene={scene.path!r}, "
-                f"resource_path={resource.path!r}, resource_id={resource.id!r}."
-            )
-        if not _is_res_path(resource.path):
-            raise ValidationError(
-                f"External resource path must start with res://: scene={scene.path!r}, "
-                f"resource_type={resource.type!r}, resource_path={resource.path!r}."
-            )
-        if not resource.id:
-            raise ValidationError(
-                f"External resource id must not be empty: scene={scene.path!r}, "
-                f"resource_type={resource.type!r}, resource_path={resource.path!r}."
-            )
+        _validate_external_resource(resource, location=f"scene={scene.path!r}")
     for resource in scene.sub_resources:
         _validate_sub_resource(resource, scene_path=scene.path)
 
@@ -103,6 +90,29 @@ def _validate_generated_resource(resource: IRGeneratedResource) -> None:
             value,
             value_path=f"generated resource {resource.path!r} property {key!r}",
             location=f"resource_type={resource.type!r}",
+        )
+    for external_resource in resource.external_resources:
+        _validate_external_resource(
+            external_resource,
+            location=f"generated_resource={resource.path!r}",
+        )
+
+
+def _validate_external_resource(resource: IRExternalResource, *, location: str) -> None:
+    if not resource.type:
+        raise ValidationError(
+            f"External resource type must not be empty: {location}, "
+            f"resource_path={resource.path!r}, resource_id={resource.id!r}."
+        )
+    if not _is_res_path(resource.path):
+        raise ValidationError(
+            f"External resource path must start with res://: {location}, "
+            f"resource_type={resource.type!r}, resource_path={resource.path!r}."
+        )
+    if not resource.id:
+        raise ValidationError(
+            f"External resource id must not be empty: {location}, "
+            f"resource_type={resource.type!r}, resource_path={resource.path!r}."
         )
 
 

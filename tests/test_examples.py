@@ -700,6 +700,10 @@ class ExampleBuildTests(unittest.TestCase):
                 sorted(path.relative_to(build_dir).as_posix() for path in result.generated_resources),
                 ["ui/section_label_settings.tres", "ui/title_label_settings.tres"],
             )
+            self.assertEqual(
+                sorted(path.relative_to(build_dir).as_posix() for path in result.copied_resources),
+                ["font/assets/WDXL_Lubrifont_TC/WDXLLubrifontTC-Regular.ttf"],
+            )
 
             scene_text = (build_dir / "scenes" / "main.tscn").read_text(encoding="utf-8")
             project_text = (build_dir / "project.godot").read_text(encoding="utf-8")
@@ -714,4 +718,27 @@ class ExampleBuildTests(unittest.TestCase):
             self.assertEqual(
                 manifest["generated_resources"],
                 ["ui/section_label_settings.tres", "ui/title_label_settings.tres"],
+            )
+            self.assertEqual(
+                manifest["external_resources"],
+                [
+                    {
+                        "copied": True,
+                        "id": "Font_font_assets_WDXL_Lubrifont_TC_WDXLLubrifontTC_Regular_ttf",
+                        "path": "res://font/assets/WDXL_Lubrifont_TC/WDXLLubrifontTC-Regular.ttf",
+                        "type": "Font",
+                    },
+                    {
+                        "copied": False,
+                        "id": "LabelSettings_ui_section_label_settings_tres",
+                        "path": "res://ui/section_label_settings.tres",
+                        "type": "LabelSettings",
+                    },
+                    {
+                        "copied": False,
+                        "id": "LabelSettings_ui_title_label_settings_tres",
+                        "path": "res://ui/title_label_settings.tres",
+                        "type": "LabelSettings",
+                    },
+                ],
             )

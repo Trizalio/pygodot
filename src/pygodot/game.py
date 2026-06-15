@@ -264,6 +264,8 @@ def _iter_external_resources(project: IRProject) -> list[IRExternalResource]:
     resources: list[IRExternalResource] = []
     for scene in project.scenes:
         resources.extend(scene.external_resources)
+    for generated_resource in project.generated_resources:
+        resources.extend(generated_resource.external_resources)
     return resources
 
 
