@@ -47,21 +47,20 @@ Implemented:
 - a small playable `examples/flappy`;
 - a generated `.tres` `examples/generated_tres`.
 
-## Next: ergonomics
+## Next: UI examples and generated resources
 
-Upcoming near-term work should stay library-first and example-backed. Script
-templates are deliberately small and do not change the runtime strategy: this
-is still not Python-to-GDScript transpilation.
-
-## Next: richer examples
-
-Pick the next small playable or visual example, then add only the Godot surface
-that example needs.
+Upcoming near-term work should stay library-first and example-backed. The next
+focus is using generated `.tres` support in richer UI examples before adding
+more resource types.
 
 Likely candidates:
 
-- direct or Godot-assisted resources beyond the current generated
-  `LabelSettings` `.tres` support, when examples justify them.
+- a static UI panel/HUD example using generated `LabelSettings`;
+- generated `LabelSettings` with real font references;
+- one narrow generated UI styling resource, such as `StyleBoxFlat`, only if an
+  example justifies it;
+- manifest ownership polish once copied, generated, and referenced resources are
+  all exercised.
 
 ## Non-goals for the near term
 

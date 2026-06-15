@@ -1,12 +1,14 @@
 # pygodot: Next Development Roadmap for Codex
 
-This document is the working roadmap for the next pygodot development iterations.
+This document is the working roadmap for the next pygodot development
+iterations. Completed sprint history belongs in git, not in this file.
 
-It is intended to be read by Codex before making changes. Follow the milestones in order unless the user explicitly asks otherwise.
+Follow the milestones in order unless the user explicitly asks otherwise.
 
-## Current project baseline
+## Current Project Baseline
 
-`pygodot` is a build-time Python library for declaring Godot 4 projects and generating normal Godot project files.
+`pygodot` is a build-time Python library for declaring Godot 4 projects and
+generating normal Godot project files.
 
 Core principles that must remain unchanged:
 
@@ -49,12 +51,15 @@ Current implemented surface includes:
   - `audio_stream(...)`
   - `font(...)`
   - `packed_scene(...)`
-- Scene instances through `scene_instance(...)` and generated scene references through `Scene.as_packed_scene()`.
+- Scene instances through `scene_instance(...)` and generated scene references
+  through `Scene.as_packed_scene()`.
 - Generated value-track animations through `animation(...)`.
 - Generic generated scene sub-resources through `sub_resource(...)`.
-- Generated shape resources through `rectangle_shape_2d(...)` and `circle_shape_2d(...)`.
+- Generated shape resources through `rectangle_shape_2d(...)` and
+  `circle_shape_2d(...)`.
 - Generated `LabelSettings` `.tres` resources through `label_settings(...)`.
-- Generated inline scripts, file-backed generated scripts, templated generated scripts, and referenced manual scripts.
+- Generated inline scripts, file-backed generated scripts, templated generated
+  scripts, and referenced manual scripts.
 - Direct `.tscn`, `.gd`, `.tres`, and `project.godot` emitters.
 - Keyboard-only InputMap generation.
 - Minimal display/window size settings.
@@ -76,34 +81,34 @@ Current implemented surface includes:
   - `examples/flappy`
   - `examples/generated_tres`
 
-## Development rules for Codex
-
-### General rules
+## Development Rules For Codex
 
 - Keep changes small and milestone-focused.
 - Do not add unrelated features while implementing a milestone.
 - Do not rewrite the public DSL without explicit instruction.
 - Preserve existing examples unless the milestone explicitly asks to change them.
-- Preserve all existing tests and snapshots unless the change intentionally updates generated output.
-- If generated output changes, update snapshots only after verifying the change is intentional.
+- Preserve all existing tests and snapshots unless the change intentionally
+  updates generated output.
+- If generated output changes, update snapshots only after verifying the change
+  is intentional.
 - Prefer explicit, boring code over clever metaprogramming.
 - Do not introduce context-manager DSL or metaclass DSL.
 - Do not add broad generated wrappers for the entire Godot API.
 
-### Public API rules
+## Public API Rules
 
 A new public helper or constructor may be added only when all are true:
 
 1. It is needed by a concrete example or test.
 2. It is documented or discoverable from `pygodot.__init__`.
 3. It has direct unit coverage.
-4. It does not duplicate a generic mechanism without adding clear ergonomic value.
+4. It does not duplicate a generic mechanism without adding clear ergonomic
+   value.
 
-Use `node(...)` for uncommon Godot nodes.
+Use `node(...)` for uncommon Godot nodes. Add convenience constructors only for
+common, example-backed nodes.
 
-Add convenience constructors only for common, example-backed nodes.
-
-### Testing rules
+## Testing Rules
 
 Every feature must have at least one of:
 
@@ -112,683 +117,282 @@ Every feature must have at least one of:
 - example build test;
 - generated file assertion.
 
-For generated output, prefer snapshot tests when the output is stable and readable.
+For generated output, prefer snapshot tests when the output is stable and
+readable.
 
-Do not rely on Godot being installed for ordinary unit tests. Real Godot execution should be optional.
-
----
-
-# Milestone 1 — Split and stabilize the test suite
-
-## Goal
-
-`tests/test_pipeline.py` has grown into a monolithic test file. Split it into focused modules before adding more features.
-
-This milestone must not change production behavior.
-
-## Tasks
-
-Create focused test modules:
-
-```text
-tests/test_dsl_nodes.py
-tests/test_values.py
-tests/test_emitters_project.py
-tests/test_emitters_tscn.py
-tests/test_normalize.py
-tests/test_validate.py
-tests/test_build.py
-tests/test_examples.py
-tests/helpers.py
-```
-
-Move existing tests from `tests/test_pipeline.py` into the appropriate files.
-
-Suggested mapping:
-
-- `DslNodeTests` -> `tests/test_dsl_nodes.py`
-- `ValueSerializationTests` -> `tests/test_values.py`
-- project emitter tests -> `tests/test_emitters_project.py`
-- `.tscn` emitter tests -> `tests/test_emitters_tscn.py`
-- normalization tests -> `tests/test_normalize.py`
-- validation tests -> `tests/test_validate.py`
-- build tests -> `tests/test_build.py`
-- example build/snapshot tests -> `tests/test_examples.py`
-- helpers like `_load_example_game`, `_find_scene`, `_build_example_script`, `make_scene`, `assert_matches_snapshot` -> `tests/helpers.py`
-
-## Acceptance criteria
-
-- `python -m unittest discover -s tests` passes.
-- No production files under `src/pygodot` are changed unless strictly necessary for imports.
-- No snapshots change.
-- Test names remain descriptive.
-- Shared helper code does not import more than necessary.
-
-## Anti-goals
-
-- Do not add new pygodot features.
-- Do not update examples.
-- Do not rewrite tests into pytest unless explicitly requested.
-- Do not introduce external test dependencies.
-
-## Suggested Codex prompt
-
-```text
-Refactor the current test suite by splitting tests/test_pipeline.py into focused test modules.
-
-Keep production behavior unchanged. Do not add new pygodot features.
-
-Target structure:
-- tests/test_dsl_nodes.py
-- tests/test_values.py
-- tests/test_emitters_project.py
-- tests/test_emitters_tscn.py
-- tests/test_normalize.py
-- tests/test_validate.py
-- tests/test_build.py
-- tests/test_examples.py
-- tests/helpers.py
-
-Acceptance criteria:
-- python -m unittest discover -s tests passes
-- snapshots do not change
-- src/pygodot remains unchanged unless strictly needed for imports
-```
+Do not rely on Godot being installed for ordinary unit tests. Real Godot
+execution should be optional.
 
 ---
 
-# Milestone 2 — Add API surface policy documentation
+# Milestone 9 - UI Panel Example
 
 ## Goal
 
-Stop uncontrolled public API growth.
+Add a small UI-focused example that uses the current DSL surface to build a
+realistic static panel/HUD screen.
 
-Add a short policy document explaining when to add public constructors/helpers and when to use generic `node(...)`.
+The purpose is to exercise generated `LabelSettings` in a more realistic scene
+before adding more resource types.
 
-## Tasks
-
-Add:
-
-```text
-docs/API_SURFACE_POLICY.md
-```
-
-Document:
-
-- what counts as public API;
-- what counts as internal API;
-- when a convenience constructor is justified;
-- when generic `node(...)` should be used instead;
-- required tests for new public API;
-- requirement that examples justify new Godot surface;
-- non-goals:
-  - no full Godot API wrapper generation;
-  - no metaclass/context-manager DSL;
-  - no Python runtime;
-  - no Python-to-GDScript transpiler.
-
-Update `docs/ROADMAP.md` or README with a link to this document.
-
-## Acceptance criteria
-
-- `docs/API_SURFACE_POLICY.md` exists.
-- README or roadmap links to it.
-- The document explicitly says that new public helpers require tests and an example-backed use case.
-- No production code changes are required.
-
-## Anti-goals
-
-- Do not remove existing public helpers.
-- Do not rename existing public API.
-- Do not generate wrappers.
-
-## Suggested Codex prompt
+## Example Structure
 
 ```text
-Add docs/API_SURFACE_POLICY.md describing pygodot public API growth rules.
-
-The policy must explain when to add a convenience constructor, when to use node(...), what requires tests, and what remains out of scope.
-
-Link it from docs/ROADMAP.md or README.md.
-
-Do not change production code.
-```
-
----
-
-# Milestone 3 — Generic SubResource DSL
-
-## Goal
-
-Avoid adding every generated subresource as a one-off branch in the normalizer.
-
-Currently `RectangleShape2D` is supported as a special DSL type. Keep that API, but introduce a generic internal/public mechanism for simple generated subresources.
-
-## Target API
-
-Preferred public shape:
-
-```python
-from pygodot import sub_resource, Vec2
-
-shape = sub_resource(
-    type="RectangleShape2D",
-    id_hint="player_hitbox",
-    size=Vec2(24, 32),
-)
-```
-
-Existing wrapper should remain:
-
-```python
-from pygodot import rectangle_shape_2d, Vec2
-
-shape = rectangle_shape_2d(size=Vec2(24, 32))
-```
-
-Add a new convenience wrapper backed by the generic mechanism:
-
-```python
-from pygodot import circle_shape_2d
-
-shape = circle_shape_2d(radius=12)
-```
-
-## Design constraints
-
-- `rectangle_shape_2d(...)` must remain backward-compatible.
-- Internally, both rectangle and circle shape helpers should normalize through the same generic subresource path.
-- IDs must be deterministic.
-- The normalized model should still emit `IRSubResource`.
-- Do not introduce a full generic Resource system yet.
-
-## Tasks
-
-1. Add DSL type/helper:
-   - `SubResource`
-   - `sub_resource(...)`
-2. Rework `RectangleShape2D` / `rectangle_shape_2d(...)` to use or map into the generic mechanism.
-3. Add:
-   - `CircleShape2D`
-   - `circle_shape_2d(radius=...)`
-4. Export new helpers from:
-   - `pygodot.dsl.__init__`
-   - `pygodot.__init__`
-5. Update normalizer to register generic subresources.
-6. Update value validation if needed.
-7. Add snapshot tests:
-   - generic subresource property;
-   - rectangle shape still unchanged or intentionally updated;
-   - circle shape emission.
-8. Add or update a small example if useful, but do not rewrite all examples.
-
-## Acceptance criteria
-
-- Existing `examples/physics` continues to build.
-- Existing snapshots either remain unchanged or change only for intentional ID/format changes.
-- `CollisionShape2D("Shape", shape=circle_shape_2d(radius=12))` emits:
-  - `[sub_resource type="CircleShape2D" ...]`
-  - `radius = 12`
-  - `shape = SubResource(...)`
-- Generic `sub_resource(...)` can emit a simple `.tscn` subresource.
-- Tests cover ID determinism and deduplication behavior.
-
-## Anti-goals
-
-- Do not add many resource-specific helpers.
-- Do not implement generated `.tres` yet.
-- Do not introduce Godot-assisted emitter.
-- Do not support arbitrary nested complex resources unless required by this milestone.
-
-## Suggested Codex prompt
-
-```text
-Implement a generic SubResource DSL while preserving rectangle_shape_2d compatibility.
-
-Add SubResource/sub_resource(...), rework rectangle_shape_2d to use the generic mechanism, and add circle_shape_2d(radius=...).
-
-Update exports, normalization, validation, emitter tests, and snapshots.
-
-Do not implement generated .tres files or a broad resource system.
-```
-
----
-
-# Milestone 4 — Flappy Bird v1 example
-
-## Goal
-
-Add the next small playable example that exercises the existing gameplay-oriented surface without requiring assets.
-
-This should validate:
-
-- `Area2D`;
-- `CollisionShape2D`;
-- generated shape subresources;
-- `Timer`;
-- input actions;
-- signals;
-- GDScript from source file;
-- game state/restart;
-- more complex but still simple scene hierarchy.
-
-## Example structure
-
-```text
-examples/flappy/
+examples/ui_panel/
   README.md
   game.py
-  scripts/main.gd
 ```
 
-## Scene structure
+## Suggested Scene
 
-Recommended scene:
+Use existing primitives first:
 
-```text
-Main: Node2D
-  Background: ColorRect
-  Bird: Area2D
-    BirdVisual: ColorRect
-    BirdShape: CollisionShape2D
-  Ground: Area2D
-    GroundVisual: ColorRect
-    GroundShape: CollisionShape2D
-  PipeTopA: Area2D
-    PipeTopAVisual: ColorRect
-    PipeTopAShape: CollisionShape2D
-  PipeBottomA: Area2D
-    PipeBottomAVisual: ColorRect
-    PipeBottomAShape: CollisionShape2D
-  PipeTopB: Area2D
-    PipeTopBVisual: ColorRect
-    PipeTopBShape: CollisionShape2D
-  PipeBottomB: Area2D
-    PipeBottomBVisual: ColorRect
-    PipeBottomBShape: CollisionShape2D
-  ScoreLabel: Label
-  StateLabel: Label
-  SpawnTimer: Timer
-```
+- `Control` as root;
+- `ColorRect` for background and panel blocks;
+- `Label` for title, section labels, and values;
+- `Button` for actions;
+- generated `LabelSettings` for title and section typography;
+- optional generic `node(...)` only if a common Godot UI node is clearly useful.
 
-Keep v1 simple:
-
-- no textures;
-- no audio;
-- no dynamic scene instancing;
-- no generated `.tres`;
-- rectangular visuals only;
-- pipes can be reused/moved by script instead of spawned dynamically.
-
-## Input actions
+Recommended window:
 
 ```python
-game.add_input_action("flap", keys=["SPACE", "UP"])
-game.add_input_action("restart", keys=["R"])
-```
-
-## Window
-
-Recommended:
-
-```python
-game.set_window(size=Vec2(480, 720))
-```
-
-## GDScript expectations
-
-`scripts/main.gd` should handle:
-
-- gravity;
-- flap impulse;
-- pipe movement;
-- pipe reset/reuse;
-- score update;
-- collision/game over;
-- restart;
-- simple state labels.
-
-## Tests
-
-Add:
-
-- snapshot `tests/snapshots/flappy_scene.tscn`;
-- snapshot `tests/snapshots/flappy_script.gd`;
-- example build test verifying generated files;
-- assertions for:
-  - `Area2D`;
-  - `CollisionShape2D`;
-  - `Timer`;
-  - `area_entered`;
-  - `timeout`;
-  - input action `flap`;
-  - window size.
-
-## Acceptance criteria
-
-- `python examples/flappy/game.py` can run when Godot is available.
-- `from examples.flappy.game import game; game.build()` works.
-- Unit tests pass.
-- Flappy v1 is playable enough:
-  - Space/Up flaps;
-  - pipes move;
-  - collision ends the game;
-  - R restarts.
-
-## Anti-goals
-
-- Do not add art assets.
-- Do not add audio.
-- Do not implement dynamic PackedScene spawning.
-- Do not implement a physics abstraction layer.
-- Do not add many new public constructors unless strictly needed.
-
-## Suggested Codex prompt
-
-```text
-Add examples/flappy as a small playable Flappy Bird style example.
-
-Use existing pygodot DSL features: Area2D, CollisionShape2D, ColorRect, Label, Timer, input actions, window settings, and Script.from_file.
-
-Use rectangular visuals only. Do not add assets or audio. Do not add dynamic scene instancing.
-
-Add snapshots and build tests for the example.
-```
-
----
-
-# Milestone 5 — Optional real Godot smoke runner
-
-## Goal
-
-Add a developer tool to run real Godot smoke checks for examples when Godot is available, without making ordinary unit tests depend on Godot.
-
-## Tool
-
-Add:
-
-```text
-tools/smoke_examples.py
-```
-
-Expected usage:
-
-```bash
-python tools/smoke_examples.py --examples minimal,pong,snake,timer,physics
-python tools/smoke_examples.py --all
-python tools/smoke_examples.py --all --frames 20
-python tools/smoke_examples.py --all --require-godot
-```
-
-Behavior:
-
-- imports selected example `game` objects;
-- calls `game.check_run(frames=N)`;
-- prints summary;
-- if Godot is missing:
-  - default: skip with clear message and exit 0;
-  - with `--require-godot`: exit non-zero.
-
-## Acceptance criteria
-
-- The tool works without new third-party dependencies.
-- The tool does not run during normal unit tests.
-- README documents usage.
-- It supports at least:
-  - minimal;
-  - pong;
-  - snake;
-  - timer;
-  - physics;
-  - flappy, if Milestone 4 is complete.
-
-## Anti-goals
-
-- Do not add GitHub Actions requirement yet.
-- Do not make `python -m unittest discover -s tests` require Godot.
-- Do not add complex reporting.
-
-## Suggested Codex prompt
-
-```text
-Add tools/smoke_examples.py to run optional real Godot smoke checks for examples.
-
-The tool should call game.check_run(frames=N) for selected examples. It must skip cleanly when Godot is unavailable unless --require-godot is passed.
-
-Document usage in README. Do not make unit tests depend on Godot.
-```
-
----
-
-# Milestone 6 — Script templates without transpilation
-
-## Goal
-
-Improve GDScript ergonomics without turning Python into a GDScript transpiler.
-
-Current options:
-
-- inline generated script body;
-- `Script.from_file(...)`;
-- `Script.reference(...)`.
-
-Add simple file template support for generated scripts.
-
-## Target API
-
-```python
-Script.from_template(
-    source="scripts/player.gd.tmpl",
-    path="res://scripts/player.gd",
-    extends="Node2D",
-    context={
-        "speed": 300,
-        "jump_force": -420,
-    },
-)
-```
-
-## Template engine
-
-Keep it simple.
-
-Acceptable options:
-
-- `string.Template`;
-- `str.format_map`.
-
-Do not add Jinja2 unless explicitly requested.
-
-## Behavior
-
-- Template source is resolved relative to `Game.source_root`.
-- Missing template file should raise `BuildError`.
-- Missing context variable should raise `BuildError` with:
-  - script path;
-  - source path;
-  - missing key.
-- Rendered body is emitted through existing `GdScriptEmitter`.
-
-## Acceptance criteria
-
-- `Script.from_file(...)` remains unchanged.
-- `Script.reference(...)` remains unchanged.
-- `Script.from_template(...)` works.
-- Tests cover:
-  - successful render;
-  - missing file;
-  - missing variable;
-  - source path escaping rejection.
-- Add one small example or update Flappy/Pong only if it makes the script clearer.
-
-## Anti-goals
-
-- Do not parse Python AST.
-- Do not translate Python code into GDScript.
-- Do not build a GDScript AST.
-- Do not add external dependencies.
-
-## Suggested Codex prompt
-
-```text
-Add Script.from_template(...) for simple generated GDScript templates.
-
-Use a standard-library-only template mechanism. Resolve source relative to Game.source_root. Raise BuildError for missing files and missing template variables.
-
-Do not implement Python-to-GDScript transpilation.
-```
-
----
-
-# Milestone 7 — Scene reference ergonomics
-
-## Goal
-
-Make generated scene instancing less stringly-typed.
-
-Current pattern:
-
-```python
-game.add_scene(gem_scene)
-gem_ref = packed_scene("res://scenes/gem.tscn")
-scene_instance("GemA", gem_ref)
-```
-
-Preferred ergonomic addition:
-
-```python
-game.add_scene(gem_scene)
-scene_instance("GemA", gem_scene.as_packed_scene())
+game.set_window(size=Vec2(720, 480))
 ```
 
 ## Tasks
 
-1. Add `Scene.as_packed_scene() -> ExternalResource`.
-2. Update `examples/instancing` to use it.
-3. Keep `packed_scene(...)` unchanged.
-4. Add tests.
+1. Add `examples/ui_panel`.
+2. Use at least two generated `LabelSettings` resources.
+3. Keep the example static unless a tiny script is clearly useful.
+4. Add scene and `.tres` snapshots.
+5. Add an example build test.
+6. Add the example to `tools/smoke_examples.py`.
+7. Update docs if the example reveals a recommended UI pattern.
 
-## Acceptance criteria
+## Acceptance Criteria
 
-- `Scene.as_packed_scene()` returns `ExternalResource(path=scene.path, type="PackedScene")`.
-- Existing `packed_scene(...)` behavior remains unchanged.
-- Instancing example still builds.
-- Snapshot output should remain unchanged.
+- `python -m unittest discover -s tests` passes.
+- `python tools/smoke_examples.py --examples ui_panel --frames 1` passes when
+  Godot is available.
+- The generated scene references generated `.tres` files as `ExtResource`.
+- The example does not add broad UI abstractions.
 
-## Anti-goals
+## Anti-Goals
 
-- Do not introduce a new ComponentScene class unless explicitly requested.
-- Do not add automatic dependency registration beyond existing scene registration behavior.
-- Do not change scene paths.
+- Do not add a layout framework.
+- Do not add generated `Theme` support yet.
+- Do not add many UI node constructors unless the example proves a repeated
+  need.
+- Do not add assets.
 
-## Suggested Codex prompt
+## Suggested Codex Prompt
 
 ```text
-Add Scene.as_packed_scene() as a small ergonomic helper for scene instances.
+Add examples/ui_panel as a static UI-focused example.
 
-Update examples/instancing to use it. Keep packed_scene(...) working. Snapshot output should remain unchanged.
+Use existing Control, ColorRect, Label, Button, Vec2, Color, and generated
+label_settings(...) resources. Add snapshots and a build test. Add the example
+to tools/smoke_examples.py.
+
+Do not add a layout framework or generated Theme support.
 ```
 
 ---
 
-# Milestone 8 — Minimal generated `.tres` strategy
+# Milestone 10 - Generated LabelSettings Font References
 
 ## Goal
 
-Start generated `.tres` support narrowly and deliberately.
+Make generated `LabelSettings` useful with real font assets.
 
-Do not implement a broad resource system yet.
-
-## Candidate first resource
-
-Prefer a UI-focused resource because it will be useful soon:
-
-```text
-LabelSettings
-```
-
-Possible API:
+Current `label_settings(...)` supports size and color only. A common real-world
+case is:
 
 ```python
 title_settings = label_settings(
-    path="res://ui/title_label_settings.tres",
-    font_size=32,
+    "res://ui/title_label_settings.tres",
+    font=font("res://assets/display.ttf"),
+    font_size=36,
     font_color=Color(1, 1, 1),
 )
+```
 
-Label(
-    "Title",
-    text="Hello",
-    label_settings=title_settings,
+The generated `.tres` should include an external font resource and assign it to
+the `font` property.
+
+## Tasks
+
+1. Extend `label_settings(...)` with an optional `font` argument.
+2. Teach `TresEmitter` to emit `.tres` external resources for generated
+   resource properties that reference `ExternalResource`.
+3. Keep `.tscn` external resource collection unchanged for scenes.
+4. Ensure `Game.build()` still copies source-owned font assets referenced by a
+   generated `.tres`.
+5. Add unit and build tests.
+6. Update `examples/ui_panel` or `examples/generated_tres` to demonstrate the
+   real font case if a font asset is already available in the repository.
+
+## Acceptance Criteria
+
+- Generated `.tres` can contain `[ext_resource ...]` entries.
+- Generated `.tres` can set `font = ExtResource(...)`.
+- Font assets referenced only from generated `.tres` are copied and recorded in
+  the manifest.
+- Existing copied `.tres` resources still work.
+- Existing scene snapshots remain unchanged unless intentionally updated.
+
+## Anti-Goals
+
+- Do not implement arbitrary nested resources.
+- Do not add generated `Theme` support.
+- Do not introduce Godot-assisted resource generation.
+- Do not add new font assets if an existing example asset can be reused.
+
+## Suggested Codex Prompt
+
+```text
+Extend generated LabelSettings resources so label_settings(...) can reference a
+Font external resource.
+
+TresEmitter should emit deterministic ext_resource entries inside .tres files
+and Game.build() should copy font assets referenced from generated .tres files.
+Keep the scope limited to LabelSettings font references.
+```
+
+---
+
+# Milestone 11 - Generated StyleBoxFlat Resource
+
+## Goal
+
+Add one more UI-focused generated `.tres` resource only if the UI panel example
+shows clear need for reusable panel/button styling.
+
+Candidate API:
+
+```python
+panel_style = style_box_flat(
+    "res://ui/panel_style.tres",
+    bg_color=Color(0.08, 0.1, 0.12),
+    border_color=Color(0.3, 0.45, 0.55),
+    border_width_all=2,
+    corner_radius_all=6,
+)
+```
+
+Then a UI node can reference it through normal properties such as:
+
+```python
+node(
+    "Panel",
+    "PanelContainer",
+    theme_override_styles={"panel": panel_style},
 )
 ```
 
 ## Tasks
 
-1. Add a minimal generated resource declaration model.
-2. Add `TresEmitter`.
-3. Extend `Game.build()` to write generated `.tres` files.
-4. Track generated `.tres` files in manifest.
-5. Add `label_settings(...)`.
-6. Add example:
-   - `examples/generated_tres`
-7. Add snapshots:
-   - generated `.tres`;
-   - scene referencing generated `.tres`.
+1. Add a narrow generated resource helper for `StyleBoxFlat`.
+2. Reuse the generated `.tres` pipeline from `LabelSettings`.
+3. Add emitter coverage for the specific supported properties only.
+4. Update or add a UI example that demonstrates the resource.
+5. Add snapshots and build tests.
 
-## Acceptance criteria
+## Acceptance Criteria
 
-- Generated `.tres` is deterministic.
-- Scene can reference generated `.tres` as `ExtResource`.
-- Manifest records generated resource file.
-- Existing copied `.tres` resources still work.
+- Generated `StyleBoxFlat` is deterministic.
+- A scene can reference it as `ExtResource`.
+- Manifest records the generated resource file.
+- Existing `LabelSettings` behavior remains unchanged.
 
-## Anti-goals
+## Anti-Goals
 
-- Do not implement all Godot resource types.
-- Do not switch simple scene subresources to external `.tres`.
-- Do not introduce Godot-assisted resource generation yet.
+- Do not implement full `Theme` generation.
+- Do not support every `StyleBoxFlat` property.
+- Do not add broad resource polymorphism unless the existing generated resource
+  model already handles it cleanly.
 
-## Suggested Codex prompt
+## Suggested Codex Prompt
 
 ```text
-Implement a minimal generated .tres pipeline for LabelSettings only.
+Add a narrow generated StyleBoxFlat .tres helper for UI styling.
 
-Add a TresEmitter, generated resource tracking in Game.build(), a label_settings(...) helper, and an example demonstrating a Label using generated LabelSettings.
-
-Do not implement a broad resource system.
+Keep the supported property set small and example-backed. Reuse the existing
+generated resource pipeline and add snapshots/build tests.
 ```
 
 ---
 
-# Recommended execution order
+# Milestone 12 - Build Manifest Resource Ownership Polish
+
+## Goal
+
+Make the manifest clearer now that resources can be copied, generated, or
+referenced without being copied.
+
+Current manifest records generated files, generated scripts/scenes/resources,
+and external resources with `copied: true/false`. This is workable but a little
+ambiguous as generated resources grow.
+
+## Tasks
+
+1. Review the manifest shape after Milestones 9-11.
+2. Decide whether external resource records need an explicit `ownership` or
+   `source` field, such as:
+   - `generated`
+   - `copied`
+   - `referenced`
+3. If changed, update serialization tests and docs.
+4. Preserve deterministic ordering.
+
+## Acceptance Criteria
+
+- Manifest output clearly distinguishes copied, generated, and referenced
+  resources.
+- Existing generated/manual overwrite boundaries remain intact.
+- Tests cover the new manifest shape.
+
+## Anti-Goals
+
+- Do not build cleanup/pruning behavior yet.
+- Do not change build directory ownership policy.
+- Do not add a persistent mixed Godot project mode.
+
+## Suggested Codex Prompt
+
+```text
+Polish the build manifest resource ownership model so copied, generated, and
+referenced resources are clearly distinguishable.
+
+Keep deterministic ordering and update tests/docs. Do not add cleanup behavior
+or persistent project output mode.
+```
+
+---
+
+# Recommended Execution Order
 
 Use this order unless the user explicitly says otherwise:
 
 ```text
-1. Split test suite
-2. Add API surface policy document
-3. Generic SubResource DSL
-4. Flappy Bird v1 example
-5. Optional real Godot smoke runner
-6. Script templates
-7. Scene.as_packed_scene()
-8. Minimal generated .tres strategy
+9. UI Panel example
+10. Generated LabelSettings font references
+11. Generated StyleBoxFlat resource
+12. Build manifest resource ownership polish
 ```
 
-## Why this order
+## Why This Order
 
-- First stabilize tests and rules.
-- Then generalize subresources before adding more physics/resource examples.
-- Then add Flappy Bird as the next meaningful playable example.
-- Then improve operational confidence with optional Godot smoke checks.
-- Then improve script ergonomics.
-- Then refine scene instancing ergonomics.
-- Then start generated `.tres` support.
+- First use the current generated `.tres` support in a more realistic UI example.
+- Then extend only the proven `LabelSettings` use case with real font references.
+- Then add one more UI resource if the example justifies it.
+- Then polish manifest semantics once generated/copy/reference cases are all
+  exercised.
 
 ---
 
-# Near-term non-goals
+# Near-Term Non-Goals
 
 Do not implement these unless the user explicitly changes direction:
 
@@ -807,14 +411,15 @@ Do not implement these unless the user explicitly changes direction:
 
 ---
 
-# Definition of done for each milestone
+# Definition Of Done For Each Milestone
 
 A milestone is complete only when:
 
 - relevant unit tests pass;
 - generated output is deterministic;
 - snapshots are updated only intentionally;
-- README/docs are updated when public behavior changes;
+- docs are updated when public behavior changes;
 - examples still build;
+- optional real Godot smoke checks pass when the task touches examples;
 - no unrelated features are added;
 - public API exports are updated if a new public helper is introduced.

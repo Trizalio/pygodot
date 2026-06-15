@@ -39,15 +39,15 @@ Do not build a Python-to-GDScript transpiler.
 
 ## Q004 - Complex Resource Strategy
 
-Direct text emission is fine for current scenes.
+Direct text emission is fine for current scenes and for the first generated
+`.tres` resource, `LabelSettings`.
 
 Open question:
 
-- when should pygodot introduce direct `.tres` emission or a Godot-assisted
-  emitter?
+- when should pygodot introduce Godot-assisted resource emission?
 
-Likely trigger examples include TileSet, Theme, ShaderMaterial, Mesh data, or
-richer physics resources beyond simple rectangle shapes.
+Likely trigger examples include TileSet, full Theme generation, ShaderMaterial,
+Mesh data, or richer physics resources beyond simple rectangle/circle shapes.
 
 ## Q005 - CLI Shape
 
