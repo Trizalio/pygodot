@@ -228,6 +228,14 @@ class ExampleSnapshotTests(SnapshotTestCase):
             _build_example_file(ui_panel.game, "ui/section_label_settings.tres"),
         )
 
+    def test_ui_panel_style_box_flat_snapshot(self) -> None:
+        ui_panel = _load_example_game("ui_panel")
+
+        self.assert_matches_snapshot(
+            "ui_panel_panel_style.tres",
+            _build_example_file(ui_panel.game, "ui/panel_style.tres"),
+        )
+
 
 class ExampleBuildTests(unittest.TestCase):
     def test_pong_example_builds_menu_and_game_scenes(self) -> None:
@@ -698,13 +706,14 @@ class ExampleBuildTests(unittest.TestCase):
                     ".pygodot/manifest.json",
                     "project.godot",
                     "scenes/main.tscn",
+                    "ui/panel_style.tres",
                     "ui/section_label_settings.tres",
                     "ui/title_label_settings.tres",
                 ],
             )
             self.assertEqual(
                 sorted(path.relative_to(build_dir).as_posix() for path in result.generated_resources),
-                ["ui/section_label_settings.tres", "ui/title_label_settings.tres"],
+                ["ui/panel_style.tres", "ui/section_label_settings.tres", "ui/title_label_settings.tres"],
             )
             self.assertEqual(
                 sorted(path.relative_to(build_dir).as_posix() for path in result.copied_resources),
@@ -714,6 +723,8 @@ class ExampleBuildTests(unittest.TestCase):
             scene_text = (build_dir / "scenes" / "main.tscn").read_text(encoding="utf-8")
             project_text = (build_dir / "project.godot").read_text(encoding="utf-8")
             self.assertIn('[node name="Dashboard" type="Control"]', scene_text)
+            self.assertIn('[node name="StatusPanel" type="Panel" parent="."]', scene_text)
+            self.assertIn('theme_override_styles = {"panel": ExtResource("StyleBoxFlat_ui_panel_style_tres")}', scene_text)
             self.assertIn('[node name="PrimaryAction" type="Button" parent="."]', scene_text)
             self.assertIn('label_settings = ExtResource("LabelSettings_ui_title_label_settings_tres")', scene_text)
             self.assertIn('label_settings = ExtResource("LabelSettings_ui_section_label_settings_tres")', scene_text)
@@ -723,7 +734,7 @@ class ExampleBuildTests(unittest.TestCase):
             manifest = json.loads((build_dir / ".pygodot" / "manifest.json").read_text(encoding="utf-8"))
             self.assertEqual(
                 manifest["generated_resources"],
-                ["ui/section_label_settings.tres", "ui/title_label_settings.tres"],
+                ["ui/panel_style.tres", "ui/section_label_settings.tres", "ui/title_label_settings.tres"],
             )
             self.assertEqual(
                 manifest["external_resources"],
@@ -748,6 +759,13 @@ class ExampleBuildTests(unittest.TestCase):
                         "ownership": "generated",
                         "path": "res://ui/title_label_settings.tres",
                         "type": "LabelSettings",
+                    },
+                    {
+                        "copied": False,
+                        "id": "StyleBoxFlat_ui_panel_style_tres",
+                        "ownership": "generated",
+                        "path": "res://ui/panel_style.tres",
+                        "type": "StyleBoxFlat",
                     },
                 ],
             )

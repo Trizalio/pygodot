@@ -41,6 +41,7 @@ Runtime logic remains ordinary GDScript inside the generated Godot project.
 | `AudioStreamPlayer` | `audio` | basic playback wiring |
 | Generated `LabelSettings` | `generated_tres`, `ui_panel` | supported |
 | Generated `LabelSettings` font references | `ui_panel` | supported |
+| Generated `StyleBoxFlat` | `ui_panel` | narrow UI styling |
 | Build manifest ownership | `resources`, `generated_tres`, `ui_panel` | generated/copied/referenced |
 | Optional real Godot smoke checks | `tools/smoke_examples.py` | optional |
 
@@ -60,7 +61,7 @@ Runtime logic remains ordinary GDScript inside the generated Godot project.
 | `examples/physics` | Uses `Area2D`, `CollisionShape2D`, and generated rectangle shapes. |
 | `examples/flappy` | Small playable flappy-style example with input, timers, and collisions. |
 | `examples/generated_tres` | Generates a `LabelSettings` `.tres` resource. |
-| `examples/ui_panel` | Static dashboard using generated `LabelSettings` and a real font asset. |
+| `examples/ui_panel` | Static dashboard using generated typography and panel style resources. |
 
 ## Run
 

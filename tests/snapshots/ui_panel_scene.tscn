@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="LabelSettings" path="res://ui/section_label_settings.tres" id="LabelSettings_ui_section_label_settings_tres"]
 [ext_resource type="LabelSettings" path="res://ui/title_label_settings.tres" id="LabelSettings_ui_title_label_settings_tres"]
+[ext_resource type="StyleBoxFlat" path="res://ui/panel_style.tres" id="StyleBoxFlat_ui_panel_style_tres"]
 
 [node name="Dashboard" type="Control"]
 
@@ -26,10 +27,10 @@ text = "Static UI generated from Python objects"
 theme_override_colors = {"font_color": Color(0.7, 0.77, 0.82, 1.0)}
 theme_override_font_sizes = {"font_size": 15}
 
-[node name="StatusPanel" type="ColorRect" parent="."]
-color = Color(0.1, 0.13, 0.15, 1.0)
+[node name="StatusPanel" type="Panel" parent="."]
 position = Vector2(32, 118)
 size = Vector2(312, 238)
+theme_override_styles = {"panel": ExtResource("StyleBoxFlat_ui_panel_style_tres")}
 
 [node name="StatusHeading" type="Label" parent="."]
 label_settings = ExtResource("LabelSettings_ui_section_label_settings_tres")
@@ -72,10 +73,10 @@ text = "14 tasks"
 theme_override_colors = {"font_color": Color(0.92, 0.88, 0.58, 1.0)}
 theme_override_font_sizes = {"font_size": 18}
 
-[node name="ActionPanel" type="ColorRect" parent="."]
-color = Color(0.085, 0.1, 0.13, 1.0)
+[node name="ActionPanel" type="Panel" parent="."]
 position = Vector2(376, 118)
 size = Vector2(312, 238)
+theme_override_styles = {"panel": ExtResource("StyleBoxFlat_ui_panel_style_tres")}
 
 [node name="ActionHeading" type="Label" parent="."]
 label_settings = ExtResource("LabelSettings_ui_section_label_settings_tres")

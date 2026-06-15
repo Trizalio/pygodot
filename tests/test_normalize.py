@@ -16,6 +16,7 @@ from pygodot import (
     label_settings,
     packed_scene,
     rectangle_shape_2d,
+    style_box_flat,
     sub_resource,
     texture,
 )
@@ -241,4 +242,54 @@ class NormalizeTests(unittest.TestCase):
         self.assertEqual(
             [(item.type, item.path, item.id) for item in resource.external_resources],
             [("Font", "res://assets/display.ttf", "Font_assets_display_ttf")],
+        )
+
+    def test_generated_style_box_flat_becomes_external_ref_and_project_resource(self) -> None:
+        project = normalize_project(
+            name="GeneratedResources",
+            main_scene="res://scenes/main.tscn",
+            scenes=[
+                Scene(
+                    path="res://scenes/main.tscn",
+                    root=Node(
+                        name="Panel",
+                        type="Panel",
+                        props={
+                            "theme_override_styles": {
+                                "panel": style_box_flat(
+                                    "res://ui/panel_style.tres",
+                                    bg_color=Color(0.1, 0.2, 0.3),
+                                    border_width_all=2,
+                                )
+                            }
+                        },
+                    ),
+                )
+            ],
+        )
+
+        self.assertEqual(
+            [(resource.type, resource.path, resource.id) for resource in project.scenes[0].external_resources],
+            [
+                (
+                    "StyleBoxFlat",
+                    "res://ui/panel_style.tres",
+                    "StyleBoxFlat_ui_panel_style_tres",
+                )
+            ],
+        )
+        self.assertEqual(len(project.generated_resources), 1)
+        resource = project.generated_resources[0]
+        self.assertEqual(resource.type, "StyleBoxFlat")
+        self.assertEqual(resource.path, "res://ui/panel_style.tres")
+        self.assertEqual(resource.id, "StyleBoxFlat_ui_panel_style_tres")
+        self.assertEqual(
+            resource.props,
+            {
+                "bg_color": Color(0.1, 0.2, 0.3),
+                "border_width_bottom": 2,
+                "border_width_left": 2,
+                "border_width_right": 2,
+                "border_width_top": 2,
+            },
         )

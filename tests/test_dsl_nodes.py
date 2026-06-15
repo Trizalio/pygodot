@@ -32,6 +32,7 @@ from pygodot import (
     rectangle_shape_2d,
     scene_instance,
     signal,
+    style_box_flat,
     sub_resource,
     texture,
     value_track,
@@ -140,6 +141,33 @@ class DslNodeTests(unittest.TestCase):
                 "font": font("res://assets/display.ttf"),
                 "font_size": 32,
                 "font_color": Color(1, 1, 1),
+            },
+        )
+
+    def test_style_box_flat_helper_creates_generated_resource(self) -> None:
+        style = style_box_flat(
+            "res://ui/panel_style.tres",
+            bg_color=Color(0.1, 0.2, 0.3),
+            border_color=Color(0.4, 0.5, 0.6),
+            border_width_all=2,
+            corner_radius_all=6,
+        )
+
+        self.assertEqual(style.path, "res://ui/panel_style.tres")
+        self.assertEqual(style.type, "StyleBoxFlat")
+        self.assertEqual(
+            style.props,
+            {
+                "bg_color": Color(0.1, 0.2, 0.3),
+                "border_color": Color(0.4, 0.5, 0.6),
+                "border_width_bottom": 2,
+                "border_width_left": 2,
+                "border_width_right": 2,
+                "border_width_top": 2,
+                "corner_radius_bottom_left": 6,
+                "corner_radius_bottom_right": 6,
+                "corner_radius_top_left": 6,
+                "corner_radius_top_right": 6,
             },
         )
 

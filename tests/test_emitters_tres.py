@@ -60,3 +60,40 @@ font_color = Color(1, 1, 1, 1.0)
 font_size = 32
 """,
         )
+
+    def test_tres_emitter_snapshot_with_style_box_flat(self) -> None:
+        resource = IRGeneratedResource(
+            type="StyleBoxFlat",
+            path="res://ui/panel_style.tres",
+            id="StyleBoxFlat_ui_panel_style_tres",
+            props={
+                "bg_color": Color(0.1, 0.2, 0.3),
+                "border_color": Color(0.4, 0.5, 0.6),
+                "border_width_bottom": 2,
+                "border_width_left": 2,
+                "border_width_right": 2,
+                "border_width_top": 2,
+                "corner_radius_bottom_left": 6,
+                "corner_radius_bottom_right": 6,
+                "corner_radius_top_left": 6,
+                "corner_radius_top_right": 6,
+            },
+        )
+
+        self.assertEqual(
+            TresEmitter().emit(resource),
+            """[gd_resource type="StyleBoxFlat" format=3]
+
+[resource]
+bg_color = Color(0.1, 0.2, 0.3, 1.0)
+border_color = Color(0.4, 0.5, 0.6, 1.0)
+border_width_bottom = 2
+border_width_left = 2
+border_width_right = 2
+border_width_top = 2
+corner_radius_bottom_left = 6
+corner_radius_bottom_right = 6
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+""",
+        )

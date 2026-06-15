@@ -27,6 +27,7 @@ Implemented:
   `circle_shape_2d(...)`;
 - generated `LabelSettings` `.tres` resources through `label_settings(...)`,
   including font references;
+- generated `StyleBoxFlat` `.tres` resources through `style_box_flat(...)`;
 - generated, file-backed, templated, and referenced GDScript;
 - direct `.tscn`, `.gd`, `.tres`, and `project.godot` emitters;
 - keyboard-only InputMap generation;
@@ -47,7 +48,8 @@ Implemented:
 - a 2D collision shape `examples/physics`;
 - a small playable `examples/flappy`;
 - a generated `.tres` `examples/generated_tres`;
-- a static generated `LabelSettings` UI panel `examples/ui_panel`.
+- a static generated UI panel with reusable `.tres` styles in
+  `examples/ui_panel`.
 
 ## Next: UI examples and generated resources
 
@@ -58,8 +60,6 @@ more resource types.
 Likely candidates:
 
 - a static UI panel/HUD example using generated `LabelSettings`;
-- one narrow generated UI styling resource, such as `StyleBoxFlat`, only if an
-  example justifies it;
 
 ## Non-goals for the near term
 

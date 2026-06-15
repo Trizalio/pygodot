@@ -70,7 +70,7 @@ def _validate_sub_resource(resource: IRSubResource, *, scene_path: str) -> None:
 
 
 def _validate_generated_resource(resource: IRGeneratedResource) -> None:
-    if resource.type != "LabelSettings":
+    if resource.type not in {"LabelSettings", "StyleBoxFlat"}:
         raise ValidationError(
             f"Unsupported generated resource type: "
             f"resource_path={resource.path!r}, resource_type={resource.type!r}."

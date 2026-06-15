@@ -135,7 +135,7 @@ Manual scripts are referenced with `Script.reference(...)` and are not emitted.
 ## `.tres`
 
 The `.tres` emitter is intentionally narrow. It currently supports generated
-`LabelSettings` resources only:
+`LabelSettings` and `StyleBoxFlat` resources:
 
 ```text
 [gd_resource type="LabelSettings" load_steps=2 format=3]
@@ -153,6 +153,24 @@ under `generated_resources`, and referenced from scenes through ordinary
 `ExtResource(...)` entries. A generated `.tres` can also declare its own
 deterministic `[ext_resource ...]` entries for narrow supported dependencies,
 currently `LabelSettings.font`.
+
+`StyleBoxFlat` resources are emitted as direct resource properties:
+
+```text
+[gd_resource type="StyleBoxFlat" format=3]
+
+[resource]
+bg_color = Color(0.08, 0.1, 0.12, 1.0)
+border_color = Color(0.3, 0.45, 0.55, 1.0)
+border_width_bottom = 2
+border_width_left = 2
+border_width_right = 2
+border_width_top = 2
+corner_radius_bottom_left = 6
+corner_radius_bottom_right = 6
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+```
 
 ## Godot-assisted Emission
 

@@ -3,7 +3,20 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-from pygodot import Button, Color, ColorRect, Control, Game, Label, Scene, Vec2, font, label_settings
+from pygodot import (
+    Button,
+    Color,
+    ColorRect,
+    Control,
+    Game,
+    Label,
+    Scene,
+    Vec2,
+    font,
+    label_settings,
+    node,
+    style_box_flat,
+)
 
 ROOT = Path(__file__).parent
 EXAMPLES_ROOT = ROOT.parent
@@ -27,6 +40,13 @@ section_settings = label_settings(
     "res://ui/section_label_settings.tres",
     font_size=18,
     font_color=Color(0.62, 0.82, 0.88),
+)
+panel_style = style_box_flat(
+    "res://ui/panel_style.tres",
+    bg_color=Color(0.085, 0.105, 0.125),
+    border_color=Color(0.24, 0.38, 0.46),
+    border_width_all=2,
+    corner_radius_all=6,
 )
 
 game.add_scene(
@@ -60,11 +80,12 @@ game.add_scene(
                     theme_override_font_sizes={"font_size": 15},
                     theme_override_colors={"font_color": Color(0.7, 0.77, 0.82)},
                 ),
-                ColorRect(
+                node(
                     "StatusPanel",
+                    "Panel",
                     position=Vec2(32, 118),
                     size=Vec2(312, 238),
-                    color=Color(0.1, 0.13, 0.15),
+                    theme_override_styles={"panel": panel_style},
                 ),
                 Label(
                     "StatusHeading",
@@ -114,11 +135,12 @@ game.add_scene(
                     theme_override_font_sizes={"font_size": 18},
                     theme_override_colors={"font_color": Color(0.92, 0.88, 0.58)},
                 ),
-                ColorRect(
+                node(
                     "ActionPanel",
+                    "Panel",
                     position=Vec2(376, 118),
                     size=Vec2(312, 238),
-                    color=Color(0.085, 0.1, 0.13),
+                    theme_override_styles={"panel": panel_style},
                 ),
                 Label(
                     "ActionHeading",

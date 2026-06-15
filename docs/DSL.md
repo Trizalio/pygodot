@@ -177,6 +177,27 @@ file from `source_root` when the font is referenced only from the generated
 Use source-owned copied `.tres` files with `ext_resource(...)` or typed helpers
 when pygodot should not generate the resource content.
 
+Generated `StyleBoxFlat` resources are available for small reusable UI styles:
+
+```python
+panel_style = style_box_flat(
+    "res://ui/panel_style.tres",
+    bg_color=Color(0.08, 0.10, 0.12),
+    border_color=Color(0.30, 0.45, 0.55),
+    border_width_all=2,
+    corner_radius_all=6,
+)
+
+node(
+    "Panel",
+    "Panel",
+    theme_override_styles={"panel": panel_style},
+)
+```
+
+The helper intentionally supports only a small property set. Use
+`ext_resource(...)` for manual style resources that need broader Godot support.
+
 Generated scenes can also be reused as `PackedScene` instances:
 
 ```python

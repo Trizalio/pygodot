@@ -9,7 +9,7 @@ from pygodot.dsl.animation import (
     value_track,
 )
 from pygodot.dsl.input import InputAction
-from pygodot.dsl.generated_resources import GeneratedResource, label_settings
+from pygodot.dsl.generated_resources import GeneratedResource, label_settings, style_box_flat
 from pygodot.dsl.nodes import (
     Area2D,
     AudioStreamPlayer,
@@ -92,6 +92,7 @@ __all__ = [
     "rectangle_shape_2d",
     "scene_instance",
     "signal",
+    "style_box_flat",
     "sub_resource",
     "texture",
     "value_track",

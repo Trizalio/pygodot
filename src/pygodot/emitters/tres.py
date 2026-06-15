@@ -8,7 +8,7 @@ from pygodot.ir.model import IRGeneratedResource
 
 class TresEmitter:
     def emit(self, resource: IRGeneratedResource) -> str:
-        if resource.type != "LabelSettings":
+        if resource.type not in {"LabelSettings", "StyleBoxFlat"}:
             raise TypeError(f"Unsupported generated .tres resource type: {resource.type!r}.")
 
         load_steps = len(resource.external_resources) + 1
