@@ -66,6 +66,9 @@ Create a `game.py` that imports `pygodot`, constructs a `Game` with
 Godot project can live under a local build directory such as `build/godot`.
 Godot is only needed when calling `game.run()` or `game.check_run()`.
 
+For a complete external-project walkthrough, see
+[Getting started](docs/GETTING_STARTED.md).
+
 ## Examples
 
 | Example | Description |
@@ -141,6 +144,7 @@ CI runs the same unit test suite without installing or launching Godot.
 
 ## Docs
 
+- [Getting started](docs/GETTING_STARTED.md)
 - [API surface policy](docs/API_SURFACE_POLICY.md)
 - [Generated/manual file boundary](docs/GENERATED_BOUNDARY.md)
 - [Build manifest](docs/MANIFEST.md)
