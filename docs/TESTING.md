@@ -102,6 +102,14 @@ python tools/smoke_examples.py --all --frames 20
 `check_run(...)` runs Godot headless for a fixed number of frames, captures logs,
 and raises if Godot reports script or parse errors.
 
+When a smoke check fails, the exception includes a concise diagnostic summary:
+
+- command;
+- return code;
+- stdout tail;
+- stderr tail;
+- Godot log tail, when the log file exists.
+
 Godot smoke checks are useful before committing example changes, but they are
 not required for normal unit test runs. The smoke runner skips cleanly when
 Godot is unavailable unless `--require-godot` is passed.

@@ -15,6 +15,16 @@ class GodotRunResult:
     stderr: str
     log_text: str = ""
 
+    def diagnostic_summary(self, *, tail_lines: int = 20) -> str:
+        return _format_diagnostic_summary(
+            command=self.command,
+            returncode=self.returncode,
+            stdout=self.stdout,
+            stderr=self.stderr,
+            log_text=self.log_text,
+            tail_lines=tail_lines,
+        )
+
 
 def run_project(project_dir: Path, *, godot_bin: str = "godot", scene: str | None = None) -> None:
     command = [godot_bin, "--path", str(project_dir)]
@@ -50,8 +60,8 @@ def check_project_run(
     combined_output = "\n".join([result.stdout, result.stderr, result.log_text])
     if _has_godot_error(combined_output):
         raise GodotCliError(
-            f"Godot check run reported errors: command={command!r}\n"
-            f"{_tail(combined_output)}"
+            "Godot check run reported errors.\n"
+            f"{result.diagnostic_summary()}"
         )
     return result
 
@@ -83,10 +93,9 @@ def _run_capture(command: list[str], *, project_dir: Path, log_file: str) -> God
         log_text=log_text,
     )
     if completed.returncode != 0:
-        combined_output = "\n".join([completed.stdout, completed.stderr, log_text])
         raise GodotCliError(
-            f"Godot command failed with exit code {completed.returncode}: command={command!r}\n"
-            f"{_tail(combined_output)}"
+            "Godot command failed.\n"
+            f"{result.diagnostic_summary()}"
         )
     return result
 
@@ -112,3 +121,33 @@ def _has_godot_error(output: str) -> bool:
 
 def _tail(output: str, *, lines: int = 40) -> str:
     return "\n".join(output.splitlines()[-lines:])
+
+
+def _format_diagnostic_summary(
+    *,
+    command: list[str],
+    returncode: int,
+    stdout: str,
+    stderr: str,
+    log_text: str,
+    tail_lines: int,
+) -> str:
+    return "\n".join(
+        [
+            f"command: {command!r}",
+            f"return code: {returncode}",
+            "stdout tail:",
+            _tail_or_empty(stdout, lines=tail_lines),
+            "stderr tail:",
+            _tail_or_empty(stderr, lines=tail_lines),
+            "Godot log tail:",
+            _tail_or_empty(log_text, lines=tail_lines),
+        ]
+    )
+
+
+def _tail_or_empty(output: str, *, lines: int) -> str:
+    tail = _tail(output, lines=lines)
+    if not tail:
+        return "(empty)"
+    return tail

@@ -60,6 +60,19 @@ class SmokeExamplesToolTests(unittest.TestCase):
         self.assertEqual(fake_game.godot_bin, "godot-test")
         self.assertEqual(fake_game.frames, [7, 7])
 
+    def test_run_examples_preserves_failure_diagnostics(self) -> None:
+        smoke = _load_smoke_module()
+        fake_game = _FailingGame()
+
+        with patch.object(smoke, "_load_game", return_value=fake_game):
+            results = smoke.run_examples(("minimal",), frames=7, godot_bin="godot-test")
+
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].status, "fail")
+        self.assertIn("command: ['godot-test']", results[0].detail)
+        self.assertIn("return code: 1", results[0].detail)
+        self.assertIn("stderr tail:", results[0].detail)
+
 
 class _FakeGame:
     def __init__(self) -> None:
@@ -74,6 +87,18 @@ class _FakeGame:
 class _FakeRunResult:
     returncode = 0
     log_text = "ok\n"
+
+
+class _FailingGame:
+    godot_bin = "godot"
+
+    def check_run(self, *, frames: int):
+        raise RuntimeError(
+            "Godot command failed.\n"
+            "command: ['godot-test']\n"
+            "return code: 1\n"
+            "stderr tail:\nboom\n"
+        )
 
 
 if __name__ == "__main__":
