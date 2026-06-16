@@ -15,6 +15,7 @@ from pygodot import (
     Script,
     Vec2,
     WindowSettings,
+    signal,
     texture,
 )
 from pygodot.errors import ValidationError
@@ -70,6 +71,27 @@ class ValidationTests(unittest.TestCase):
             "Unsupported value for property 'metadata': scene='res://scenes/main.tscn', "
             "node='.', value=.*value_type=object",
         ):
+            validate_scene(normalize_scene(scene))
+
+    def test_invalid_node_group_name_is_rejected(self) -> None:
+        scene = Scene(
+            path="res://scenes/main.tscn",
+            root=Node2D("Main", groups=["bad/group"]),
+        )
+
+        with self.assertRaisesRegex(ValidationError, "Node group name"):
+            validate_scene(normalize_scene(scene))
+
+    def test_unsupported_signal_bind_value_is_rejected(self) -> None:
+        scene = Scene(
+            path="res://scenes/main.tscn",
+            root=Node2D(
+                "Main",
+                signals=[signal("ready", target=".", method="_on_ready", binds=[object()])],
+            ),
+        )
+
+        with self.assertRaisesRegex(ValidationError, "Unsupported value for signal 'ready' bind 0"):
             validate_scene(normalize_scene(scene))
 
     def test_main_scene_error_includes_registered_scenes(self) -> None:

@@ -58,6 +58,8 @@ class TscnEmitter:
             parts.append(f"parent={gd_string(node.parent_path)}")
         if node.instance is not None:
             parts.append(f"instance={gd_value(node.instance)}")
+        if node.groups:
+            parts.append(f"groups={gd_value(list(node.groups))}")
         lines.append(f"[node {' '.join(parts)}]")
 
         if node.script is not None:
@@ -73,12 +75,15 @@ class TscnEmitter:
 
     def _emit_connections(self, lines: list[str], node: Any) -> None:
         for conn in node.signals:
-            lines.append(
-                f"[connection signal={gd_string(conn.signal)} "
-                f"from={gd_string(conn.from_path)} "
-                f"to={gd_string(conn.target)} "
-                f"method={gd_string(conn.method)}]"
-            )
+            parts = [
+                f"signal={gd_string(conn.signal)}",
+                f"from={gd_string(conn.from_path)}",
+                f"to={gd_string(conn.target)}",
+                f"method={gd_string(conn.method)}",
+            ]
+            if conn.binds:
+                parts.append(f"binds={gd_value(list(conn.binds))}")
+            lines.append(f"[connection {' '.join(parts)}]")
 
         for child in node.children:
             self._emit_connections(lines, child)

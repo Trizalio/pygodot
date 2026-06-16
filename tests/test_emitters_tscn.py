@@ -3,6 +3,7 @@ from __future__ import annotations
 import unittest
 
 from pygodot import (
+    Button,
     CollisionShape2D,
     Node2D,
     Rect2,
@@ -10,6 +11,8 @@ from pygodot import (
     Script,
     circle_shape_2d,
     ext_resource,
+    node,
+    signal,
     sub_resource,
 )
 from pygodot.emitters.tscn import TscnEmitter
@@ -171,5 +174,44 @@ size = Vector2(24, 32)
 
 [node name="Hitbox" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_player_hitbox")
+""",
+        )
+
+    def test_tscn_emitter_snapshot_with_node_groups_and_signal_binds(self) -> None:
+        scene = normalize_scene(
+            Scene(
+                path="res://scenes/main.tscn",
+                root=Node2D(
+                    "Main",
+                    children=[
+                        node("Hint", "Node", groups=["hints", "runtime-ui"]),
+                        Button(
+                            "StartButton",
+                            signals=[
+                                signal(
+                                    "pressed",
+                                    target=".",
+                                    method="_on_start_pressed",
+                                    binds=[1, "left"],
+                                )
+                            ],
+                        ),
+                    ],
+                ),
+            )
+        )
+
+        self.assertEqual(
+            TscnEmitter().emit(scene),
+            """[gd_scene format=3]
+
+[node name="Main" type="Node2D"]
+
+[node name="Hint" type="Node" parent="." groups=["hints", "runtime-ui"]]
+
+[node name="StartButton" type="Button" parent="."]
+
+
+[connection signal="pressed" from="StartButton" to="." method="_on_start_pressed" binds=[1, "left"]]
 """,
         )

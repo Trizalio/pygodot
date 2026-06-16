@@ -12,6 +12,7 @@ class IRSignalConnection:
     from_path: str
     target: str
     method: str
+    binds: tuple[Any, ...] = ()
 
 
 @dataclass(slots=True, frozen=True)
@@ -80,6 +81,7 @@ class IRNode:
     script: IRScript | None = None
     signals: tuple[IRSignalConnection, ...] = ()
     instance: IRExternalResourceRef | None = None
+    groups: tuple[str, ...] = ()
 
 
 @dataclass(slots=True, frozen=True)

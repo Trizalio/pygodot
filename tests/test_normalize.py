@@ -19,6 +19,7 @@ from pygodot import (
     label_settings,
     packed_scene,
     rectangle_shape_2d,
+    signal,
     style_box_flat,
     sub_resource,
     texture,
@@ -68,6 +69,21 @@ class NormalizeTests(unittest.TestCase):
 
         self.assertEqual(project.input_actions[0].keys, ("SPACE",))
         self.assertEqual(project.input_actions[0].mouse_buttons, ("LEFT", "WHEEL_DOWN"))
+
+    def test_normalize_node_groups_and_signal_binds(self) -> None:
+        scene = normalize_scene(
+            Scene(
+                path="res://scenes/main.tscn",
+                root=Node2D(
+                    "Main",
+                    groups=["actors"],
+                    signals=[signal("ready", target=".", method="_on_ready", binds=[Vec2(1, 2)])],
+                ),
+            )
+        )
+
+        self.assertEqual(scene.root.groups, ("actors",))
+        self.assertEqual(scene.root.signals[0].binds, (Vec2(1, 2),))
 
     def test_normalize_collects_external_resource_properties(self) -> None:
         scene = normalize_scene(

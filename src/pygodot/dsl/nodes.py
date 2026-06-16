@@ -21,6 +21,7 @@ class Node:
     signals: list[SignalConnection] = field(default_factory=list)
     instance: ExternalResource | None = None
     animations: list[Animation] = field(default_factory=list)
+    groups: list[str] = field(default_factory=list)
 
     def add(self, *children: "Node") -> "Node":
         self.children.extend(children)
@@ -35,6 +36,7 @@ def node(
     script: Script | None = None,
     signals: list[SignalConnection] | None = None,
     instance: ExternalResource | None = None,
+    groups: list[str] | None = None,
     **props: Any,
 ) -> Node:
     return Node(
@@ -45,6 +47,7 @@ def node(
         script=script,
         signals=signals or [],
         instance=instance,
+        groups=groups or [],
     )
 
 
@@ -54,6 +57,7 @@ def scene_instance(
     *,
     children: list[Node] | None = None,
     signals: list[SignalConnection] | None = None,
+    groups: list[str] | None = None,
     **props: Any,
 ) -> Node:
     if scene.type != "PackedScene":
@@ -65,6 +69,7 @@ def scene_instance(
         children=children or [],
         signals=signals or [],
         instance=scene,
+        groups=groups or [],
     )
 
 
@@ -74,6 +79,7 @@ def Node2D(
     children: list[Node] | None = None,
     script: Script | None = None,
     signals: list[SignalConnection] | None = None,
+    groups: list[str] | None = None,
     **props: Any,
 ) -> Node:
     return Node(
@@ -83,6 +89,7 @@ def Node2D(
         children=children or [],
         script=script,
         signals=signals or [],
+        groups=groups or [],
     )
 
 
@@ -92,6 +99,7 @@ def Area2D(
     children: list[Node] | None = None,
     script: Script | None = None,
     signals: list[SignalConnection] | None = None,
+    groups: list[str] | None = None,
     **props: Any,
 ) -> Node:
     return Node(
@@ -101,6 +109,7 @@ def Area2D(
         children=children or [],
         script=script,
         signals=signals or [],
+        groups=groups or [],
     )
 
 
@@ -110,6 +119,7 @@ def CollisionShape2D(
     children: list[Node] | None = None,
     script: Script | None = None,
     signals: list[SignalConnection] | None = None,
+    groups: list[str] | None = None,
     **props: Any,
 ) -> Node:
     return Node(
@@ -119,6 +129,7 @@ def CollisionShape2D(
         children=children or [],
         script=script,
         signals=signals or [],
+        groups=groups or [],
     )
 
 
@@ -128,6 +139,7 @@ def Control(
     children: list[Node] | None = None,
     script: Script | None = None,
     signals: list[SignalConnection] | None = None,
+    groups: list[str] | None = None,
     **props: Any,
 ) -> Node:
     return Node(
@@ -137,6 +149,7 @@ def Control(
         children=children or [],
         script=script,
         signals=signals or [],
+        groups=groups or [],
     )
 
 
@@ -146,6 +159,7 @@ def ColorRect(
     children: list[Node] | None = None,
     script: Script | None = None,
     signals: list[SignalConnection] | None = None,
+    groups: list[str] | None = None,
     **props: Any,
 ) -> Node:
     return Node(
@@ -155,6 +169,7 @@ def ColorRect(
         children=children or [],
         script=script,
         signals=signals or [],
+        groups=groups or [],
     )
 
 
@@ -164,6 +179,7 @@ def Sprite2D(
     children: list[Node] | None = None,
     script: Script | None = None,
     signals: list[SignalConnection] | None = None,
+    groups: list[str] | None = None,
     **props: Any,
 ) -> Node:
     return Node(
@@ -173,6 +189,7 @@ def Sprite2D(
         children=children or [],
         script=script,
         signals=signals or [],
+        groups=groups or [],
     )
 
 
@@ -182,6 +199,7 @@ def Label(
     children: list[Node] | None = None,
     script: Script | None = None,
     signals: list[SignalConnection] | None = None,
+    groups: list[str] | None = None,
     **props: Any,
 ) -> Node:
     return Node(
@@ -191,6 +209,7 @@ def Label(
         children=children or [],
         script=script,
         signals=signals or [],
+        groups=groups or [],
     )
 
 
@@ -200,6 +219,7 @@ def Button(
     children: list[Node] | None = None,
     script: Script | None = None,
     signals: list[SignalConnection] | None = None,
+    groups: list[str] | None = None,
     **props: Any,
 ) -> Node:
     return Node(
@@ -209,6 +229,7 @@ def Button(
         children=children or [],
         script=script,
         signals=signals or [],
+        groups=groups or [],
     )
 
 
@@ -218,6 +239,7 @@ def Timer(
     children: list[Node] | None = None,
     script: Script | None = None,
     signals: list[SignalConnection] | None = None,
+    groups: list[str] | None = None,
     **props: Any,
 ) -> Node:
     return Node(
@@ -227,6 +249,7 @@ def Timer(
         children=children or [],
         script=script,
         signals=signals or [],
+        groups=groups or [],
     )
 
 
@@ -236,6 +259,7 @@ def AudioStreamPlayer(
     children: list[Node] | None = None,
     script: Script | None = None,
     signals: list[SignalConnection] | None = None,
+    groups: list[str] | None = None,
     **props: Any,
 ) -> Node:
     return Node(
@@ -245,6 +269,7 @@ def AudioStreamPlayer(
         children=children or [],
         script=script,
         signals=signals or [],
+        groups=groups or [],
     )
 
 
@@ -255,6 +280,7 @@ def AnimationPlayer(
     children: list[Node] | None = None,
     script: Script | None = None,
     signals: list[SignalConnection] | None = None,
+    groups: list[str] | None = None,
     **props: Any,
 ) -> Node:
     return Node(
@@ -265,4 +291,5 @@ def AnimationPlayer(
         script=script,
         signals=signals or [],
         animations=animations or [],
+        groups=groups or [],
     )

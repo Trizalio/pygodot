@@ -45,7 +45,10 @@ The stable 0.1 surface is:
   `Node2D`, `Control`, `ColorRect`, `Label`, `Button`, `Sprite2D`, `Timer`,
   `AudioStreamPlayer`, `AnimationPlayer`, `Area2D`, and `CollisionShape2D`;
 - scene instancing through `scene_instance(...)` and `Scene.as_packed_scene()`;
-- signals through `SignalConnection` and `signal(...)`;
+- node group declarations through the `groups=...` keyword on existing node
+  declarations and constructors;
+- signals through `SignalConnection` and `signal(...)`, including explicit bind
+  arguments;
 - value wrappers:
   `Vec2`, `Vec3`, `Rect2`, `Color`, and `NodePath`;
 - external resource declarations:

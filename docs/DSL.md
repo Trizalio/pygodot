@@ -114,6 +114,15 @@ AudioStreamPlayer("Player", stream=audio_stream("res://assets/tone.wav"))
 Area2D("Trigger", children=[CollisionShape2D("Hitbox", shape=hitbox_shape)])
 ```
 
+Nodes can be assigned to Godot groups with the `groups` keyword. This is
+available on `Node`, `node(...)`, `scene_instance(...)`, and existing node
+constructors:
+
+```python
+Node2D("Player", groups=["actors", "restartable"])
+node("MarkerLayer", "Node", groups=["debug"])
+```
+
 Do not add broad wrappers for the whole Godot API. Add small constructors only
 when examples show repeated pain.
 
@@ -300,6 +309,18 @@ Button(
     text="Start",
     signals=[
         signal("pressed", target=".", method="_on_start_pressed"),
+    ],
+)
+```
+
+Signal connections can include Godot bind arguments:
+
+```python
+Button(
+    "LeftButton",
+    text="Left",
+    signals=[
+        signal("pressed", target=".", method="_on_direction_pressed", binds=["left"]),
     ],
 )
 ```

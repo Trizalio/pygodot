@@ -144,6 +144,10 @@ def _normalize_node(
             from_path=node_path,
             target=conn.target,
             method=conn.method,
+            binds=tuple(
+                _normalize_value(value, resources, sub_resources, generated_resources)
+                for value in conn.binds
+            ),
         )
         for conn in node.signals
     )
@@ -168,6 +172,7 @@ def _normalize_node(
         script=script,
         signals=signals,
         instance=_normalize_instance(node.instance, resources),
+        groups=tuple(node.groups),
     )
 
 

@@ -161,6 +161,12 @@ def _validate_node(node: IRNode, *, scene_path: str) -> None:
                 f"Referenced manual script must not define generated content: "
                 f"{location}, script_path={node.script.path!r}."
             )
+    for group in node.groups:
+        if not _is_valid_node_group_name(group):
+            raise ValidationError(
+                f"Node group name must contain only letters, numbers, underscores, and dashes: "
+                f"{location}, group={group!r}."
+            )
     for key, value in node.props.items():
         _validate_supported_value(value, value_path=f"property {key!r}", location=location)
     for conn in node.signals:
@@ -174,6 +180,12 @@ def _validate_node(node: IRNode, *, scene_path: str) -> None:
         if not conn.method:
             raise ValidationError(
                 f"Signal method must not be empty: {location}, signal={conn.signal!r}, target={conn.target!r}."
+            )
+        for index, value in enumerate(conn.binds):
+            _validate_supported_value(
+                value,
+                value_path=f"signal {conn.signal!r} bind {index}",
+                location=location,
             )
 
     seen: set[str] = set()
@@ -194,6 +206,12 @@ def _validate_supported_value(value: Any, *, value_path: str, location: str) -> 
             f"Unsupported value for {value_path}: {location}, "
             f"value={value!r}, value_type={type(value).__name__}."
         ) from exc
+
+
+def _is_valid_node_group_name(name: str) -> bool:
+    if not isinstance(name, str) or not name:
+        return False
+    return all(char.isalnum() or char in {"_", "-"} for char in name)
 
 
 def _validate_input_actions(actions: tuple[IRInputAction, ...]) -> None:
