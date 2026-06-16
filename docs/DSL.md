@@ -395,12 +395,13 @@ script resources, but `Game.build()` does not write the `.gd` file.
 
 ## Input Actions
 
-Keyboard input actions are declared on `Game` and emitted into `project.godot`:
+Input actions are declared on `Game` and emitted into `project.godot`:
 
 ```python
 game.add_input_action("left_up", keys=["W"])
 game.add_input_action("right_up", keys=["UP"])
 game.add_input_action("restart", keys=["SPACE"])
+game.add_input_action("place_marker", mouse_buttons=["LEFT"])
 ```
 
 Generated GDScript should use Godot's InputMap APIs:
@@ -408,9 +409,12 @@ Generated GDScript should use Godot's InputMap APIs:
 ```gdscript
 Input.is_action_pressed("left_up")
 Input.is_action_just_pressed("restart")
+Input.is_action_just_pressed("place_marker")
 ```
 
-The current InputMap DSL is keyboard-only.
+The current InputMap DSL intentionally covers keyboard keys and mouse buttons
+only. It does not cover gamepads, touch, gestures, or arbitrary Godot input
+event types yet.
 
 ## Window Settings
 

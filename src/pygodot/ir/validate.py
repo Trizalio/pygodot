@@ -5,6 +5,7 @@ from typing import Any
 from pygodot.emitters.values import gd_value
 from pygodot.errors import ValidationError
 from pygodot.input_keys import keycode_for
+from pygodot.input_mouse import mouse_button_index_for
 from pygodot.ir.generated_resources import supported_generated_resource_types
 from pygodot.ir.model import (
     IRExternalResource,
@@ -200,12 +201,20 @@ def _validate_input_actions(actions: tuple[IRInputAction, ...]) -> None:
         if action.name in seen:
             raise ValidationError(f"Duplicate input action name: action={action.name!r}.")
         seen.add(action.name)
-        if not action.keys:
-            raise ValidationError(f"Input action must contain at least one key: action={action.name!r}.")
+        if not action.keys and not action.mouse_buttons:
+            raise ValidationError(
+                f"Input action must contain at least one key or mouse button: action={action.name!r}."
+            )
         for key in action.keys:
             if keycode_for(key) is None:
                 raise ValidationError(
                     f"Unsupported input action key: action={action.name!r}, key={key!r}."
+                )
+        for button in action.mouse_buttons:
+            if mouse_button_index_for(button) is None:
+                raise ValidationError(
+                    f"Unsupported input action mouse button: action={action.name!r}, "
+                    f"mouse_button={button!r}."
                 )
 
 

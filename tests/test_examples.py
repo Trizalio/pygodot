@@ -694,6 +694,33 @@ class ExampleBuildTests(unittest.TestCase):
             self.assertIn('"keycode":4194320', project_text)
             self.assertIn("restart={", project_text)
 
+    def test_mouse_input_example_builds_left_click_action(self) -> None:
+        mouse_input = _load_example_game("mouse_input")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            build_dir = Path(tmp) / "godot_project"
+            mouse_input.game.build_dir = build_dir
+
+            result = mouse_input.game.build()
+
+            self.assertEqual(
+                sorted(path.relative_to(build_dir).as_posix() for path in result.written_files),
+                [".pygodot/manifest.json", "project.godot", "scenes/main.tscn", "scripts/main.gd"],
+            )
+
+            scene_text = (build_dir / "scenes" / "main.tscn").read_text(encoding="utf-8")
+            script_text = (build_dir / "scripts" / "main.gd").read_text(encoding="utf-8")
+            project_text = (build_dir / "project.godot").read_text(encoding="utf-8")
+
+            self.assertIn('[node name="Main" type="Node2D"]', scene_text)
+            self.assertIn('[node name="Marker" type="ColorRect" parent="."]', scene_text)
+            self.assertIn('[node name="Counter" type="Label" parent="."]', scene_text)
+            self.assertIn('Input.is_action_just_pressed("place_marker")', script_text)
+            self.assertIn("$Marker.position = get_viewport().get_mouse_position()", script_text)
+            self.assertIn("place_marker={", project_text)
+            self.assertIn("InputEventMouseButton", project_text)
+            self.assertIn('"button_index":1', project_text)
+
     def test_generated_tres_example_builds_label_settings_resource(self) -> None:
         generated_tres = _load_example_game("generated_tres")
 

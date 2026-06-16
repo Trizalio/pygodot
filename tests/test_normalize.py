@@ -5,6 +5,7 @@ import unittest
 from pygodot import (
     CollisionShape2D,
     Color,
+    InputAction,
     Node,
     Node2D,
     Scene,
@@ -25,6 +26,22 @@ from pygodot.ir.normalize import normalize_project, normalize_scene
 
 
 class NormalizeTests(unittest.TestCase):
+    def test_normalize_input_action_mouse_buttons(self) -> None:
+        project = normalize_project(
+            name="GeneratedGame",
+            main_scene="res://scenes/main.tscn",
+            scenes=[
+                Scene(
+                    path="res://scenes/main.tscn",
+                    root=Node2D("Main"),
+                )
+            ],
+            input_actions=[InputAction("shoot", ("SPACE",), ("left", "wheel-down"))],
+        )
+
+        self.assertEqual(project.input_actions[0].keys, ("SPACE",))
+        self.assertEqual(project.input_actions[0].mouse_buttons, ("LEFT", "WHEEL_DOWN"))
+
     def test_normalize_collects_external_resource_properties(self) -> None:
         scene = normalize_scene(
             Scene(

@@ -50,7 +50,8 @@ The stable 0.1 surface is:
 - external resource declarations:
   `ExternalResource`, `ext_resource(...)`, `external_resource(...)`,
   `texture(...)`, `audio_stream(...)`, `font(...)`, and `packed_scene(...)`;
-- keyboard InputMap declaration through `Game.add_input_action(..., keys=...)`;
+- keyboard and mouse button InputMap declaration through
+  `Game.add_input_action(..., keys=..., mouse_buttons=...)`;
 - minimal window sizing through `WindowSettings` and `Game.set_window(...)`;
 - the library-first workflow where a user project imports `pygodot`, creates a
   `Game`, and calls methods on that object.

@@ -24,11 +24,12 @@ game.add_scene(main_scene)
 game.add_scene(menu_scene)
 ```
 
-Register keyboard input actions:
+Register input actions:
 
 ```python
 game.add_input_action("move_up", keys=["W", "UP"])
 game.add_input_action("restart", keys=["SPACE"])
+game.add_input_action("shoot", mouse_buttons=["LEFT"])
 ```
 
 Set the generated project window size:
@@ -77,7 +78,13 @@ errors.
 ```python
 class Game:
     def add_scene(self, scene: Scene) -> None: ...
-    def add_input_action(self, name: str, *, keys: list[str]) -> None: ...
+    def add_input_action(
+        self,
+        name: str,
+        *,
+        keys: list[str] | None = None,
+        mouse_buttons: list[str] | None = None,
+    ) -> None: ...
     def set_window(self, *, size: Vec2) -> None: ...
     def build(self) -> BuildResult: ...
     def run(self, scene: str | None = None) -> None: ...

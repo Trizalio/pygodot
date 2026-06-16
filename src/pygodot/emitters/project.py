@@ -2,7 +2,8 @@
 
 from pygodot.emitters.values import gd_string
 from pygodot.input_keys import keycode_for
-from pygodot.ir.model import IRProject
+from pygodot.input_mouse import mouse_button_index_for
+from pygodot.ir.model import IRInputAction, IRProject
 
 
 class ProjectEmitter:
@@ -20,7 +21,7 @@ class ProjectEmitter:
         if project.input_actions:
             lines.extend(["", "[input]", ""])
             for action in project.input_actions:
-                lines.extend(_emit_input_action(action.name, action.keys))
+                lines.extend(_emit_input_action(action))
         if project.window is not None:
             lines.extend(
                 [
@@ -34,10 +35,15 @@ class ProjectEmitter:
         return "\n".join(lines).rstrip() + "\n"
 
 
-def _emit_input_action(name: str, keys: tuple[str, ...]) -> list[str]:
-    events = ", ".join(_input_event_key(key) for key in keys)
+def _emit_input_action(action: IRInputAction) -> list[str]:
+    events = ", ".join(
+        [
+            *(_input_event_key(key) for key in action.keys),
+            *(_input_event_mouse_button(button) for button in action.mouse_buttons),
+        ]
+    )
     return [
-        f"{name}={{",
+        f"{action.name}={{",
         '"deadzone": 0.5,',
         f'"events": [{events}]',
         "}",
@@ -55,4 +61,17 @@ def _input_event_key(key: str) -> str:
         '"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,'
         f'"pressed":false,"keycode":{keycode},"physical_keycode":0,'
         f'"key_label":0,"unicode":{unicode_value},"location":0,"echo":false,"script":null)'
+    )
+
+
+def _input_event_mouse_button(button: str) -> str:
+    button_index = mouse_button_index_for(button)
+    if button_index is None:
+        raise ValueError(f"Unsupported input mouse button: {button!r}.")
+    return (
+        'Object(InputEventMouseButton,"resource_local_to_scene":false,'
+        '"resource_name":"","device":-1,"window_id":0,'
+        '"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,'
+        f'"pressed":false,"button_index":{button_index},'
+        '"pressure":0.0,"double_click":false,"script":null)'
     )

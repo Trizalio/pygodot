@@ -53,8 +53,20 @@ class Game:
     def add_scene(self, scene: Scene) -> None:
         self.scenes.append(scene)
 
-    def add_input_action(self, name: str, *, keys: list[str]) -> None:
-        self.input_actions.append(InputAction(name=name, keys=tuple(keys)))
+    def add_input_action(
+        self,
+        name: str,
+        *,
+        keys: list[str] | None = None,
+        mouse_buttons: list[str] | None = None,
+    ) -> None:
+        self.input_actions.append(
+            InputAction(
+                name=name,
+                keys=tuple(keys or []),
+                mouse_buttons=tuple(mouse_buttons or []),
+            )
+        )
 
     def set_window(self, *, size: Vec2) -> None:
         self.window = WindowSettings(size=size)

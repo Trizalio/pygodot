@@ -33,6 +33,7 @@ ALL_EXAMPLES = (
     "flappy",
     "generated_tres",
     "ui_panel",
+    "mouse_input",
 )
 
 

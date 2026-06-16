@@ -30,6 +30,7 @@ from pygodot.ir.model import (
     IRWindowSettings,
 )
 from pygodot.input_keys import normalize_key_name
+from pygodot.input_mouse import normalize_mouse_button_name
 
 
 def normalize_scene(
@@ -78,6 +79,7 @@ def _normalize_input_action(action: InputAction) -> IRInputAction:
     return IRInputAction(
         name=action.name,
         keys=tuple(normalize_key_name(key) for key in action.keys),
+        mouse_buttons=tuple(normalize_mouse_button_name(button) for button in action.mouse_buttons),
     )
 
 

@@ -93,6 +93,7 @@ class IRScene:
 class IRInputAction:
     name: str
     keys: tuple[str, ...]
+    mouse_buttons: tuple[str, ...] = ()
 
 
 @dataclass(slots=True, frozen=True)

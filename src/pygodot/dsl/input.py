@@ -9,3 +9,4 @@ from dataclasses import dataclass
 class InputAction:
     name: str
     keys: tuple[str, ...]
+    mouse_buttons: tuple[str, ...] = ()

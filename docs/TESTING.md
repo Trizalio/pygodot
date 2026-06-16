@@ -95,7 +95,7 @@ Multiple examples can be checked with:
 
 ```powershell
 $env:PYTHONPATH = "src"
-python tools/smoke_examples.py --examples minimal,pong,snake,timer,template_script,physics,flappy
+python tools/smoke_examples.py --examples minimal,pong,snake,timer,template_script,physics,flappy,mouse_input
 python tools/smoke_examples.py --all --frames 20
 ```
 

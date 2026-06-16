@@ -107,6 +107,27 @@ class ValidationTests(unittest.TestCase):
         with self.assertRaisesRegex(ValidationError, "Unsupported input action key"):
             validate_project(project)
 
+    def test_input_action_mouse_buttons_are_validated(self) -> None:
+        project = normalize_project(
+            name="GeneratedGame",
+            main_scene="res://scenes/main.tscn",
+            scenes=[make_scene()],
+            input_actions=[InputAction("shoot", (), ("SIDEWAYS",))],
+        )
+
+        with self.assertRaisesRegex(ValidationError, "Unsupported input action mouse button"):
+            validate_project(project)
+
+    def test_input_action_allows_mouse_button_without_key(self) -> None:
+        project = normalize_project(
+            name="GeneratedGame",
+            main_scene="res://scenes/main.tscn",
+            scenes=[make_scene()],
+            input_actions=[InputAction("shoot", (), ("LEFT",))],
+        )
+
+        validate_project(project)
+
     def test_duplicate_input_actions_are_rejected(self) -> None:
         project = normalize_project(
             name="GeneratedGame",

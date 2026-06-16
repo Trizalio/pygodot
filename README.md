@@ -30,7 +30,7 @@ Runtime logic remains ordinary GDScript inside the generated Godot project.
 | Scene generation | `minimal` | supported |
 | Signals | `minimal`, `timer`, `audio`, `physics`, `flappy` | supported |
 | Generated GDScript | `minimal`, `pong`, `snake`, `timer`, `template_script` | raw body, source file, or template |
-| InputMap | `pong`, `snake`, `flappy` | keyboard-only |
+| InputMap | `pong`, `snake`, `flappy`, `mouse_input` | keyboard and mouse buttons |
 | Window settings | `pong`, `snake`, `ui_panel` | viewport size |
 | External textures | `resources` | copied assets |
 | External audio | `audio` | copied assets |
@@ -84,6 +84,7 @@ Godot is only needed when calling `game.run()` or `game.check_run()`.
 | `examples/flappy` | Small playable flappy-style example with input, timers, and collisions. |
 | `examples/generated_tres` | Generates a `LabelSettings` `.tres` resource. |
 | `examples/ui_panel` | Static dashboard using generated typography and panel style resources. |
+| `examples/mouse_input` | Moves a marker and increments a counter on left click. |
 
 ## Run
 
@@ -120,7 +121,7 @@ python -c "from examples.pong.game import game; game.check_run(frames=20)"
 Run optional smoke checks for multiple examples:
 
 ```powershell
-python tools/smoke_examples.py --examples minimal,pong,snake,timer,template_script,physics,flappy
+python tools/smoke_examples.py --examples minimal,pong,snake,timer,template_script,physics,flappy,mouse_input
 python tools/smoke_examples.py --all --frames 20
 ```
 
