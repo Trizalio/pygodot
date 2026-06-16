@@ -90,6 +90,19 @@ Build without launching Godot:
 python -c "from examples.pong.game import game; game.build()"
 ```
 
+Use `pygodot` from another project by installing this checkout in editable mode:
+
+```powershell
+python -m pip install -e C:\path\to\pygodot
+mkdir my_game
+cd my_game
+```
+
+Then create a `game.py` that imports `pygodot`, constructs a `Game` with
+`source_root=Path(__file__).parent`, and calls `game.build()`. The generated
+Godot project can live under a local build directory such as `build/godot`;
+Godot is only needed when calling `game.run()` or `game.check_run()`.
+
 Run a short headless smoke check:
 
 ```powershell
