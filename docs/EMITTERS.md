@@ -137,6 +137,10 @@ Manual scripts are referenced with `Script.reference(...)` and are not emitted.
 The `.tres` emitter is intentionally narrow. It currently supports generated
 `LabelSettings` and `StyleBoxFlat` resources:
 
+Supported generated `.tres` resource types are declared in one internal
+registry so validation and emission reject unsupported resource types
+consistently.
+
 ```text
 [gd_resource type="LabelSettings" load_steps=2 format=3]
 

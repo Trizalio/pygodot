@@ -16,7 +16,7 @@ from pygodot import (
     texture,
 )
 from pygodot.errors import ValidationError
-from pygodot.ir.model import IRNode, IRScene, IRSubResource
+from pygodot.ir.model import IRGeneratedResource, IRNode, IRProject, IRScene, IRSubResource
 from pygodot.ir.normalize import normalize_project, normalize_scene
 from pygodot.ir.validate import validate_project, validate_scene
 from tests.helpers import make_scene
@@ -167,3 +167,23 @@ class ValidationTests(unittest.TestCase):
             "Unsupported value for sub-resource 'RectangleShape2D_bad' property 'metadata'",
         ):
             validate_scene(scene)
+
+    def test_unsupported_generated_resource_type_is_rejected(self) -> None:
+        project = IRProject(
+            name="GeneratedGame",
+            main_scene="res://scenes/main.tscn",
+            scenes=(normalize_scene(make_scene()),),
+            generated_resources=(
+                IRGeneratedResource(
+                    type="GradientTexture2D",
+                    path="res://ui/gradient.tres",
+                    id="GradientTexture2D_ui_gradient_tres",
+                ),
+            ),
+        )
+
+        with self.assertRaisesRegex(
+            ValidationError,
+            "Unsupported generated resource type: resource_path='res://ui/gradient.tres'",
+        ):
+            validate_project(project)

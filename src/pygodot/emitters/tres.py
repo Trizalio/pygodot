@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 from pygodot.emitters.values import gd_string, gd_value
+from pygodot.ir.generated_resources import generated_resource_spec
 from pygodot.ir.model import IRGeneratedResource
 
 
 class TresEmitter:
     def emit(self, resource: IRGeneratedResource) -> str:
-        if resource.type not in {"LabelSettings", "StyleBoxFlat"}:
-            raise TypeError(f"Unsupported generated .tres resource type: {resource.type!r}.")
+        generated_resource_spec(resource.type)
 
         load_steps = len(resource.external_resources) + 1
         if resource.external_resources:

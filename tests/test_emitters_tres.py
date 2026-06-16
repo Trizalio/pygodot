@@ -4,10 +4,17 @@ import unittest
 
 from pygodot import Color
 from pygodot.emitters.tres import TresEmitter
+from pygodot.ir.generated_resources import supported_generated_resource_types
 from pygodot.ir.model import IRExternalResource, IRExternalResourceRef, IRGeneratedResource
 
 
 class TresEmitterTests(unittest.TestCase):
+    def test_supported_generated_resource_types_are_declared_in_one_place(self) -> None:
+        self.assertEqual(
+            supported_generated_resource_types(),
+            frozenset({"LabelSettings", "StyleBoxFlat"}),
+        )
+
     def test_tres_emitter_snapshot_with_label_settings(self) -> None:
         resource = IRGeneratedResource(
             type="LabelSettings",
@@ -28,6 +35,16 @@ font_color = Color(1, 1, 1, 1.0)
 font_size = 32
 """,
         )
+
+    def test_unsupported_generated_resource_type_is_rejected(self) -> None:
+        resource = IRGeneratedResource(
+            type="GradientTexture2D",
+            path="res://ui/gradient.tres",
+            id="GradientTexture2D_ui_gradient_tres",
+        )
+
+        with self.assertRaisesRegex(TypeError, "Unsupported generated .tres resource type"):
+            TresEmitter().emit(resource)
 
     def test_tres_emitter_snapshot_with_label_settings_font_resource(self) -> None:
         resource = IRGeneratedResource(

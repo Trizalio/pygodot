@@ -5,6 +5,7 @@ from typing import Any
 from pygodot.emitters.values import gd_value
 from pygodot.errors import ValidationError
 from pygodot.input_keys import keycode_for
+from pygodot.ir.generated_resources import supported_generated_resource_types
 from pygodot.ir.model import (
     IRExternalResource,
     IRGeneratedResource,
@@ -70,7 +71,7 @@ def _validate_sub_resource(resource: IRSubResource, *, scene_path: str) -> None:
 
 
 def _validate_generated_resource(resource: IRGeneratedResource) -> None:
-    if resource.type not in {"LabelSettings", "StyleBoxFlat"}:
+    if resource.type not in supported_generated_resource_types():
         raise ValidationError(
             f"Unsupported generated resource type: "
             f"resource_path={resource.path!r}, resource_type={resource.type!r}."
