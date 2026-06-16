@@ -52,7 +52,8 @@ Implemented:
 - a generated `.tres` `examples/generated_tres`;
 - a static generated UI panel with reusable `.tres` styles in
   `examples/ui_panel`;
-- an LD49-style Control/container menu shell in `examples/ld49_ui_shell`.
+- an LD49-style Control/container menu shell in `examples/ld49_ui_shell`;
+- an LD49-style autoload scene flow slice in `examples/ld49_scene_flow`.
 
 ## Next Direction
 

@@ -1,0 +1,20 @@
+extends Node
+
+const MENU_SCENE := "res://scenes/main.tscn"
+const INTRO_SCENE := "res://scenes/intro.tscn"
+const FADER_SCENE := "res://scenes/fader.tscn"
+
+var last_requested_scene := MENU_SCENE
+
+func go_to_intro() -> void:
+    change_scene(INTRO_SCENE)
+
+func go_to_menu() -> void:
+    change_scene(MENU_SCENE)
+
+func show_fader() -> void:
+    change_scene(FADER_SCENE)
+
+func change_scene(path: String) -> void:
+    last_requested_scene = path
+    get_tree().change_scene_to_file(path)

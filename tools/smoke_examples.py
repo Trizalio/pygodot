@@ -35,6 +35,7 @@ ALL_EXAMPLES = (
     "ui_panel",
     "mouse_input",
     "ld49_ui_shell",
+    "ld49_scene_flow",
 )
 
 

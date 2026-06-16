@@ -6,8 +6,9 @@ import unittest
 from pathlib import Path
 
 from pygodot import Label, Node2D, Scene
+from pygodot.emitters.project import ProjectEmitter
 from pygodot.emitters.tscn import TscnEmitter
-from pygodot.ir.normalize import normalize_scene
+from pygodot.ir.normalize import normalize_project, normalize_scene
 from tests.helpers import SnapshotTestCase, _build_example_file, _build_example_script, _find_scene, _load_example_game
 
 
@@ -259,6 +260,31 @@ class ExampleSnapshotTests(SnapshotTestCase):
 
         self.assert_matches_snapshot(
             "ld49_ui_shell_scene.tscn",
+            TscnEmitter().emit(normalize_scene(scene)),
+        )
+
+    def test_ld49_scene_flow_project_snapshot(self) -> None:
+        scene_flow = _load_example_game("ld49_scene_flow")
+
+        self.assert_matches_snapshot(
+            "ld49_scene_flow_project.godot",
+            ProjectEmitter().emit(
+                normalize_project(
+                    name=scene_flow.game.name,
+                    main_scene=scene_flow.game.main_scene,
+                    scenes=scene_flow.game.scenes,
+                    window=scene_flow.game.window,
+                    autoloads=scene_flow.game.autoloads,
+                )
+            ),
+        )
+
+    def test_ld49_scene_flow_main_scene_snapshot(self) -> None:
+        scene_flow = _load_example_game("ld49_scene_flow")
+        scene = _find_scene(scene_flow.game, "res://scenes/main.tscn")
+
+        self.assert_matches_snapshot(
+            "ld49_scene_flow_main_scene.tscn",
             TscnEmitter().emit(normalize_scene(scene)),
         )
 
@@ -898,6 +924,92 @@ class ExampleBuildTests(unittest.TestCase):
                         "ownership": "copied",
                         "path": "res://assets/banner.svg",
                         "type": "Texture2D",
+                    },
+                ],
+            )
+
+    def test_ld49_scene_flow_example_builds_autoload_scene_flow(self) -> None:
+        scene_flow = _load_example_game("ld49_scene_flow")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            build_dir = Path(tmp) / "godot_project"
+            scene_flow.game.build_dir = build_dir
+
+            result = scene_flow.game.build()
+
+            self.assertEqual(
+                sorted(path.relative_to(build_dir).as_posix() for path in result.written_files),
+                [
+                    ".pygodot/manifest.json",
+                    "project.godot",
+                    "scenes/fader.tscn",
+                    "scenes/intro.tscn",
+                    "scenes/main.tscn",
+                    "scripts/fader.gd",
+                    "scripts/intro.gd",
+                    "scripts/main.gd",
+                ],
+            )
+            self.assertEqual(
+                sorted(path.relative_to(build_dir).as_posix() for path in result.copied_resources),
+                ["scripts/audio_manager.gd", "scripts/scene_changer.gd"],
+            )
+
+            project_text = (build_dir / "project.godot").read_text(encoding="utf-8")
+            main_scene_text = (build_dir / "scenes" / "main.tscn").read_text(encoding="utf-8")
+            intro_scene_text = (build_dir / "scenes" / "intro.tscn").read_text(encoding="utf-8")
+            fader_scene_text = (build_dir / "scenes" / "fader.tscn").read_text(encoding="utf-8")
+            main_script_text = (build_dir / "scripts" / "main.gd").read_text(encoding="utf-8")
+            scene_changer_text = (build_dir / "scripts" / "scene_changer.gd").read_text(encoding="utf-8")
+
+            self.assertIn("[autoload]", project_text)
+            self.assertIn('SceneChanger="*res://scripts/scene_changer.gd"', project_text)
+            self.assertIn('AudioManager="*res://scripts/audio_manager.gd"', project_text)
+            self.assertIn('[node name="Main" type="MarginContainer" groups=["scene_flow"]]', main_scene_text)
+            self.assertIn('[node name="Intro" type="MarginContainer"]', intro_scene_text)
+            self.assertIn('[node name="Fader" type="MarginContainer"]', fader_scene_text)
+            self.assertIn("SceneChanger.go_to_intro()", main_script_text)
+            self.assertIn('AudioManager.play_cue("start")', main_script_text)
+            self.assertIn("func change_scene(path: String) -> void:", scene_changer_text)
+
+            manifest = json.loads((build_dir / ".pygodot" / "manifest.json").read_text(encoding="utf-8"))
+            self.assertEqual(
+                manifest["external_resources"],
+                [
+                    {
+                        "copied": True,
+                        "id": "Script_scripts_audio_manager_gd",
+                        "ownership": "copied",
+                        "path": "res://scripts/audio_manager.gd",
+                        "type": "Script",
+                    },
+                    {
+                        "copied": False,
+                        "id": "Script_scripts_fader_gd",
+                        "ownership": "generated",
+                        "path": "res://scripts/fader.gd",
+                        "type": "Script",
+                    },
+                    {
+                        "copied": False,
+                        "id": "Script_scripts_intro_gd",
+                        "ownership": "generated",
+                        "path": "res://scripts/intro.gd",
+                        "type": "Script",
+                    },
+                    {
+                        "copied": False,
+                        "id": "Script_scripts_main_gd",
+                        "ownership": "generated",
+                        "path": "res://scripts/main.gd",
+                        "type": "Script",
+                    },
+                    {
+                        "copied": True,
+                        "id": "Script_scripts_scene_changer_gd",
+                        "ownership": "copied",
+                        "path": "res://scripts/scene_changer.gd",
+                        "type": "Script",
                     },
                 ],
             )

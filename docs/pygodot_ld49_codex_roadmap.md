@@ -48,6 +48,7 @@ Implemented baseline includes:
 - explicit scene/node/script DSL;
 - selected node constructors plus generic `node(...)`;
 - narrow LD49-style Control/UI helper constructors;
+- LD49-style autoload scene flow example coverage;
 - typed values: `Vec2`, `Vec3`, `Rect2`, `Color`, `NodePath`;
 - external resource helpers for textures, audio, fonts, generic resources, and packed scenes;
 - generated scenes, scripts, `.tres` resources, and `project.godot`;
@@ -62,7 +63,7 @@ Implemented baseline includes:
 - explicit generated/copied/referenced resource ownership in manifest and `BuildResult`;
 - optional real Godot smoke checks;
 - minimal GitHub Actions unit-test CI that does not require Godot;
-- examples covering small scenes, Pong, Snake, Flappy, mouse input, resources, instancing, audio, font, animation, physics, generated `.tres`, UI panel, LD49 UI shell, and template scripts;
+- examples covering small scenes, Pong, Snake, Flappy, mouse input, resources, instancing, audio, font, animation, physics, generated `.tres`, UI panel, LD49 UI shell, LD49 scene flow, and template scripts;
 - external-project build smoke coverage and getting started documentation.
 
 Core principles that must remain unchanged:
@@ -227,82 +228,6 @@ python tools/smoke_examples.py --examples <example_name> --frames 20
 ```
 
 Do not make Godot mandatory in ordinary tests or CI.
-
----
-
-# Milestone 4 - Autoload Scene Flow Slice
-
-## Goal
-
-Prove that pygodot can generate an LD49-style scene transition setup with autoload singletons.
-
-LD49 uses `SceneChanger` and `AudioManager` singleton scripts. Main and intro scenes call those autoloads rather than owning all transition/audio logic locally.
-
-## Example
-
-Add:
-
-```text
-examples/ld49_scene_flow/
-  README.md
-  game.py
-  scripts/
-    scene_changer.gd
-    audio_manager.gd
-    main.gd
-    intro.gd
-    fader.gd
-```
-
-Generated scenes:
-
-```text
-main.tscn
-intro.tscn
-fader.tscn
-```
-
-Project should emit:
-
-```text
-[autoload]
-SceneChanger="*res://scripts/scene_changer.gd"
-AudioManager="*res://scripts/audio_manager.gd"
-```
-
-## Tasks
-
-1. Use Milestone 1 autoload support.
-2. Create a simple menu scene with a start button.
-3. Create a second scene.
-4. Add a simple fader scene or a minimal scene-change script.
-5. Use copied audio if practical, otherwise keep audio manager minimal.
-6. Add build tests and snapshots.
-7. Add optional smoke example entry.
-
-## Acceptance Criteria
-
-- Generated project contains autoloads.
-- Main scene can reference `SceneChanger` and `AudioManager` from GDScript.
-- Multiple generated scenes are present.
-- Build-only tests pass without Godot.
-- Optional smoke can run when Godot is available.
-
-## Anti-Goals
-
-- Do not port full LD49 `SceneChanger` yet.
-- Do not add complex animation/tween behavior unless needed.
-- Do not require Godot in CI.
-
-## Suggested Codex Prompt
-
-```text
-Add examples/ld49_scene_flow to prove LD49-style autoload scene transitions.
-
-Use generated project autoloads for SceneChanger and AudioManager. Generate main, intro, and fader/minimal transition scenes. Runtime logic must remain file-backed GDScript.
-
-Add snapshots/build tests and optional smoke runner entry.
-```
 
 ---
 
@@ -745,7 +670,6 @@ Verify with:
 Use this order unless the user explicitly says otherwise:
 
 ```text
-4. Autoload scene flow slice
 5. Animated sprite resource slice
 6. ShaderMaterial/material reference slice
 7. LD49 drag-and-drop spell slice

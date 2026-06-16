@@ -1,0 +1,34 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="Script_scripts_main_gd"]
+
+[node name="Main" type="MarginContainer" groups=["scene_flow"]]
+script = ExtResource("Script_scripts_main_gd")
+anchors_preset = 15
+offset_bottom = 750
+offset_right = 540
+
+[node name="Panel" type="Panel" parent="."]
+
+[node name="VBox" type="VBoxContainer" parent="Panel"]
+
+[node name="Title" type="Label" parent="Panel/VBox"]
+horizontal_alignment = 1
+text = "LD49 Scene Flow"
+theme_override_font_sizes = {"font_size": 30}
+
+[node name="StatusLabel" type="Label" parent="Panel/VBox"]
+horizontal_alignment = 1
+text = "Waiting"
+
+[node name="StartButton" type="Button" parent="Panel/VBox"]
+custom_minimum_size = Vector2(260, 46)
+text = "Start Intro"
+
+[node name="FaderButton" type="Button" parent="Panel/VBox"]
+custom_minimum_size = Vector2(260, 46)
+text = "Preview Fader"
+
+
+[connection signal="pressed" from="Panel/VBox/StartButton" to="." method="_on_start_pressed"]
+[connection signal="pressed" from="Panel/VBox/FaderButton" to="." method="_on_fader_pressed"]

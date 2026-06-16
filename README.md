@@ -46,6 +46,7 @@ Runtime logic remains ordinary GDScript inside the generated Godot project.
 | Generated `LabelSettings` font references | `ui_panel` | supported |
 | Generated `StyleBoxFlat` | `ui_panel` | narrow UI styling |
 | Control/UI containers | `ld49_ui_shell` | narrow LD49-style helpers |
+| Autoload scene flow | `ld49_scene_flow` | SceneChanger/AudioManager slice |
 | Build manifest ownership | `resources`, `generated_tres`, `ui_panel` | generated/copied/referenced |
 | Optional real Godot smoke checks | `tools/smoke_examples.py` | optional |
 
@@ -93,6 +94,7 @@ For a complete external-project walkthrough, see
 | `examples/ui_panel` | Static dashboard using generated typography and panel style resources. |
 | `examples/mouse_input` | Moves a marker and increments a counter on left click. |
 | `examples/ld49_ui_shell` | LD49-style menu shell with Control containers and copied art. |
+| `examples/ld49_scene_flow` | LD49-style autoload scene transition slice. |
 
 ## Run
 
