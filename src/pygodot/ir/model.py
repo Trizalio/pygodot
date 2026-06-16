@@ -30,6 +30,7 @@ class IRExternalResource:
     type: str
     path: str
     id: str
+    copy_if_present: bool = True
 
 
 @dataclass(slots=True, frozen=True)
@@ -100,6 +101,21 @@ class IRInputAction:
 class IRWindowSettings:
     width: int
     height: int
+    stretch_mode: str | None = None
+    stretch_aspect: str | None = None
+
+
+@dataclass(slots=True, frozen=True)
+class IRAutoload:
+    name: str
+    path: str
+    resource_id: str
+
+
+@dataclass(slots=True, frozen=True)
+class IRProjectSetting:
+    path: str
+    value: Any
 
 
 @dataclass(slots=True, frozen=True)
@@ -110,3 +126,6 @@ class IRProject:
     generated_resources: tuple[IRGeneratedResource, ...] = ()
     input_actions: tuple[IRInputAction, ...] = ()
     window: IRWindowSettings | None = None
+    autoloads: tuple[IRAutoload, ...] = ()
+    icon: IRExternalResource | None = None
+    project_settings: tuple[IRProjectSetting, ...] = ()

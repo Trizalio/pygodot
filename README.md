@@ -28,6 +28,8 @@ Runtime logic remains ordinary GDScript inside the generated Godot project.
 | Feature | Example | Status |
 | --- | --- | --- |
 | Scene generation | `minimal` | supported |
+| Project autoloads | LD49 roadmap slices | generated `[autoload]` |
+| Project settings | LD49 roadmap slices | icon, display stretch, focused extra settings |
 | Signals | `minimal`, `timer`, `audio`, `physics`, `flappy` | supported |
 | Generated GDScript | `minimal`, `pong`, `snake`, `timer`, `template_script` | raw body, source file, or template |
 | InputMap | `pong`, `snake`, `flappy`, `mouse_input` | keyboard and mouse buttons |

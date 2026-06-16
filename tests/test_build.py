@@ -892,6 +892,92 @@ corner_radius_top_right = 6
                 },
             )
 
+    def test_game_build_copies_autoloads_icon_and_writes_project_settings_manifest(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            source_root = Path(tmp) / "source"
+            build_dir = Path(tmp) / "godot_project"
+            singleton = source_root / "scripts" / "singletons" / "game_state.gd"
+            singleton.parent.mkdir(parents=True)
+            singleton.write_text("extends Node\n", encoding="utf-8")
+            icon = source_root / "resources" / "icon.svg"
+            icon.parent.mkdir(parents=True)
+            icon.write_text("<svg></svg>\n", encoding="utf-8")
+
+            game = Game(
+                name="AutoloadGame",
+                source_root=source_root,
+                build_dir=build_dir,
+                main_scene="res://scenes/main.tscn",
+            )
+            game.add_autoload("GameState", "res://scripts/singletons/game_state.gd")
+            game.add_autoload("MissingState", "res://scripts/singletons/missing_state.gd")
+            game.set_icon("res://resources/icon.svg")
+            game.set_display(
+                size=Vec2(540, 750),
+                stretch_mode="canvas_items",
+                stretch_aspect="expand",
+            )
+            game.set_project_setting("audio/output_latency/web", 200)
+            game.set_project_setting("physics/common/enable_pause_aware_picking", True)
+            game.add_scene(
+                Scene(
+                    path="res://scenes/main.tscn",
+                    root=Node2D("Main"),
+                )
+            )
+
+            result = game.build()
+
+            self.assertEqual(
+                sorted(path.relative_to(build_dir).as_posix() for path in result.copied_resources),
+                ["resources/icon.svg", "scripts/singletons/game_state.gd"],
+            )
+            self.assertEqual(result.referenced_resources, ["res://scripts/singletons/missing_state.gd"])
+            self.assertEqual(
+                (build_dir / "scripts" / "singletons" / "game_state.gd").read_text(encoding="utf-8"),
+                "extends Node\n",
+            )
+
+            project_text = (build_dir / "project.godot").read_text(encoding="utf-8")
+            self.assertIn("[autoload]", project_text)
+            self.assertIn('GameState="*res://scripts/singletons/game_state.gd"', project_text)
+            self.assertIn('MissingState="*res://scripts/singletons/missing_state.gd"', project_text)
+            self.assertIn('config/icon="res://resources/icon.svg"', project_text)
+            self.assertIn('window/stretch/mode="canvas_items"', project_text)
+            self.assertIn('window/stretch/aspect="expand"', project_text)
+            self.assertIn("[audio]", project_text)
+            self.assertIn("output_latency/web=200", project_text)
+            self.assertIn("[physics]", project_text)
+            self.assertIn("common/enable_pause_aware_picking=true", project_text)
+
+            manifest = json.loads((build_dir / ".pygodot" / "manifest.json").read_text(encoding="utf-8"))
+            self.assertEqual(
+                manifest["external_resources"],
+                [
+                    {
+                        "copied": True,
+                        "id": "Script_scripts_singletons_game_state_gd",
+                        "ownership": "copied",
+                        "path": "res://scripts/singletons/game_state.gd",
+                        "type": "Script",
+                    },
+                    {
+                        "copied": False,
+                        "id": "Script_scripts_singletons_missing_state_gd",
+                        "ownership": "referenced",
+                        "path": "res://scripts/singletons/missing_state.gd",
+                        "type": "Script",
+                    },
+                    {
+                        "copied": True,
+                        "id": "Texture2D_resources_icon_svg",
+                        "ownership": "copied",
+                        "path": "res://resources/icon.svg",
+                        "type": "Texture2D",
+                    },
+                ],
+            )
+
     def test_game_build_rejects_unsafe_res_paths(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             build_dir = Path(tmp) / "godot_project"

@@ -10,9 +10,11 @@ from pygodot.ir.generated_resources import supported_generated_resource_types
 from pygodot.ir.model import (
     IRExternalResource,
     IRGeneratedResource,
+    IRAutoload,
     IRInputAction,
     IRNode,
     IRProject,
+    IRProjectSetting,
     IRScene,
     IRSubResource,
     IRWindowSettings,
@@ -38,6 +40,10 @@ def validate_project(project: IRProject) -> None:
         validate_scene(scene)
     for resource in project.generated_resources:
         _validate_generated_resource(resource)
+    _validate_autoloads(project.autoloads)
+    if project.icon is not None:
+        _validate_external_resource(project.icon, location="project icon")
+    _validate_project_settings(project.project_settings)
     _validate_input_actions(project.input_actions)
     _validate_window(project.window)
 
@@ -224,6 +230,57 @@ def _is_valid_input_action_name(name: str) -> bool:
     return all(char.isalnum() or char == "_" for char in name)
 
 
+def _validate_autoloads(autoloads: tuple[IRAutoload, ...]) -> None:
+    seen: set[str] = set()
+    for autoload in autoloads:
+        if not _is_valid_autoload_name(autoload.name):
+            raise ValidationError(
+                f"Autoload name must contain only letters, numbers, and underscores: "
+                f"autoload={autoload.name!r}."
+            )
+        if autoload.name in seen:
+            raise ValidationError(f"Duplicate autoload name: autoload={autoload.name!r}.")
+        seen.add(autoload.name)
+        if not _is_safe_res_path(autoload.path):
+            raise ValidationError(
+                f"Autoload path must be a safe res:// path: "
+                f"autoload={autoload.name!r}, path={autoload.path!r}."
+            )
+
+
+def _is_valid_autoload_name(name: str) -> bool:
+    if not name:
+        return False
+    if not (name[0].isalpha() or name[0] == "_"):
+        return False
+    return all(char.isalnum() or char == "_" for char in name)
+
+
+def _validate_project_settings(settings: tuple[IRProjectSetting, ...]) -> None:
+    seen: set[str] = set()
+    for setting in settings:
+        if not _is_valid_project_setting_path(setting.path):
+            raise ValidationError(f"Invalid project setting path: path={setting.path!r}.")
+        if setting.path in seen:
+            raise ValidationError(f"Duplicate project setting path: path={setting.path!r}.")
+        seen.add(setting.path)
+        try:
+            gd_value(setting.value)
+        except TypeError as exc:
+            raise ValidationError(
+                f"Unsupported project setting value: path={setting.path!r}, "
+                f"value={setting.value!r}, value_type={type(setting.value).__name__}."
+            ) from exc
+
+
+def _is_valid_project_setting_path(path: str) -> bool:
+    if not path or "/" not in path:
+        return False
+    if path.startswith("/") or path.endswith("/"):
+        return False
+    return all(part for part in path.split("/"))
+
+
 def _validate_window(window: IRWindowSettings | None) -> None:
     if window is None:
         return
@@ -231,6 +288,10 @@ def _validate_window(window: IRWindowSettings | None) -> None:
         raise ValidationError(
             f"Window size must be positive: width={window.width!r}, height={window.height!r}."
         )
+    if window.stretch_mode is not None and not window.stretch_mode:
+        raise ValidationError("Window stretch mode must not be empty.")
+    if window.stretch_aspect is not None and not window.stretch_aspect:
+        raise ValidationError("Window stretch aspect must not be empty.")
 
 
 def _location(scene_path: str, node_path: str) -> str:
@@ -239,3 +300,12 @@ def _location(scene_path: str, node_path: str) -> str:
 
 def _is_res_path(path: str) -> bool:
     return path.startswith("res://")
+
+
+def _is_safe_res_path(path: str) -> bool:
+    if not _is_res_path(path):
+        return False
+    relative = path.removeprefix("res://")
+    if not relative:
+        return False
+    return ".." not in relative.replace("\\", "/").split("/")

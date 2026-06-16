@@ -9,7 +9,7 @@ from pygodot.dsl.input import InputAction
 from pygodot.dsl.nodes import Node
 from pygodot.dsl.resources import ExternalResource
 from pygodot.dsl.scene import Scene
-from pygodot.dsl.settings import WindowSettings
+from pygodot.dsl.settings import Autoload, ProjectSetting, WindowSettings
 from pygodot.dsl.shapes import CircleShape2D, RectangleShape2D
 from pygodot.dsl.script import Script
 from pygodot.dsl.subresources import SubResource
@@ -17,10 +17,12 @@ from pygodot.ir.model import (
     IRExternalResource,
     IRExternalResourceRef,
     IRGeneratedResource,
+    IRAutoload,
     IRInputAction,
     IRNode,
     IRPackedFloat32Array,
     IRProject,
+    IRProjectSetting,
     IRScene,
     IRScript,
     IRSignalConnection,
@@ -63,6 +65,9 @@ def normalize_project(
     scenes: list[Scene],
     input_actions: list[InputAction] | None = None,
     window: WindowSettings | None = None,
+    autoloads: list[Autoload] | None = None,
+    icon: str | None = None,
+    project_settings: list[ProjectSetting] | None = None,
 ) -> IRProject:
     generated_resources: dict[tuple[str, str], IRGeneratedResource] = {}
     return IRProject(
@@ -72,6 +77,12 @@ def normalize_project(
         generated_resources=tuple(generated_resources[key] for key in sorted(generated_resources)),
         input_actions=tuple(_normalize_input_action(action) for action in input_actions or []),
         window=_normalize_window(window),
+        autoloads=tuple(_normalize_autoload(autoload) for autoload in autoloads or []),
+        icon=_normalize_icon(icon),
+        project_settings=tuple(
+            IRProjectSetting(path=setting.path, value=setting.value)
+            for setting in project_settings or []
+        ),
     )
 
 
@@ -86,7 +97,30 @@ def _normalize_input_action(action: InputAction) -> IRInputAction:
 def _normalize_window(window: WindowSettings | None) -> IRWindowSettings | None:
     if window is None:
         return None
-    return IRWindowSettings(width=int(window.size.x), height=int(window.size.y))
+    return IRWindowSettings(
+        width=int(window.size.x),
+        height=int(window.size.y),
+        stretch_mode=window.stretch_mode,
+        stretch_aspect=window.stretch_aspect,
+    )
+
+
+def _normalize_autoload(autoload: Autoload) -> IRAutoload:
+    return IRAutoload(
+        name=autoload.name,
+        path=autoload.path,
+        resource_id=resource_id_for_path(autoload.path, prefix="Script"),
+    )
+
+
+def _normalize_icon(icon: str | None) -> IRExternalResource | None:
+    if icon is None:
+        return None
+    return IRExternalResource(
+        type="Texture2D",
+        path=icon,
+        id=resource_id_for_path(icon, prefix="Texture2D"),
+    )
 
 
 def _normalize_node(
@@ -194,6 +228,7 @@ def _normalize_script(
     resource = _register_external_resource(
         resources,
         ExternalResource(path=script.path, type="Script"),
+        copy_if_present=False,
     )
     return IRScript(
         path=script.path,
@@ -326,9 +361,16 @@ def _normalize_instance(
 def _register_external_resource(
     resources: dict[tuple[str, str], IRExternalResource],
     resource: ExternalResource,
+    *,
+    copy_if_present: bool = True,
 ) -> IRExternalResource:
     resource_id = resource_id_for_path(resource.path, prefix=resource.type)
-    ir_resource = IRExternalResource(type=resource.type, path=resource.path, id=resource_id)
+    ir_resource = IRExternalResource(
+        type=resource.type,
+        path=resource.path,
+        id=resource_id,
+        copy_if_present=copy_if_present,
+    )
     resources[(resource.type, resource.path)] = ir_resource
     return ir_resource
 

@@ -44,10 +44,11 @@ External resource entries are sorted deterministically by type, path, and ID.
   scripts, generated scenes referenced as `PackedScene`, and generated `.tres`
   resources.
 - `copied`: pygodot copied an existing file from `source_root` into `build_dir`.
-  The source file remains user-owned.
+  The source file remains user-owned. Autoload singleton scripts and project
+  icons use this ownership when their files exist under `source_root`.
 - `referenced`: pygodot referenced the resource but did not write or copy it.
-  This is used for manual scripts and for assets/resources managed outside the
-  generated build output.
+  This is used for manual scene scripts, missing autoload scripts, and
+  assets/resources managed outside the generated build output.
 
 ## Contract Boundaries
 

@@ -5,12 +5,13 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
 from string import Template
+from typing import Any
 
 from pygodot.build.manifest import BuildManifest, ManifestResource
 from pygodot.build.writer import GeneratedFileWriter
 from pygodot.dsl.input import InputAction
 from pygodot.dsl.scene import Scene
-from pygodot.dsl.settings import WindowSettings
+from pygodot.dsl.settings import Autoload, ProjectSetting, WindowSettings
 from pygodot.dsl.values import Vec2
 from pygodot.errors import BuildError
 from pygodot.emitters.gdscript import GdScriptEmitter
@@ -49,6 +50,9 @@ class Game:
     scenes: list[Scene] = field(default_factory=list)
     input_actions: list[InputAction] = field(default_factory=list)
     window: WindowSettings | None = None
+    autoloads: list[Autoload] = field(default_factory=list)
+    icon: str | None = None
+    project_settings: list[ProjectSetting] = field(default_factory=list)
 
     def add_scene(self, scene: Scene) -> None:
         self.scenes.append(scene)
@@ -71,6 +75,28 @@ class Game:
     def set_window(self, *, size: Vec2) -> None:
         self.window = WindowSettings(size=size)
 
+    def set_display(
+        self,
+        *,
+        size: Vec2,
+        stretch_mode: str | None = None,
+        stretch_aspect: str | None = None,
+    ) -> None:
+        self.window = WindowSettings(
+            size=size,
+            stretch_mode=stretch_mode,
+            stretch_aspect=stretch_aspect,
+        )
+
+    def add_autoload(self, name: str, path: str) -> None:
+        self.autoloads.append(Autoload(name=name, path=path))
+
+    def set_icon(self, path: str) -> None:
+        self.icon = path
+
+    def set_project_setting(self, path: str, value: Any) -> None:
+        self.project_settings.append(ProjectSetting(path=path, value=value))
+
     def build(self) -> BuildResult:
         project = normalize_project(
             name=self.name,
@@ -78,6 +104,9 @@ class Game:
             scenes=self.scenes,
             input_actions=self.input_actions,
             window=self.window,
+            autoloads=self.autoloads,
+            icon=self.icon,
+            project_settings=self.project_settings,
         )
         validate_project(project)
 
@@ -277,7 +306,7 @@ def _copy_external_resources(
             )
             continue
 
-        if resource.type == "Script":
+        if resource.type == "Script" and not resource.copy_if_present:
             referenced.append(resource.path)
             manifest.external_resources.append(
                 ManifestResource(
@@ -316,6 +345,17 @@ def _copy_external_resources(
 
 def _iter_external_resources(project: IRProject) -> list[IRExternalResource]:
     resources: list[IRExternalResource] = []
+    if project.icon is not None:
+        resources.append(project.icon)
+    resources.extend(
+        IRExternalResource(
+            type="Script",
+            path=autoload.path,
+            id=autoload.resource_id,
+            copy_if_present=True,
+        )
+        for autoload in project.autoloads
+    )
     for scene in project.scenes:
         resources.extend(scene.external_resources)
     for generated_resource in project.generated_resources:

@@ -3,11 +3,13 @@ from __future__ import annotations
 import unittest
 
 from pygodot import (
+    Autoload,
     CollisionShape2D,
     Color,
     InputAction,
     Node,
     Node2D,
+    ProjectSetting,
     Scene,
     Vec2,
     audio_stream,
@@ -26,6 +28,31 @@ from pygodot.ir.normalize import normalize_project, normalize_scene
 
 
 class NormalizeTests(unittest.TestCase):
+    def test_normalize_project_autoloads_icon_and_extra_settings(self) -> None:
+        project = normalize_project(
+            name="GeneratedGame",
+            main_scene="res://scenes/main.tscn",
+            scenes=[
+                Scene(
+                    path="res://scenes/main.tscn",
+                    root=Node2D("Main"),
+                )
+            ],
+            autoloads=[Autoload("GameState", "res://scripts/game_state.gd")],
+            icon="res://resources/icon.png",
+            project_settings=[ProjectSetting("audio/output_latency/web", 200)],
+        )
+
+        self.assertEqual(len(project.autoloads), 1)
+        self.assertEqual(project.autoloads[0].name, "GameState")
+        self.assertEqual(project.autoloads[0].path, "res://scripts/game_state.gd")
+        self.assertEqual(project.autoloads[0].resource_id, "Script_scripts_game_state_gd")
+        self.assertIsNotNone(project.icon)
+        self.assertEqual(project.icon.path, "res://resources/icon.png")
+        self.assertEqual(project.icon.id, "Texture2D_resources_icon_png")
+        self.assertEqual(project.project_settings[0].path, "audio/output_latency/web")
+        self.assertEqual(project.project_settings[0].value, 200)
+
     def test_normalize_input_action_mouse_buttons(self) -> None:
         project = normalize_project(
             name="GeneratedGame",

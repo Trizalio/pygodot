@@ -33,7 +33,8 @@ when they are intentional and snapshot-reviewed.
 The stable 0.1 surface is:
 
 - `Game`, including `build()`, `run()`, `check_run()`, `add_scene(...)`,
-  `add_input_action(...)`, and `set_window(...)`;
+  `add_input_action(...)`, `add_autoload(...)`, `set_icon(...)`,
+  `set_display(...)`, `set_project_setting(...)`, and `set_window(...)`;
 - `BuildResult` and `GodotRunResult` as the structured results for build and
   smoke-check workflows;
 - `Scene`;
@@ -52,6 +53,8 @@ The stable 0.1 surface is:
   `texture(...)`, `audio_stream(...)`, `font(...)`, and `packed_scene(...)`;
 - keyboard and mouse button InputMap declaration through
   `Game.add_input_action(..., keys=..., mouse_buttons=...)`;
+- project-level autoload, icon, display stretch, and focused extra project
+  settings declarations;
 - minimal window sizing through `WindowSettings` and `Game.set_window(...)`;
 - the library-first workflow where a user project imports `pygodot`, creates a
   `Game`, and calls methods on that object.
@@ -80,6 +83,8 @@ The experimental surface is:
   beyond the documented generated/copied/referenced distinction;
 - exact smoke-check diagnostic formatting, beyond including command, return
   code, stdout tail, stderr tail, and Godot log tail.
+- broad use of `set_project_setting(...)` outside documented LD49-style
+  project settings.
 
 Experimental APIs must still follow the same test and documentation rules as
 stable APIs when they are added or changed.

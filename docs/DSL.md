@@ -393,6 +393,33 @@ Script.reference("res://manual/player.gd", extends="CharacterBody2D")
 Referenced manual scripts are included in generated `.tscn` files as external
 script resources, but `Game.build()` does not write the `.gd` file.
 
+## Project Settings And Autoloads
+
+Autoload singletons are declared on `Game` and emitted into `project.godot`:
+
+```python
+game.add_autoload("GameState", "res://scripts/singletons/game_state.gd")
+game.add_autoload("SceneChanger", "res://scripts/singletons/scene_changer.gd")
+```
+
+Autoload paths are script resources. If the `.gd` file exists under
+`source_root`, `Game.build()` copies it into `build_dir` and records it with
+`ownership="copied"`. If it is missing or managed elsewhere, the manifest records
+it with `ownership="referenced"`.
+
+Focused project settings are available for the LD49-style project shell:
+
+```python
+game.set_icon("res://resources/icon.png")
+game.set_display(size=Vec2(540, 750), stretch_mode="canvas_items", stretch_aspect="expand")
+game.set_project_setting("audio/output_latency/web", 200)
+game.set_project_setting("physics/common/enable_pause_aware_picking", True)
+```
+
+`set_project_setting(...)` is intentionally narrow: it accepts a Godot project
+setting path such as `section/key/path` and a value supported by pygodot's Godot
+value emitter. It is not a full `ProjectSettings` wrapper.
+
 ## Input Actions
 
 Input actions are declared on `Game` and emitted into `project.godot`:

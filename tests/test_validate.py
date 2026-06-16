@@ -4,11 +4,13 @@ import unittest
 from pathlib import Path
 
 from pygodot import (
+    Autoload,
     Game,
     InputAction,
     Label,
     Node,
     Node2D,
+    ProjectSetting,
     Scene,
     Script,
     Vec2,
@@ -140,6 +142,64 @@ class ValidationTests(unittest.TestCase):
         )
 
         with self.assertRaisesRegex(ValidationError, "Duplicate input action name"):
+            validate_project(project)
+
+    def test_duplicate_autoloads_are_rejected(self) -> None:
+        project = normalize_project(
+            name="GeneratedGame",
+            main_scene="res://scenes/main.tscn",
+            scenes=[make_scene()],
+            autoloads=[
+                Autoload("GameState", "res://scripts/game_state.gd"),
+                Autoload("GameState", "res://scripts/other_game_state.gd"),
+            ],
+        )
+
+        with self.assertRaisesRegex(ValidationError, "Duplicate autoload name"):
+            validate_project(project)
+
+    def test_invalid_autoload_path_is_rejected(self) -> None:
+        project = normalize_project(
+            name="GeneratedGame",
+            main_scene="res://scenes/main.tscn",
+            scenes=[make_scene()],
+            autoloads=[Autoload("GameState", "scripts/game_state.gd")],
+        )
+
+        with self.assertRaisesRegex(ValidationError, "Autoload path must be a safe res:// path"):
+            validate_project(project)
+
+    def test_unsafe_autoload_path_is_rejected(self) -> None:
+        project = normalize_project(
+            name="GeneratedGame",
+            main_scene="res://scenes/main.tscn",
+            scenes=[make_scene()],
+            autoloads=[Autoload("GameState", "res://../game_state.gd")],
+        )
+
+        with self.assertRaisesRegex(ValidationError, "Autoload path must be a safe res:// path"):
+            validate_project(project)
+
+    def test_invalid_project_setting_path_is_rejected(self) -> None:
+        project = normalize_project(
+            name="GeneratedGame",
+            main_scene="res://scenes/main.tscn",
+            scenes=[make_scene()],
+            project_settings=[ProjectSetting("audio", 200)],
+        )
+
+        with self.assertRaisesRegex(ValidationError, "Invalid project setting path"):
+            validate_project(project)
+
+    def test_unsupported_project_setting_value_is_rejected(self) -> None:
+        project = normalize_project(
+            name="GeneratedGame",
+            main_scene="res://scenes/main.tscn",
+            scenes=[make_scene()],
+            project_settings=[ProjectSetting("application/custom", object())],
+        )
+
+        with self.assertRaisesRegex(ValidationError, "Unsupported project setting value"):
             validate_project(project)
 
     def test_window_size_is_validated(self) -> None:

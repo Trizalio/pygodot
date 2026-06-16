@@ -36,7 +36,7 @@ from pygodot.dsl.resources import (
     texture,
 )
 from pygodot.dsl.scene import Scene
-from pygodot.dsl.settings import WindowSettings
+from pygodot.dsl.settings import Autoload, ProjectSetting, WindowSettings
 from pygodot.dsl.shapes import (
     CircleShape2D,
     RectangleShape2D,
@@ -54,6 +54,7 @@ __all__ = [
     "AnimationPlayer",
     "Area2D",
     "AudioStreamPlayer",
+    "Autoload",
     "Button",
     "CircleShape2D",
     "CollisionShape2D",
@@ -67,6 +68,7 @@ __all__ = [
     "Node",
     "Node2D",
     "NodePath",
+    "ProjectSetting",
     "Rect2",
     "RectangleShape2D",
     "Scene",

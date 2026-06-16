@@ -24,6 +24,22 @@ game.add_scene(main_scene)
 game.add_scene(menu_scene)
 ```
 
+Register autoload singletons:
+
+```python
+game.add_autoload("GameState", "res://scripts/singletons/game_state.gd")
+game.add_autoload("SceneChanger", "res://scripts/singletons/scene_changer.gd")
+```
+
+Set project-level display and settings:
+
+```python
+game.set_icon("res://resources/icon.png")
+game.set_display(size=Vec2(540, 750), stretch_mode="canvas_items", stretch_aspect="expand")
+game.set_project_setting("audio/output_latency/web", 200)
+game.set_project_setting("physics/common/enable_pause_aware_picking", True)
+```
+
 Register input actions:
 
 ```python
@@ -78,6 +94,16 @@ errors.
 ```python
 class Game:
     def add_scene(self, scene: Scene) -> None: ...
+    def add_autoload(self, name: str, path: str) -> None: ...
+    def set_icon(self, path: str) -> None: ...
+    def set_display(
+        self,
+        *,
+        size: Vec2,
+        stretch_mode: str | None = None,
+        stretch_aspect: str | None = None,
+    ) -> None: ...
+    def set_project_setting(self, path: str, value: Any) -> None: ...
     def add_input_action(
         self,
         name: str,
