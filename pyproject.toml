@@ -4,11 +4,37 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pygodot"
-version = "0.0.0"
-description = "Declarative Python framework to create Godot projects"
+version = "0.1.0"
+description = "Build-time Python framework for generating Godot 4 projects"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { file = "LICENSE" }
+authors = [
+    { name = "Trizalio" },
+]
+keywords = [
+    "godot",
+    "godot-engine",
+    "gamedev",
+    "gdscript",
+    "build-tools",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Games/Entertainment",
+    "Topic :: Software Development :: Build Tools",
+]
+
+[project.urls]
+Homepage = "https://github.com/Trizalio/pygodot"
+Repository = "https://github.com/Trizalio/pygodot"
+Issues = "https://github.com/Trizalio/pygodot/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]

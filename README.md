@@ -45,6 +45,27 @@ Runtime logic remains ordinary GDScript inside the generated Godot project.
 | Build manifest ownership | `resources`, `generated_tres`, `ui_panel` | generated/copied/referenced |
 | Optional real Godot smoke checks | `tools/smoke_examples.py` | optional |
 
+## Install From Checkout
+
+`pygodot` is an early `0.1.x` technical package. Install it from a local
+checkout while developing or trying it from another project:
+
+```powershell
+python -m pip install -e C:\path\to\pygodot
+```
+
+Then create a separate project directory:
+
+```powershell
+mkdir my_game
+cd my_game
+```
+
+Create a `game.py` that imports `pygodot`, constructs a `Game` with
+`source_root=Path(__file__).parent`, and calls `game.build()`. The generated
+Godot project can live under a local build directory such as `build/godot`.
+Godot is only needed when calling `game.run()` or `game.check_run()`.
+
 ## Examples
 
 | Example | Description |
@@ -89,19 +110,6 @@ Build without launching Godot:
 ```powershell
 python -c "from examples.pong.game import game; game.build()"
 ```
-
-Use `pygodot` from another project by installing this checkout in editable mode:
-
-```powershell
-python -m pip install -e C:\path\to\pygodot
-mkdir my_game
-cd my_game
-```
-
-Then create a `game.py` that imports `pygodot`, constructs a `Game` with
-`source_root=Path(__file__).parent`, and calls `game.build()`. The generated
-Godot project can live under a local build directory such as `build/godot`;
-Godot is only needed when calling `game.run()` or `game.check_run()`.
 
 Run a short headless smoke check:
 
