@@ -42,6 +42,7 @@ Current snapshots cover:
 - timer scene/script with a built-in `timeout` signal connection.
 - audio scene/script with a copied `AudioStream` resource.
 - font scene with a copied `Font` resource.
+- template script scene/script rendered from `string.Template`.
 - animation scene with generated `Animation` and `AnimationLibrary` sub-resources.
 - physics scene/script with generated `RectangleShape2D` sub-resources.
 - flappy scene/script with generated collision shapes, input actions, and timer
@@ -85,7 +86,7 @@ Multiple examples can be checked with:
 
 ```powershell
 $env:PYTHONPATH = "src"
-python tools/smoke_examples.py --examples minimal,pong,snake,timer,physics,flappy
+python tools/smoke_examples.py --examples minimal,pong,snake,timer,template_script,physics,flappy
 python tools/smoke_examples.py --all --frames 20
 ```
 

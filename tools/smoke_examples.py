@@ -25,6 +25,7 @@ ALL_EXAMPLES = (
     "resources",
     "instancing",
     "timer",
+    "template_script",
     "audio",
     "font",
     "animation",

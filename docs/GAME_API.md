@@ -55,6 +55,11 @@ Script.from_template(
 )
 ```
 
+`Script.from_template(...)` uses Python's standard-library `string.Template`.
+Supported placeholders are `$name`, `${name}`, and `$$` for a literal dollar
+sign. This is plain text substitution for GDScript bodies, not Python-to-GDScript
+transpilation.
+
 Build or run:
 
 ```python

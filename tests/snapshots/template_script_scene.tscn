@@ -1,0 +1,15 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="Script_scripts_main_gd"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("Script_scripts_main_gd")
+
+[node name="Background" type="ColorRect" parent="."]
+color = Color(0.04, 0.05, 0.08, 1.0)
+position = Vector2(0, 0)
+size = Vector2(640, 360)
+
+[node name="StatusLabel" type="Label" parent="."]
+position = Vector2(150, 150)
+text = "waiting for template"

@@ -117,6 +117,23 @@ class ExampleSnapshotTests(SnapshotTestCase):
             _build_example_script(timer.game, "scripts/main.gd"),
         )
 
+    def test_template_script_scene_file_snapshot(self) -> None:
+        template_script = _load_example_game("template_script")
+        scene = template_script.game.scenes[0]
+
+        self.assert_matches_snapshot(
+            "template_script_scene.tscn",
+            TscnEmitter().emit(normalize_scene(scene)),
+        )
+
+    def test_template_script_file_snapshot(self) -> None:
+        template_script = _load_example_game("template_script")
+
+        self.assert_matches_snapshot(
+            "template_script.gd",
+            _build_example_script(template_script.game, "scripts/main.gd"),
+        )
+
     def test_audio_scene_file_snapshot(self) -> None:
         audio = _load_example_game("audio")
         scene = audio.game.scenes[0]
@@ -436,6 +453,23 @@ class ExampleBuildTests(unittest.TestCase):
                 'method="_on_pulse_timer_timeout"]',
                 scene_text,
             )
+
+    def test_template_script_example_builds_template_script(self) -> None:
+        template_script = _load_example_game("template_script")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            build_dir = Path(tmp) / "godot_project"
+            template_script.game.build_dir = build_dir
+
+            result = template_script.game.build()
+
+            self.assertEqual(
+                sorted(path.relative_to(build_dir).as_posix() for path in result.written_files),
+                [".pygodot/manifest.json", "project.godot", "scenes/main.tscn", "scripts/main.gd"],
+            )
+            script_text = (build_dir / "scripts" / "main.gd").read_text(encoding="utf-8")
+            self.assertIn("const INITIAL_COUNT := 3", script_text)
+            self.assertIn('$StatusLabel.text = "Template rendered GDScript (%s)"', script_text)
 
     def test_audio_example_builds_player_and_copies_stream(self) -> None:
         audio = _load_example_game("audio")

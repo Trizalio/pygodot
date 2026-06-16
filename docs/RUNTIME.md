@@ -36,6 +36,10 @@ Allowed:
 - user-authored manual GDScript files referenced by Python DSL;
 - generated signal connections;
 
+`Script.from_template(...)` uses Python `string.Template` only. It supports
+`$name`, `${name}`, and `$$` escaping in text GDScript templates; it is not a
+Python-to-GDScript compiler.
+
 ## Manual Scripts
 
 Manual scripts are referenced explicitly:

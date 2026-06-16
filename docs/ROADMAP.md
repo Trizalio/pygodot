@@ -42,6 +42,7 @@ Implemented:
 - a source-asset `examples/resources`;
 - a generated PackedScene instancing `examples/instancing`;
 - a signal-connected timer `examples/timer`;
+- a templated generated script `examples/template_script`;
 - an audio resource `examples/audio`;
 - a font resource `examples/font`;
 - a generated AnimationPlayer `examples/animation`;

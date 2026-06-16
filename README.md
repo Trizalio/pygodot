@@ -29,7 +29,7 @@ Runtime logic remains ordinary GDScript inside the generated Godot project.
 | --- | --- | --- |
 | Scene generation | `minimal` | supported |
 | Signals | `minimal`, `timer`, `audio`, `physics`, `flappy` | supported |
-| Generated GDScript | `minimal`, `pong`, `snake`, `timer` | raw body or source file |
+| Generated GDScript | `minimal`, `pong`, `snake`, `timer`, `template_script` | raw body, source file, or template |
 | InputMap | `pong`, `snake`, `flappy` | keyboard-only |
 | Window settings | `pong`, `snake`, `ui_panel` | viewport size |
 | External textures | `resources` | copied assets |
@@ -55,6 +55,7 @@ Runtime logic remains ordinary GDScript inside the generated Godot project.
 | `examples/resources` | Copies a source-owned SVG texture into the generated project. |
 | `examples/instancing` | Reuses a generated scene through `Scene.as_packed_scene()`. |
 | `examples/timer` | Connects a `Timer.timeout` signal to generated GDScript. |
+| `examples/template_script` | Renders generated GDScript from a `string.Template` file. |
 | `examples/audio` | Copies and plays a source-owned WAV with `AudioStreamPlayer`. |
 | `examples/font` | Uses copied `.ttf` and `.tres` font resources on labels. |
 | `examples/animation` | Generates `AnimationPlayer` value tracks and animation sub-resources. |
@@ -98,7 +99,7 @@ python -c "from examples.pong.game import game; game.check_run(frames=20)"
 Run optional smoke checks for multiple examples:
 
 ```powershell
-python tools/smoke_examples.py --examples minimal,pong,snake,timer,physics,flappy
+python tools/smoke_examples.py --examples minimal,pong,snake,timer,template_script,physics,flappy
 python tools/smoke_examples.py --all --frames 20
 ```
 

@@ -345,12 +345,35 @@ Script.from_template(
     source="scripts/player.gd.tmpl",
     path="res://scripts/player.gd",
     extends="Node2D",
-    context={"speed": 300},
+    context={"speed": 300, "title": "Pilot"},
 )
 ```
 
-Template placeholders use `$name` syntax. Literal Godot node shorthand such as
-`$Player` must be escaped as `$$Player` inside template files.
+Template files are plain GDScript body files rendered with Python's
+standard-library `string.Template`:
+
+- `$name` inserts `context["name"]`;
+- `${name}` is the braced form, useful next to identifier characters;
+- `$$` emits a literal `$`.
+
+Literal Godot node shorthand such as `$Player` must be escaped as `$$Player`
+inside template files:
+
+```gdscript
+const SPEED := ${speed}
+
+func _ready() -> void:
+    $$Title.text = "$title"
+```
+
+Context values are converted by `string.Template` during substitution, so simple
+numbers such as `300` can be passed directly. Missing or invalid placeholders
+raise `BuildError` with the script path, template source, and missing key or
+template parse error.
+
+Templates are text substitution only. They are not Python-to-GDScript
+transpilation, do not add control flow, and do not parse Python functions or
+classes.
 
 Manual scripts are referenced without generation:
 
