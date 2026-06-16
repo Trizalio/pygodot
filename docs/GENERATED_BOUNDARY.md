@@ -85,6 +85,17 @@ with `ownership="referenced"` and `copied=false`.
 Copied resources are not generated content. Edit the source-owned file under
 `source_root`, then rebuild.
 
+`pygodot` does not recursively inspect copied resources. For example, if a
+source-owned `res://assets/display_font.tres` references
+`res://assets/font.ttf`, declare both resources in Python or keep both files
+managed by the source project layout. The build step copies resources that are
+explicitly referenced by DSL objects or by supported generated `.tres` helpers;
+it does not parse arbitrary `.tres` files to discover nested dependencies.
+
+Missing external assets are soft references for now. This keeps manual or
+externally managed project layouts possible while still making the boundary
+visible through `BuildResult.referenced_resources` and the manifest.
+
 ## Manifest
 
 Each build writes:

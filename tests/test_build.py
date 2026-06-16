@@ -100,6 +100,7 @@ class BuildTests(unittest.TestCase):
                 [".pygodot/manifest.json", "project.godot", "scenes/main.tscn"],
             )
             self.assertEqual(result.generated_scripts, [])
+            self.assertEqual(result.referenced_resources, ["res://manual/player.gd"])
             self.assertFalse((build_dir / "manual" / "player.gd").exists())
             self.assertIn(
                 'path="res://manual/player.gd"',
@@ -473,6 +474,47 @@ const SPEED := 120.5
                 ],
             )
 
+    def test_game_build_records_missing_external_assets_as_referenced(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            source_root = Path(tmp) / "source"
+            build_dir = Path(tmp) / "godot_project"
+
+            game = Game(
+                name="GeneratedGame",
+                source_root=source_root,
+                build_dir=build_dir,
+                main_scene="res://scenes/main.tscn",
+            )
+            game.add_scene(
+                Scene(
+                    path="res://scenes/main.tscn",
+                    root=Node2D(
+                        "Main",
+                        icon=texture("res://assets/missing_icon.svg"),
+                    ),
+                )
+            )
+
+            result = game.build()
+
+            self.assertEqual(result.copied_resources, [])
+            self.assertEqual(result.referenced_resources, ["res://assets/missing_icon.svg"])
+            self.assertFalse((build_dir / "assets" / "missing_icon.svg").exists())
+
+            manifest = json.loads((build_dir / ".pygodot" / "manifest.json").read_text(encoding="utf-8"))
+            self.assertEqual(
+                manifest["external_resources"],
+                [
+                    {
+                        "copied": False,
+                        "id": "Texture2D_assets_missing_icon_svg",
+                        "ownership": "referenced",
+                        "path": "res://assets/missing_icon.svg",
+                        "type": "Texture2D",
+                    }
+                ],
+            )
+
     def test_game_build_writes_generated_tres_resources_and_manifest(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             build_dir = Path(tmp) / "godot_project"
@@ -606,6 +648,60 @@ font_size = 32
                         "id": "Font_assets_display_ttf",
                         "ownership": "copied",
                         "path": "res://assets/display.ttf",
+                        "type": "Font",
+                    },
+                    {
+                        "copied": False,
+                        "id": "LabelSettings_ui_title_label_settings_tres",
+                        "ownership": "generated",
+                        "path": "res://ui/title_label_settings.tres",
+                        "type": "LabelSettings",
+                    },
+                ],
+            )
+
+    def test_game_build_records_missing_generated_tres_dependencies_as_referenced(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            source_root = Path(tmp) / "source"
+            build_dir = Path(tmp) / "godot_project"
+
+            title_settings = label_settings(
+                "res://ui/title_label_settings.tres",
+                font=font("res://assets/missing_display.ttf"),
+                font_size=32,
+            )
+            game = Game(
+                name="GeneratedResources",
+                source_root=source_root,
+                build_dir=build_dir,
+                main_scene="res://scenes/main.tscn",
+            )
+            game.add_scene(
+                Scene(
+                    path="res://scenes/main.tscn",
+                    root=Node2D(
+                        "Main",
+                        children=[Label("Title", text="Generated .tres", label_settings=title_settings)],
+                    ),
+                )
+            )
+
+            result = game.build()
+
+            self.assertEqual(result.copied_resources, [])
+            self.assertEqual(result.referenced_resources, ["res://assets/missing_display.ttf"])
+            self.assertFalse((build_dir / "assets" / "missing_display.ttf").exists())
+            self.assertTrue((build_dir / "ui" / "title_label_settings.tres").exists())
+
+            manifest = json.loads((build_dir / ".pygodot" / "manifest.json").read_text(encoding="utf-8"))
+            self.assertEqual(
+                manifest["external_resources"],
+                [
+                    {
+                        "copied": False,
+                        "id": "Font_assets_missing_display_ttf",
+                        "ownership": "referenced",
+                        "path": "res://assets/missing_display.ttf",
                         "type": "Font",
                     },
                     {

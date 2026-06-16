@@ -33,6 +33,7 @@ class BuildResult:
     generated_scripts: list[Path]
     generated_resources: list[Path] = field(default_factory=list)
     copied_resources: list[Path] = field(default_factory=list)
+    referenced_resources: list[str] = field(default_factory=list)
     manifest_path: Path | None = None
 
 
@@ -79,6 +80,7 @@ class Game:
         generated_scripts: list[Path] = []
         generated_resources: list[Path] = []
         copied_resources: list[Path] = []
+        referenced_resources: list[str] = []
         manifest = BuildManifest()
 
         project_file = writer.write_text(Path("project.godot"), project_emitter.emit(project))
@@ -118,7 +120,9 @@ class Game:
             manifest.generated_files.append(rel_scene_path)
             manifest.generated_scenes.append(rel_scene_path)
 
-        copied_resources.extend(_copy_external_resources(project, writer, self.source_root, manifest))
+        external_result = _copy_external_resources(project, writer, self.source_root, manifest)
+        copied_resources.extend(external_result.copied_resources)
+        referenced_resources.extend(external_result.referenced_resources)
         manifest_relative_path = Path(".pygodot") / "manifest.json"
         manifest.generated_files.append(manifest_relative_path.as_posix())
         manifest_path = writer.write_text(
@@ -135,6 +139,7 @@ class Game:
             generated_scripts=generated_scripts,
             generated_resources=generated_resources,
             copied_resources=copied_resources,
+            referenced_resources=referenced_resources,
             manifest_path=manifest_path,
         )
 
@@ -213,13 +218,20 @@ def _render_template_body(script: IRScript, body: str) -> str:
         ) from exc
 
 
+@dataclass(slots=True, frozen=True)
+class _ExternalResourceBuildResult:
+    copied_resources: list[Path]
+    referenced_resources: list[str]
+
+
 def _copy_external_resources(
     project: IRProject,
     writer: GeneratedFileWriter,
     source_root: Path,
     manifest: BuildManifest,
-) -> list[Path]:
+) -> _ExternalResourceBuildResult:
     copied: list[Path] = []
+    referenced: list[str] = []
     seen: set[tuple[str, str]] = set()
     generated_resource_keys = {
         (resource.type, resource.path)
@@ -254,6 +266,7 @@ def _copy_external_resources(
             continue
 
         if resource.type == "Script":
+            referenced.append(resource.path)
             manifest.external_resources.append(
                 ManifestResource(
                     type=resource.type,
@@ -271,6 +284,8 @@ def _copy_external_resources(
         if source.is_file():
             copied_path = writer.copy_file(source, relative_path)
             copied.append(copied_path)
+        else:
+            referenced.append(resource.path)
 
         manifest.external_resources.append(
             ManifestResource(
@@ -281,7 +296,10 @@ def _copy_external_resources(
                 ownership="copied" if copied_path is not None else "referenced",
             )
         )
-    return copied
+    return _ExternalResourceBuildResult(
+        copied_resources=copied,
+        referenced_resources=referenced,
+    )
 
 
 def _iter_external_resources(project: IRProject) -> list[IRExternalResource]:

@@ -74,6 +74,10 @@ Build tests create temporary generated projects and verify:
 - manual script references are not written;
 - existing external resources are copied and recorded in the manifest with
   explicit ownership;
+- missing external resources remain referenced and visible in both
+  `BuildResult.referenced_resources` and the manifest;
+- generated `.tres` dependencies follow the same copied/referenced ownership
+  rules as scene-level external resources;
 - generated resources and referenced manual resources keep distinct manifest
   ownership;
 - unsafe `res://` paths are rejected.

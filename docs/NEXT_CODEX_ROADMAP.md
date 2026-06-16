@@ -26,7 +26,7 @@ Implemented:
 - keyboard-only InputMap generation;
 - minimal window settings;
 - explicit generated/copied/referenced resource ownership in the build
-  manifest;
+  manifest and `BuildResult`;
 - optional real Godot smoke checks;
 - minimal GitHub Actions unit-test CI that does not require Godot.
 
@@ -48,27 +48,7 @@ live in focused docs such as `docs/DSL.md`, `docs/EMITTERS.md`,
 
 ## Candidate Next Milestones
 
-### 1. Resource Dependency Boundaries
-
-Goal: make copied/manual resource dependency behavior explicit before adding
-broader asset features.
-
-Possible tasks:
-
-- document what pygodot does and does not discover inside copied `.tres` files;
-- add tests for referenced-but-missing external assets with
-  `ownership="referenced"`;
-- decide whether missing copied assets should remain soft references or become
-  opt-in validation errors;
-- keep scope away from a full asset graph engine.
-
-Anti-goals:
-
-- no import pipeline;
-- no cleanup/pruning;
-- no broad resource graph engine.
-
-### 2. Godot Error Reporting Polish
+### 1. Godot Error Reporting Polish
 
 Goal: make `Game.check_run()` and smoke failures easier to diagnose.
 
@@ -83,7 +63,7 @@ Anti-goals:
 - no CI dependency on Godot;
 - no editor integration.
 
-### 3. InputMap Increment
+### 2. InputMap Increment
 
 Goal: extend InputMap only when a concrete example needs it.
 

@@ -148,7 +148,14 @@ Node2D("Other", resource=ext_resource("res://assets/data.tres", type="Resource")
 Normalization collects external resources into scene resource tables and
 deduplicates them by `(type, path)`. During `Game.build()`, existing source
 files under `Game.source_root` are copied to matching `res://` paths under
-`build_dir` and recorded in the manifest with `ownership="copied"`.
+`build_dir` and recorded in the manifest with `ownership="copied"`. Missing
+external resources remain soft references: they are not copied, they appear in
+`BuildResult.referenced_resources`, and the manifest records them with
+`ownership="referenced"`.
+
+Copied `.tres` resources are treated as source-owned files. `pygodot` does not
+parse them to discover nested dependencies; declare those dependencies directly
+when pygodot should copy or track them.
 
 Generated `.tres` resources are intentionally narrow. The current public helper
 is `label_settings(...)`, which writes a native Godot `LabelSettings` resource
@@ -173,6 +180,8 @@ The optional `font` argument accepts the same `font("res://...")` external
 resource helper used by node properties. `Game.build()` copies an existing font
 file from `source_root` when the font is referenced only from the generated
 `.tres` file, and the `.tres` file declares it as an internal `ExtResource`.
+If that font file is not present under `source_root`, it is recorded as a
+referenced external resource instead of failing the build.
 
 Use source-owned copied `.tres` files with `ext_resource(...)` or typed helpers
 when pygodot should not generate the resource content.

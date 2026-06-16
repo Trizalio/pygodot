@@ -101,8 +101,13 @@ class BuildResult:
     generated_scripts: list[Path]
     generated_resources: list[Path]
     copied_resources: list[Path]
+    referenced_resources: list[str]
     manifest_path: Path | None
 ```
+
+`referenced_resources` contains `res://` paths that pygodot intentionally did
+not write or copy, such as manual scripts and missing or externally managed
+assets. The manifest records the same resources with `ownership="referenced"`.
 
 ## Entry point pattern
 

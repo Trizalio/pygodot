@@ -158,6 +158,11 @@ under `generated_resources`, and referenced from scenes through ordinary
 deterministic `[ext_resource ...]` entries for narrow supported dependencies,
 currently `LabelSettings.font`.
 
+The build step only tracks dependencies explicitly present in normalized IR. It
+does not inspect copied/manual `.tres` files for nested `ExtResource` entries.
+Missing dependencies declared by supported generated `.tres` helpers remain
+referenced resources and are recorded as such in the build result and manifest.
+
 `StyleBoxFlat` resources are emitted as direct resource properties:
 
 ```text
