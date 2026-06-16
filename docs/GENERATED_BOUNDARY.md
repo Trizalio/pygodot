@@ -104,6 +104,8 @@ Each build writes:
 res://.pygodot/manifest.json
 ```
 
+The manifest contract is documented in [MANIFEST.md](MANIFEST.md).
+
 The manifest records:
 
 - `generated_files`: generated project files written by pygodot;

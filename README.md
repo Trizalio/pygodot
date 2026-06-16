@@ -142,6 +142,7 @@ CI runs the same unit test suite without installing or launching Godot.
 
 - [API surface policy](docs/API_SURFACE_POLICY.md)
 - [Generated/manual file boundary](docs/GENERATED_BOUNDARY.md)
+- [Build manifest](docs/MANIFEST.md)
 - [Roadmap](docs/ROADMAP.md)
 - [Next Codex roadmap](docs/NEXT_CODEX_ROADMAP.md)
 

@@ -791,6 +791,107 @@ corner_radius_top_right = 6
                 ],
             )
 
+    def test_game_build_writes_mixed_project_manifest_contract(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            source_root = Path(tmp) / "source"
+            build_dir = Path(tmp) / "godot_project"
+            asset_path = source_root / "assets" / "icon.svg"
+            asset_path.parent.mkdir(parents=True)
+            asset_path.write_text("<svg></svg>\n", encoding="utf-8")
+            manual_script = source_root / "manual" / "player.gd"
+            manual_script.parent.mkdir(parents=True)
+            manual_script.write_text("extends Node2D\n", encoding="utf-8")
+
+            title_settings = label_settings(
+                "res://ui/title_label_settings.tres",
+                font_size=20,
+                font_color=Color(1, 1, 1),
+            )
+            game = Game(
+                name="MixedManifest",
+                source_root=source_root,
+                build_dir=build_dir,
+                main_scene="res://scenes/main.tscn",
+            )
+            game.add_scene(
+                Scene(
+                    path="res://scenes/main.tscn",
+                    root=Node2D(
+                        "Main",
+                        script=Script(
+                            path="res://scripts/main.gd",
+                            extends="Node2D",
+                            body="func _ready() -> void:\n    pass\n",
+                        ),
+                        children=[
+                            Label("Title", text="Manifest", label_settings=title_settings),
+                            node("Icon", "Sprite2D", texture=texture("res://assets/icon.svg")),
+                            Node2D(
+                                "ManualPlayer",
+                                script=Script.reference(
+                                    "res://manual/player.gd",
+                                    extends="Node2D",
+                                ),
+                            ),
+                        ],
+                    ),
+                )
+            )
+
+            result = game.build()
+
+            self.assertEqual(result.copied_resources, [build_dir / "assets" / "icon.svg"])
+            self.assertEqual(result.referenced_resources, ["res://manual/player.gd"])
+            self.assertTrue((build_dir / "assets" / "icon.svg").is_file())
+            self.assertFalse((build_dir / "manual" / "player.gd").exists())
+
+            manifest = json.loads((build_dir / ".pygodot" / "manifest.json").read_text(encoding="utf-8"))
+            self.assertEqual(
+                manifest,
+                {
+                    "external_resources": [
+                        {
+                            "copied": False,
+                            "id": "LabelSettings_ui_title_label_settings_tres",
+                            "ownership": "generated",
+                            "path": "res://ui/title_label_settings.tres",
+                            "type": "LabelSettings",
+                        },
+                        {
+                            "copied": False,
+                            "id": "Script_manual_player_gd",
+                            "ownership": "referenced",
+                            "path": "res://manual/player.gd",
+                            "type": "Script",
+                        },
+                        {
+                            "copied": False,
+                            "id": "Script_scripts_main_gd",
+                            "ownership": "generated",
+                            "path": "res://scripts/main.gd",
+                            "type": "Script",
+                        },
+                        {
+                            "copied": True,
+                            "id": "Texture2D_assets_icon_svg",
+                            "ownership": "copied",
+                            "path": "res://assets/icon.svg",
+                            "type": "Texture2D",
+                        },
+                    ],
+                    "generated_files": [
+                        ".pygodot/manifest.json",
+                        "project.godot",
+                        "scenes/main.tscn",
+                        "scripts/main.gd",
+                        "ui/title_label_settings.tres",
+                    ],
+                    "generated_resources": ["ui/title_label_settings.tres"],
+                    "generated_scenes": ["scenes/main.tscn"],
+                    "generated_scripts": ["scripts/main.gd"],
+                },
+            )
+
     def test_game_build_rejects_unsafe_res_paths(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             build_dir = Path(tmp) / "godot_project"
