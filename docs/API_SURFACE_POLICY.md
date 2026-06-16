@@ -23,6 +23,66 @@ Public API is anything users are expected to import from `pygodot` or
 Public API must be kept backward-compatible unless the user explicitly approves
 a breaking change.
 
+## Stable For 0.1
+
+Stable for 0.1 means the API name, broad purpose, and normal usage pattern
+should not change without an explicit breaking-change decision. Exact generated
+text remains test-protected, but small emitter formatting fixes may still happen
+when they are intentional and snapshot-reviewed.
+
+The stable 0.1 surface is:
+
+- `Game`, including `build()`, `run()`, `check_run()`, `add_scene(...)`,
+  `add_input_action(...)`, and `set_window(...)`;
+- `BuildResult` and `GodotRunResult` as the structured results for build and
+  smoke-check workflows;
+- `Scene`;
+- `Script`, including inline generated scripts, `Script.from_file(...)`,
+  `Script.from_template(...)`, and `Script.reference(...)`;
+- `Node` and generic `node(...)`;
+- basic node constructors used by examples:
+  `Node2D`, `Control`, `ColorRect`, `Label`, `Button`, `Sprite2D`, `Timer`,
+  `AudioStreamPlayer`, `AnimationPlayer`, `Area2D`, and `CollisionShape2D`;
+- scene instancing through `scene_instance(...)` and `Scene.as_packed_scene()`;
+- signals through `SignalConnection` and `signal(...)`;
+- value wrappers:
+  `Vec2`, `Vec3`, `Rect2`, `Color`, and `NodePath`;
+- external resource declarations:
+  `ExternalResource`, `ext_resource(...)`, `external_resource(...)`,
+  `texture(...)`, `audio_stream(...)`, `font(...)`, and `packed_scene(...)`;
+- keyboard InputMap declaration through `Game.add_input_action(..., keys=...)`;
+- minimal window sizing through `WindowSettings` and `Game.set_window(...)`;
+- the library-first workflow where a user project imports `pygodot`, creates a
+  `Game`, and calls methods on that object.
+
+## Experimental Surface
+
+Experimental means the API is public and tested, but still shaped by examples.
+It should remain available during the 0.1 line when practical, yet its exact
+shape may change with explicit documentation and tests as the resource model
+settles.
+
+The experimental surface is:
+
+- generated `.tres` helpers:
+  `GeneratedResource`, `label_settings(...)`, and `style_box_flat(...)`;
+- generated animation helpers:
+  `Animation`, `AnimationKey`, `ValueTrack`, `animation(...)`, `key(...)`, and
+  `value_track(...)`;
+- generic scene sub-resources:
+  `SubResource` and `sub_resource(...)`;
+- generated shape sub-resources:
+  `RectangleShape2D`, `CircleShape2D`, `rectangle_shape_2d(...)`, and
+  `circle_shape_2d(...)`;
+- exact `.pygodot/manifest.json` JSON shape and ordering;
+- generated resource registry details, resource IDs, and ownership internals
+  beyond the documented generated/copied/referenced distinction;
+- exact smoke-check diagnostic formatting, beyond including command, return
+  code, stdout tail, stderr tail, and Godot log tail.
+
+Experimental APIs must still follow the same test and documentation rules as
+stable APIs when they are added or changed.
+
 ## Internal API
 
 Internal API includes modules that implement normalization, validation,

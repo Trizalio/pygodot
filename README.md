@@ -145,5 +145,8 @@ CI runs the same unit test suite without installing or launching Godot.
 - [Roadmap](docs/ROADMAP.md)
 - [Next Codex roadmap](docs/NEXT_CODEX_ROADMAP.md)
 
+The API surface policy marks which public helpers are stable for the 0.1 line
+and which remain experimental while the examples continue to shape them.
+
 Generated Godot projects are build output, not the source of truth. Edit the
 Python DSL, manual assets, and referenced manual scripts, then rebuild.
