@@ -25,6 +25,11 @@ $env:PYTHONPATH = "src"
 python -m unittest discover -s tests
 ```
 
+## Continuous Integration
+
+GitHub Actions runs the ordinary unit test suite on push and pull request using
+Python 3.11. CI does not install Godot and does not run real Godot smoke checks.
+
 ## Snapshot Tests
 
 File snapshots live under `tests/snapshots/`.

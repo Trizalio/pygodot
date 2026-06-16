@@ -115,6 +115,8 @@ $env:PYTHONPATH = "src"
 python -m unittest discover -s tests
 ```
 
+CI runs the same unit test suite without installing or launching Godot.
+
 ## Docs
 
 - [API surface policy](docs/API_SURFACE_POLICY.md)
