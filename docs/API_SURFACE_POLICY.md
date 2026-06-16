@@ -15,6 +15,8 @@ Public API is anything users are expected to import from `pygodot` or
 - node constructors such as `Node2D`, `Label`, `Timer`, and `Area2D`;
 - resource helpers such as `texture(...)`, `packed_scene(...)`, and
   `rectangle_shape_2d(...)`;
+- generated resource helpers such as `label_settings(...)` and
+  `style_box_flat(...)`;
 - value wrappers such as `Vec2`, `Color`, and `NodePath`;
 - functions exported from `pygodot.__init__` or `pygodot.dsl.__init__`.
 

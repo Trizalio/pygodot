@@ -51,7 +51,9 @@ Current public concepts include:
 - scene instances: `scene_instance(...)`;
 - animations: `animation(...)`, `value_track(...)`, `key(...)`;
 - generated sub-resources: `sub_resource(...)`, `rectangle_shape_2d(...)`,
-  `circle_shape_2d(...)`.
+  `circle_shape_2d(...)`;
+- generated `.tres` resources: `label_settings(...)`,
+  `style_box_flat(...)`.
 
 The DSL should stay explicit and boring. Avoid hidden global scene stacks,
 metaclass-heavy APIs, and mandatory context managers.
@@ -67,6 +69,7 @@ Responsibilities:
 - normalize scene instance resources;
 - normalize animation sub-resources;
 - normalize generated sub-resources;
+- normalize generated `.tres` resources and their external dependencies;
 - collect external resources;
 - compute stable resource IDs;
 - carry project-level input actions;
@@ -102,7 +105,8 @@ Current emitters:
 
 - `ProjectEmitter` -> `project.godot`;
 - `TscnEmitter` -> `.tscn`;
-- `GdScriptEmitter` -> `.gd`.
+- `GdScriptEmitter` -> `.gd`;
+- `TresEmitter` -> generated `.tres` resources.
 
 Emitters should be deterministic and side-effect-light. File writing belongs to
 the build layer.

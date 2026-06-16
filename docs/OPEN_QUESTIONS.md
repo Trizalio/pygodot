@@ -39,8 +39,8 @@ Do not build a Python-to-GDScript transpiler.
 
 ## Q004 - Complex Resource Strategy
 
-Direct text emission is fine for current scenes and for the first generated
-`.tres` resource, `LabelSettings`.
+Direct text emission is fine for current scenes and for current generated
+`.tres` resources such as `LabelSettings` and `StyleBoxFlat`.
 
 Open question:
 

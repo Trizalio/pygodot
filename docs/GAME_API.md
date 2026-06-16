@@ -99,6 +99,7 @@ class BuildResult:
     written_files: list[Path]
     generated_scenes: list[Path]
     generated_scripts: list[Path]
+    generated_resources: list[Path]
     copied_resources: list[Path]
     manifest_path: Path | None
 ```

@@ -52,15 +52,17 @@ Implemented:
 - a static generated UI panel with reusable `.tres` styles in
   `examples/ui_panel`.
 
-## Next: UI examples and generated resources
+## Next Direction
 
-Upcoming near-term work should stay library-first and example-backed. The next
-focus is using generated `.tres` support in richer UI examples before adding
-more resource types.
+Upcoming near-term work should stay library-first and example-backed. Use
+`docs/NEXT_CODEX_ROADMAP.md` for the active Codex work plan; keep this file as
+the short product-direction overview.
 
 Likely candidates:
 
-- a static UI panel/HUD example using generated `LabelSettings`;
+- clearer resource dependency boundaries;
+- better Godot smoke-check error reporting;
+- one small InputMap increment if an example needs it.
 
 ## Non-goals for the near term
 
