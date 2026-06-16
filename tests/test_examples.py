@@ -970,6 +970,8 @@ class ExampleBuildTests(unittest.TestCase):
             self.assertIn('[node name="Fader" type="MarginContainer"]', fader_scene_text)
             self.assertIn("SceneChanger.go_to_intro()", main_script_text)
             self.assertIn('AudioManager.play_cue("start")', main_script_text)
+            self.assertIn("AudioManager.describe_state()", main_script_text)
+            self.assertIn("Start pressed. %s", main_script_text)
             self.assertIn("func change_scene(path: String) -> void:", scene_changer_text)
 
             manifest = json.loads((build_dir / ".pygodot" / "manifest.json").read_text(encoding="utf-8"))
