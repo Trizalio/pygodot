@@ -43,7 +43,10 @@ The stable 0.1 surface is:
 - `Node` and generic `node(...)`;
 - basic node constructors used by examples:
   `Node2D`, `Control`, `ColorRect`, `Label`, `Button`, `Sprite2D`, `Timer`,
-  `AudioStreamPlayer`, `AnimationPlayer`, `Area2D`, and `CollisionShape2D`;
+  `AudioStreamPlayer`, `AnimationPlayer`, `Area2D`, `CollisionShape2D`,
+  `MarginContainer`, `Panel`, `VBoxContainer`, `HBoxContainer`,
+  `GridContainer`, `CenterContainer`, `TextureRect`, `RichTextLabel`, and
+  `HSeparator`;
 - scene instancing through `scene_instance(...)` and `Scene.as_packed_scene()`;
 - node group declarations through the `groups=...` keyword on existing node
   declarations and constructors;

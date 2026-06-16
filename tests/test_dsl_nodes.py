@@ -7,20 +7,29 @@ from pygodot import (
     Area2D,
     AudioStreamPlayer,
     Button,
+    CenterContainer,
     CircleShape2D,
     Color,
     ColorRect,
     CollisionShape2D,
+    GridContainer,
+    HBoxContainer,
+    HSeparator,
     Label,
+    MarginContainer,
     Node2D,
+    Panel,
     Rect2,
     RectangleShape2D,
+    RichTextLabel,
     Scene,
     Script,
     Sprite2D,
     SubResource,
+    TextureRect,
     Timer,
     Vec2,
+    VBoxContainer,
     audio_stream,
     animation,
     circle_shape_2d,
@@ -40,6 +49,30 @@ from pygodot import (
 
 
 class DslNodeTests(unittest.TestCase):
+    def test_ld49_ui_constructors_create_thin_control_nodes(self) -> None:
+        cases = [
+            (MarginContainer, "MarginContainer"),
+            (Panel, "Panel"),
+            (VBoxContainer, "VBoxContainer"),
+            (HBoxContainer, "HBoxContainer"),
+            (GridContainer, "GridContainer"),
+            (CenterContainer, "CenterContainer"),
+            (TextureRect, "TextureRect"),
+            (RichTextLabel, "RichTextLabel"),
+            (HSeparator, "HSeparator"),
+        ]
+
+        for constructor, type_name in cases:
+            with self.subTest(type_name=type_name):
+                child = Label("Child", text="Nested")
+                created = constructor("NodeName", children=[child], groups=["ui"], visible=True)
+
+                self.assertEqual(created.name, "NodeName")
+                self.assertEqual(created.type, type_name)
+                self.assertEqual(created.children, [child])
+                self.assertEqual(created.groups, ["ui"])
+                self.assertEqual(created.props, {"visible": True})
+
     def test_animation_player_constructor_creates_animation_player_node(self) -> None:
         pulse = animation(
             "pulse",

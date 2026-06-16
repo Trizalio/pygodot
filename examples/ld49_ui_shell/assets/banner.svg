@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="160" viewBox="0 0 480 160">
+  <rect width="480" height="160" fill="#17202a"/>
+  <rect x="20" y="22" width="440" height="116" rx="12" fill="#243447" stroke="#6fb3a8" stroke-width="4"/>
+  <path d="M62 112 L118 48 L174 112 Z" fill="#e3b341"/>
+  <path d="M184 112 L240 48 L296 112 Z" fill="#d96b5f"/>
+  <path d="M306 112 L362 48 L418 112 Z" fill="#7fb069"/>
+  <text x="240" y="132" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#edf2f4">LD49 shell</text>
+</svg>

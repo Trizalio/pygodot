@@ -34,6 +34,7 @@ ALL_EXAMPLES = (
     "generated_tres",
     "ui_panel",
     "mouse_input",
+    "ld49_ui_shell",
 )
 
 

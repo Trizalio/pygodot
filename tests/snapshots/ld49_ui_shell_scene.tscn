@@ -1,0 +1,65 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="Script_scripts_main_gd"]
+[ext_resource type="Texture2D" path="res://assets/banner.svg" id="Texture2D_assets_banner_svg"]
+
+[node name="Main" type="MarginContainer" groups=["ld49_ui_shell"]]
+script = ExtResource("Script_scripts_main_gd")
+anchors_preset = 15
+offset_bottom = 750
+offset_right = 540
+
+[node name="Panel" type="Panel" parent="."]
+
+[node name="VBox" type="VBoxContainer" parent="Panel"]
+
+[node name="Title" type="Label" parent="Panel/VBox"]
+horizontal_alignment = 1
+text = "LD49 Tactical Shell"
+theme_override_font_sizes = {"font_size": 30}
+
+[node name="Banner" type="TextureRect" parent="Panel/VBox"]
+custom_minimum_size = Vector2(480, 160)
+expand_mode = 1
+stretch_mode = 5
+texture = ExtResource("Texture2D_assets_banner_svg")
+
+[node name="Intro" type="RichTextLabel" parent="Panel/VBox"]
+bbcode_enabled = true
+custom_minimum_size = Vector2(480, 96)
+fit_content = true
+text = "[center]A compact menu shell for the LD49 migration: containers, copied art, buttons, signal binds, and a file-backed script.[/center]"
+
+[node name="MenuCenter" type="CenterContainer" parent="Panel/VBox"]
+
+[node name="MenuButtons" type="VBoxContainer" parent="Panel/VBox/MenuCenter"]
+
+[node name="StartButton" type="Button" parent="Panel/VBox/MenuCenter/MenuButtons"]
+custom_minimum_size = Vector2(260, 46)
+text = "Start"
+
+[node name="ContinueButton" type="Button" parent="Panel/VBox/MenuCenter/MenuButtons"]
+custom_minimum_size = Vector2(260, 46)
+text = "Continue"
+
+[node name="ExitButton" type="Button" parent="Panel/VBox/MenuCenter/MenuButtons"]
+custom_minimum_size = Vector2(260, 46)
+text = "Exit"
+
+[node name="Divider" type="HSeparator" parent="Panel/VBox"]
+
+[node name="Footer" type="HBoxContainer" parent="Panel/VBox"]
+
+[node name="StatusLabel" type="Label" parent="Panel/VBox/Footer"]
+text = "Ready"
+
+[node name="VersionLabel" type="Label" parent="Panel/VBox/Footer"]
+text = "Godot 4 target"
+
+[node name="BackgroundMusic" type="AudioStreamPlayer" parent="."]
+autoplay = false
+
+
+[connection signal="pressed" from="Panel/VBox/MenuCenter/MenuButtons/StartButton" to="." method="_on_menu_action" binds=["start"]]
+[connection signal="pressed" from="Panel/VBox/MenuCenter/MenuButtons/ContinueButton" to="." method="_on_menu_action" binds=["continue"]]
+[connection signal="pressed" from="Panel/VBox/MenuCenter/MenuButtons/ExitButton" to="." method="_on_exit_pressed"]

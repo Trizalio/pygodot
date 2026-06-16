@@ -153,6 +153,186 @@ def Control(
     )
 
 
+def MarginContainer(
+    name: str,
+    *,
+    children: list[Node] | None = None,
+    script: Script | None = None,
+    signals: list[SignalConnection] | None = None,
+    groups: list[str] | None = None,
+    **props: Any,
+) -> Node:
+    return Node(
+        name=name,
+        type="MarginContainer",
+        props=props,
+        children=children or [],
+        script=script,
+        signals=signals or [],
+        groups=groups or [],
+    )
+
+
+def Panel(
+    name: str,
+    *,
+    children: list[Node] | None = None,
+    script: Script | None = None,
+    signals: list[SignalConnection] | None = None,
+    groups: list[str] | None = None,
+    **props: Any,
+) -> Node:
+    return Node(
+        name=name,
+        type="Panel",
+        props=props,
+        children=children or [],
+        script=script,
+        signals=signals or [],
+        groups=groups or [],
+    )
+
+
+def VBoxContainer(
+    name: str,
+    *,
+    children: list[Node] | None = None,
+    script: Script | None = None,
+    signals: list[SignalConnection] | None = None,
+    groups: list[str] | None = None,
+    **props: Any,
+) -> Node:
+    return Node(
+        name=name,
+        type="VBoxContainer",
+        props=props,
+        children=children or [],
+        script=script,
+        signals=signals or [],
+        groups=groups or [],
+    )
+
+
+def HBoxContainer(
+    name: str,
+    *,
+    children: list[Node] | None = None,
+    script: Script | None = None,
+    signals: list[SignalConnection] | None = None,
+    groups: list[str] | None = None,
+    **props: Any,
+) -> Node:
+    return Node(
+        name=name,
+        type="HBoxContainer",
+        props=props,
+        children=children or [],
+        script=script,
+        signals=signals or [],
+        groups=groups or [],
+    )
+
+
+def GridContainer(
+    name: str,
+    *,
+    children: list[Node] | None = None,
+    script: Script | None = None,
+    signals: list[SignalConnection] | None = None,
+    groups: list[str] | None = None,
+    **props: Any,
+) -> Node:
+    return Node(
+        name=name,
+        type="GridContainer",
+        props=props,
+        children=children or [],
+        script=script,
+        signals=signals or [],
+        groups=groups or [],
+    )
+
+
+def CenterContainer(
+    name: str,
+    *,
+    children: list[Node] | None = None,
+    script: Script | None = None,
+    signals: list[SignalConnection] | None = None,
+    groups: list[str] | None = None,
+    **props: Any,
+) -> Node:
+    return Node(
+        name=name,
+        type="CenterContainer",
+        props=props,
+        children=children or [],
+        script=script,
+        signals=signals or [],
+        groups=groups or [],
+    )
+
+
+def TextureRect(
+    name: str,
+    *,
+    children: list[Node] | None = None,
+    script: Script | None = None,
+    signals: list[SignalConnection] | None = None,
+    groups: list[str] | None = None,
+    **props: Any,
+) -> Node:
+    return Node(
+        name=name,
+        type="TextureRect",
+        props=props,
+        children=children or [],
+        script=script,
+        signals=signals or [],
+        groups=groups or [],
+    )
+
+
+def RichTextLabel(
+    name: str,
+    *,
+    children: list[Node] | None = None,
+    script: Script | None = None,
+    signals: list[SignalConnection] | None = None,
+    groups: list[str] | None = None,
+    **props: Any,
+) -> Node:
+    return Node(
+        name=name,
+        type="RichTextLabel",
+        props=props,
+        children=children or [],
+        script=script,
+        signals=signals or [],
+        groups=groups or [],
+    )
+
+
+def HSeparator(
+    name: str,
+    *,
+    children: list[Node] | None = None,
+    script: Script | None = None,
+    signals: list[SignalConnection] | None = None,
+    groups: list[str] | None = None,
+    **props: Any,
+) -> Node:
+    return Node(
+        name=name,
+        type="HSeparator",
+        props=props,
+        children=children or [],
+        script=script,
+        signals=signals or [],
+        groups=groups or [],
+    )
+
+
 def ColorRect(
     name: str,
     *,

@@ -31,6 +31,7 @@ Runtime logic remains ordinary GDScript inside the generated Godot project.
 | Project autoloads | LD49 roadmap slices | generated `[autoload]` |
 | Project settings | LD49 roadmap slices | icon, display stretch, focused extra settings |
 | Signals | `minimal`, `timer`, `audio`, `physics`, `flappy` | supported |
+| Signal binds and node groups | `ld49_ui_shell` | supported |
 | Generated GDScript | `minimal`, `pong`, `snake`, `timer`, `template_script` | raw body, source file, or template |
 | InputMap | `pong`, `snake`, `flappy`, `mouse_input` | keyboard and mouse buttons |
 | Window settings | `pong`, `snake`, `ui_panel` | viewport size |
@@ -44,6 +45,7 @@ Runtime logic remains ordinary GDScript inside the generated Godot project.
 | Generated `LabelSettings` | `generated_tres`, `ui_panel` | supported |
 | Generated `LabelSettings` font references | `ui_panel` | supported |
 | Generated `StyleBoxFlat` | `ui_panel` | narrow UI styling |
+| Control/UI containers | `ld49_ui_shell` | narrow LD49-style helpers |
 | Build manifest ownership | `resources`, `generated_tres`, `ui_panel` | generated/copied/referenced |
 | Optional real Godot smoke checks | `tools/smoke_examples.py` | optional |
 
@@ -90,6 +92,7 @@ For a complete external-project walkthrough, see
 | `examples/generated_tres` | Generates a `LabelSettings` `.tres` resource. |
 | `examples/ui_panel` | Static dashboard using generated typography and panel style resources. |
 | `examples/mouse_input` | Moves a marker and increments a counter on left click. |
+| `examples/ld49_ui_shell` | LD49-style menu shell with Control containers and copied art. |
 
 ## Run
 

@@ -47,6 +47,7 @@ Implemented baseline includes:
 - `Game.build()`, `Game.run()`, `Game.check_run()`;
 - explicit scene/node/script DSL;
 - selected node constructors plus generic `node(...)`;
+- narrow LD49-style Control/UI helper constructors;
 - typed values: `Vec2`, `Vec3`, `Rect2`, `Color`, `NodePath`;
 - external resource helpers for textures, audio, fonts, generic resources, and packed scenes;
 - generated scenes, scripts, `.tres` resources, and `project.godot`;
@@ -61,7 +62,7 @@ Implemented baseline includes:
 - explicit generated/copied/referenced resource ownership in manifest and `BuildResult`;
 - optional real Godot smoke checks;
 - minimal GitHub Actions unit-test CI that does not require Godot;
-- examples covering small scenes, Pong, Snake, Flappy, mouse input, resources, instancing, audio, font, animation, physics, generated `.tres`, UI panel, and template scripts;
+- examples covering small scenes, Pong, Snake, Flappy, mouse input, resources, instancing, audio, font, animation, physics, generated `.tres`, UI panel, LD49 UI shell, and template scripts;
 - external-project build smoke coverage and getting started documentation.
 
 Core principles that must remain unchanged:
@@ -226,86 +227,6 @@ python tools/smoke_examples.py --examples <example_name> --frames 20
 ```
 
 Do not make Godot mandatory in ordinary tests or CI.
-
----
-
-# Milestone 3 - LD49 UI Shell Support
-
-## Goal
-
-Make it ergonomic to describe LD49-style UI/control-heavy scenes.
-
-LD49 heavily uses Godot Control containers and UI nodes. `pygodot` can already use generic `node(...)`, but the LD49 port will become noisy without a small set of example-backed helpers.
-
-## Candidate Helpers
-
-Add thin constructors only for nodes that are repeatedly used in LD49-style scenes:
-
-- `MarginContainer`;
-- `Panel`;
-- `VBoxContainer`;
-- `HBoxContainer`;
-- `GridContainer`;
-- `CenterContainer`;
-- `TextureRect`;
-- `RichTextLabel`;
-- `HSeparator`.
-
-These helpers should be as thin as existing node constructors.
-
-## Example
-
-Add:
-
-```text
-examples/ld49_ui_shell/
-  README.md
-  game.py
-  scripts/main.gd
-```
-
-Scene should approximate the LD49 main/intro shell:
-
-```text
-Main: MarginContainer
-  Panel
-  VBoxContainer parts
-    Label title
-    TextureRect art
-    CenterContainer
-      VBoxContainer buttons
-        Button Start
-        Button Exit
-  AudioStreamPlayer background
-```
-
-Use existing generated/copy resource mechanisms. Runtime script should be file-backed GDScript.
-
-## Acceptance Criteria
-
-- Thin UI helpers are exported from `pygodot` and `pygodot.dsl`.
-- `examples/ld49_ui_shell` builds.
-- Scene snapshot is deterministic.
-- No layout framework is introduced.
-- No full Theme generation is introduced.
-- `python -m unittest discover -s tests` passes.
-
-## Anti-Goals
-
-- Do not wrap the full Godot UI API.
-- Do not add layout abstractions.
-- Do not add Theme DSL unless later examples prove it is necessary.
-- Do not port the full LD49 UI yet.
-
-## Suggested Codex Prompt
-
-```text
-Add a small LD49-style UI shell example and the minimal thin UI node constructors it needs.
-
-Use MarginContainer, Panel, VBoxContainer, CenterContainer, TextureRect, Label, Button, and AudioStreamPlayer. Add only repeated LD49-style UI helpers, not a full Godot UI wrapper.
-
-Add snapshots/build tests and export new helpers from pygodot.
-```
 
 ---
 
@@ -824,7 +745,6 @@ Verify with:
 Use this order unless the user explicitly says otherwise:
 
 ```text
-3. LD49 UI shell support
 4. Autoload scene flow slice
 5. Animated sprite resource slice
 6. ShaderMaterial/material reference slice

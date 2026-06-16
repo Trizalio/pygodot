@@ -253,6 +253,15 @@ class ExampleSnapshotTests(SnapshotTestCase):
             _build_example_file(ui_panel.game, "ui/panel_style.tres"),
         )
 
+    def test_ld49_ui_shell_scene_file_snapshot(self) -> None:
+        ui_shell = _load_example_game("ld49_ui_shell")
+        scene = ui_shell.game.scenes[0]
+
+        self.assert_matches_snapshot(
+            "ld49_ui_shell_scene.tscn",
+            TscnEmitter().emit(normalize_scene(scene)),
+        )
+
 
 class ExampleBuildTests(unittest.TestCase):
     def test_pong_example_builds_menu_and_game_scenes(self) -> None:
@@ -827,6 +836,68 @@ class ExampleBuildTests(unittest.TestCase):
                         "ownership": "generated",
                         "path": "res://ui/panel_style.tres",
                         "type": "StyleBoxFlat",
+                    },
+                ],
+            )
+
+    def test_ld49_ui_shell_example_builds_control_menu(self) -> None:
+        ui_shell = _load_example_game("ld49_ui_shell")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            build_dir = Path(tmp) / "godot_project"
+            ui_shell.game.build_dir = build_dir
+
+            result = ui_shell.game.build()
+
+            self.assertEqual(
+                sorted(path.relative_to(build_dir).as_posix() for path in result.written_files),
+                [
+                    ".pygodot/manifest.json",
+                    "project.godot",
+                    "scenes/main.tscn",
+                    "scripts/main.gd",
+                ],
+            )
+            self.assertEqual(
+                sorted(path.relative_to(build_dir).as_posix() for path in result.copied_resources),
+                ["assets/banner.svg"],
+            )
+
+            scene_text = (build_dir / "scenes" / "main.tscn").read_text(encoding="utf-8")
+            script_text = (build_dir / "scripts" / "main.gd").read_text(encoding="utf-8")
+            project_text = (build_dir / "project.godot").read_text(encoding="utf-8")
+
+            self.assertIn('[node name="Main" type="MarginContainer" groups=["ld49_ui_shell"]]', scene_text)
+            self.assertIn('[node name="Panel" type="Panel" parent="."]', scene_text)
+            self.assertIn('[node name="VBox" type="VBoxContainer" parent="Panel"]', scene_text)
+            self.assertIn('[node name="MenuCenter" type="CenterContainer" parent="Panel/VBox"]', scene_text)
+            self.assertIn('[node name="Banner" type="TextureRect" parent="Panel/VBox"]', scene_text)
+            self.assertIn('texture = ExtResource("Texture2D_assets_banner_svg")', scene_text)
+            self.assertIn('[node name="BackgroundMusic" type="AudioStreamPlayer" parent="."]', scene_text)
+            self.assertIn('binds=["start"]', scene_text)
+            self.assertIn('func _on_menu_action(action: String) -> void:', script_text)
+            self.assertIn("window/size/viewport_width=540", project_text)
+            self.assertIn("window/size/viewport_height=750", project_text)
+            self.assertIn('window/stretch/mode="canvas_items"', project_text)
+            self.assertIn('window/stretch/aspect="expand"', project_text)
+
+            manifest = json.loads((build_dir / ".pygodot" / "manifest.json").read_text(encoding="utf-8"))
+            self.assertEqual(
+                manifest["external_resources"],
+                [
+                    {
+                        "copied": False,
+                        "id": "Script_scripts_main_gd",
+                        "ownership": "generated",
+                        "path": "res://scripts/main.gd",
+                        "type": "Script",
+                    },
+                    {
+                        "copied": True,
+                        "id": "Texture2D_assets_banner_svg",
+                        "ownership": "copied",
+                        "path": "res://assets/banner.svg",
+                        "type": "Texture2D",
                     },
                 ],
             )

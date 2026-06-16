@@ -15,7 +15,8 @@ Implemented:
 - documented public API surface policy in `docs/API_SURFACE_POLICY.md`;
 - generic `node(...)` helper and selected node constructors: `Node2D`,
   `Control`, `ColorRect`, `Sprite2D`, `Label`, `Button`, `Timer`,
-  `AnimationPlayer`, `AudioStreamPlayer`, `Area2D`, `CollisionShape2D`;
+  `AnimationPlayer`, `AudioStreamPlayer`, `Area2D`, `CollisionShape2D`, and
+  narrow LD49-style Control/UI helpers;
 - typed value wrappers: `Vec2`, `Vec3`, `Rect2`, `Color`, `NodePath`;
 - external resources through `ext_resource(...)`, `texture(...)`,
   `audio_stream(...)`, `font(...)`, and `packed_scene(...)`;
@@ -50,7 +51,8 @@ Implemented:
 - a small playable `examples/flappy`;
 - a generated `.tres` `examples/generated_tres`;
 - a static generated UI panel with reusable `.tres` styles in
-  `examples/ui_panel`.
+  `examples/ui_panel`;
+- an LD49-style Control/container menu shell in `examples/ld49_ui_shell`.
 
 ## Next Direction
 

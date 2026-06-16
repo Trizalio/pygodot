@@ -41,7 +41,9 @@ Current public concepts include:
 - `Node` and `node(...)`;
 - node constructors: `Node2D`, `Control`, `ColorRect`, `Sprite2D`,
   `Label`, `Button`, `Timer`, `AnimationPlayer`, `AudioStreamPlayer`,
-  `Area2D`, `CollisionShape2D`;
+  `Area2D`, `CollisionShape2D`, and narrow LD49-style Control/UI helpers such
+  as `MarginContainer`, `Panel`, `VBoxContainer`, `TextureRect`, and
+  `RichTextLabel`;
 - `Script` and `Script.reference(...)`;
 - `signal(...)`;
 - `InputAction` through `Game.add_input_action(...)`;

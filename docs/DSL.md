@@ -33,7 +33,16 @@ Node constructors/helpers:
 - `node(name, type, ...)` for arbitrary Godot node classes;
 - `Node2D`;
 - `Control`;
+- `MarginContainer`;
+- `Panel`;
+- `VBoxContainer`;
+- `HBoxContainer`;
+- `GridContainer`;
+- `CenterContainer`;
 - `ColorRect`;
+- `TextureRect`;
+- `RichTextLabel`;
+- `HSeparator`;
 - `Sprite2D`;
 - `Label`;
 - `Button`;
@@ -112,6 +121,28 @@ Timer("PulseTimer", wait_time=0.5, autostart=True)
 AnimationPlayer("Animator", autoplay="pulse", animations=[pulse_animation])
 AudioStreamPlayer("Player", stream=audio_stream("res://assets/tone.wav"))
 Area2D("Trigger", children=[CollisionShape2D("Hitbox", shape=hitbox_shape)])
+```
+
+LD49-style UI scenes can use thin Control/container constructors:
+
+```python
+MarginContainer(
+    "Main",
+    children=[
+        Panel(
+            "Panel",
+            children=[
+                VBoxContainer(
+                    "Menu",
+                    children=[
+                        TextureRect("Banner", texture=texture("res://assets/banner.svg")),
+                        CenterContainer("Center", children=[Button("Start", text="Start")]),
+                    ],
+                )
+            ],
+        )
+    ],
+)
 ```
 
 Nodes can be assigned to Godot groups with the `groups` keyword. This is
