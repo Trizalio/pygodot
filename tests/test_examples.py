@@ -315,6 +315,33 @@ class ExampleSnapshotTests(SnapshotTestCase):
             TscnEmitter().emit(normalize_scene(scene)),
         )
 
+    def test_ld49_drag_spell_main_scene_snapshot(self) -> None:
+        drag_spell = _load_example_game("ld49_drag_spell")
+        scene = _find_scene(drag_spell.game, "res://scenes/main.tscn")
+
+        self.assert_matches_snapshot(
+            "ld49_drag_spell_main_scene.tscn",
+            TscnEmitter().emit(normalize_scene(scene)),
+        )
+
+    def test_ld49_drag_spell_spell_scene_snapshot(self) -> None:
+        drag_spell = _load_example_game("ld49_drag_spell")
+        scene = _find_scene(drag_spell.game, "res://scenes/spell.tscn")
+
+        self.assert_matches_snapshot(
+            "ld49_drag_spell_spell_scene.tscn",
+            TscnEmitter().emit(normalize_scene(scene)),
+        )
+
+    def test_ld49_drag_spell_tile_scene_snapshot(self) -> None:
+        drag_spell = _load_example_game("ld49_drag_spell")
+        scene = _find_scene(drag_spell.game, "res://scenes/tile.tscn")
+
+        self.assert_matches_snapshot(
+            "ld49_drag_spell_tile_scene.tscn",
+            TscnEmitter().emit(normalize_scene(scene)),
+        )
+
 
 class ExampleBuildTests(unittest.TestCase):
     def test_pong_example_builds_menu_and_game_scenes(self) -> None:
@@ -1207,6 +1234,119 @@ class ExampleBuildTests(unittest.TestCase):
                         "ownership": "copied",
                         "path": "res://materials/spell_edge.tres",
                         "type": "ShaderMaterial",
+                    },
+                ],
+            )
+
+    def test_ld49_drag_spell_example_builds_drag_drop_slice(self) -> None:
+        drag_spell = _load_example_game("ld49_drag_spell")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            build_dir = Path(tmp) / "godot_project"
+            drag_spell.game.build_dir = build_dir
+
+            result = drag_spell.game.build()
+
+            self.assertEqual(
+                sorted(path.relative_to(build_dir).as_posix() for path in result.written_files),
+                [
+                    ".pygodot/manifest.json",
+                    "project.godot",
+                    "scenes/main.tscn",
+                    "scenes/spell.tscn",
+                    "scenes/tile.tscn",
+                    "scripts/main.gd",
+                    "scripts/spell.gd",
+                    "scripts/tile.gd",
+                ],
+            )
+
+            main_scene_text = (build_dir / "scenes" / "main.tscn").read_text(encoding="utf-8")
+            spell_scene_text = (build_dir / "scenes" / "spell.tscn").read_text(encoding="utf-8")
+            tile_scene_text = (build_dir / "scenes" / "tile.tscn").read_text(encoding="utf-8")
+            main_script_text = (build_dir / "scripts" / "main.gd").read_text(encoding="utf-8")
+            spell_script_text = (build_dir / "scripts" / "spell.gd").read_text(encoding="utf-8")
+            tile_script_text = (build_dir / "scripts" / "tile.gd").read_text(encoding="utf-8")
+
+            self.assertIn('[node name="Main" type="Control"]', main_scene_text)
+            self.assertIn('[node name="MapGrid" type="GridContainer" parent="Panel/VBox"]', main_scene_text)
+            self.assertIn('[node name="SpellBar" type="HBoxContainer" parent="Panel/VBox"]', main_scene_text)
+            self.assertIn(
+                '[ext_resource type="PackedScene" path="res://scenes/spell.tscn" '
+                'id="PackedScene_scenes_spell_tscn"]',
+                main_scene_text,
+            )
+            self.assertIn(
+                '[ext_resource type="PackedScene" path="res://scenes/tile.tscn" '
+                'id="PackedScene_scenes_tile_tscn"]',
+                main_scene_text,
+            )
+            self.assertIn(
+                '[node name="TileA1" parent="Panel/VBox/MapGrid" '
+                'instance=ExtResource("PackedScene_scenes_tile_tscn")]',
+                main_scene_text,
+            )
+            self.assertIn('tile_id = "B3"', main_scene_text)
+            self.assertIn(
+                '[node name="FreezeSpell" parent="Panel/VBox/SpellBar" '
+                'instance=ExtResource("PackedScene_scenes_spell_tscn")]',
+                main_scene_text,
+            )
+            self.assertIn('spell_id = "freeze"', main_scene_text)
+            self.assertIn(
+                '[connection signal="spell_dropped" from="Panel/VBox/MapGrid/TileA1" '
+                'to="." method="_on_tile_spell_dropped"]',
+                main_scene_text,
+            )
+
+            self.assertIn('[node name="Spell" type="Control"]', spell_scene_text)
+            self.assertIn('[node name="Tile" type="Control"]', tile_scene_text)
+            self.assertIn("func _get_drag_data(_at_position: Vector2) -> Variant:", spell_script_text)
+            self.assertIn('\"type\": \"spell\"', spell_script_text)
+            self.assertIn("func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:", tile_script_text)
+            self.assertIn("func _drop_data(_at_position: Vector2, data: Variant) -> void:", tile_script_text)
+            self.assertIn("spell_dropped.emit(tile_id, spell_id, display_name)", tile_script_text)
+            self.assertIn("func _on_tile_spell_dropped(", main_script_text)
+            self.assertIn("drop_count += 1", main_script_text)
+
+            manifest = json.loads((build_dir / ".pygodot" / "manifest.json").read_text(encoding="utf-8"))
+            self.assertEqual(
+                manifest["external_resources"],
+                [
+                    {
+                        "copied": False,
+                        "id": "PackedScene_scenes_spell_tscn",
+                        "ownership": "generated",
+                        "path": "res://scenes/spell.tscn",
+                        "type": "PackedScene",
+                    },
+                    {
+                        "copied": False,
+                        "id": "PackedScene_scenes_tile_tscn",
+                        "ownership": "generated",
+                        "path": "res://scenes/tile.tscn",
+                        "type": "PackedScene",
+                    },
+                    {
+                        "copied": False,
+                        "id": "Script_scripts_main_gd",
+                        "ownership": "generated",
+                        "path": "res://scripts/main.gd",
+                        "type": "Script",
+                    },
+                    {
+                        "copied": False,
+                        "id": "Script_scripts_spell_gd",
+                        "ownership": "generated",
+                        "path": "res://scripts/spell.gd",
+                        "type": "Script",
+                    },
+                    {
+                        "copied": False,
+                        "id": "Script_scripts_tile_gd",
+                        "ownership": "generated",
+                        "path": "res://scripts/tile.gd",
+                        "type": "Script",
                     },
                 ],
             )

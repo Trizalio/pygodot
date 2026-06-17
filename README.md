@@ -98,6 +98,7 @@ For a complete external-project walkthrough, see
 | `examples/ld49_scene_flow` | LD49-style autoload scene transition slice. |
 | `examples/ld49_unit_card` | LD49-style animated unit scene with copied texture/audio assets. |
 | `examples/ld49_spell_card` | LD49-style shader material spell visual slice. |
+| `examples/ld49_drag_spell` | LD49-style drag-and-drop spell onto tile interaction slice. |
 
 ## Run
 
