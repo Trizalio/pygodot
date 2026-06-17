@@ -29,6 +29,8 @@ The current pygodot examples map to intended LD49 slices:
 - `examples/ld49_drag_spell` for dragging a spell onto a tile.
 - `examples/ld49_vertical_slice` for the final combined rehearsal before the
   real LD49 port.
+- `ld49_pygodot/` for the real port target, starting with the Stage A skeleton
+  project.
 
 ## What Pygodot Should Generate
 

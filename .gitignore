@@ -10,6 +10,7 @@ __pycache__/
 .Python
 /build/
 /examples/*/build/
+/ld49_pygodot/build/
 develop-eggs/
 dist/
 downloads/

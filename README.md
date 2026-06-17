@@ -79,6 +79,8 @@ For a complete external-project walkthrough, see
 For the LD49 Godot 3 to Godot 4 port plan, see
 [LD49 migration notes](docs/LD49_MIGRATION_NOTES.md).
 
+The real LD49 port scaffold starts in [ld49_pygodot](ld49_pygodot/README.md).
+
 ## Examples
 
 | Example | Description |

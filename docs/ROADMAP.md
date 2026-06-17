@@ -60,6 +60,7 @@ Implemented:
   `examples/ld49_vertical_slice`.
 - LD49 Godot 3 to Godot 4 migration notes in
   `docs/LD49_MIGRATION_NOTES.md`.
+- a real LD49 port skeleton target in `ld49_pygodot/`.
 
 ## Next Direction
 
