@@ -12,7 +12,7 @@ class TresEmitterTests(unittest.TestCase):
     def test_supported_generated_resource_types_are_declared_in_one_place(self) -> None:
         self.assertEqual(
             supported_generated_resource_types(),
-            frozenset({"LabelSettings", "StyleBoxFlat"}),
+            frozenset({"LabelSettings", "ShaderMaterial", "StyleBoxFlat"}),
         )
 
     def test_tres_emitter_snapshot_with_label_settings(self) -> None:
@@ -45,6 +45,38 @@ font_size = 32
 
         with self.assertRaisesRegex(TypeError, "Unsupported generated .tres resource type"):
             TresEmitter().emit(resource)
+
+    def test_tres_emitter_snapshot_with_shader_material(self) -> None:
+        resource = IRGeneratedResource(
+            type="ShaderMaterial",
+            path="res://materials/spell_pulse.tres",
+            id="ShaderMaterial_materials_spell_pulse_tres",
+            props={
+                "shader": IRExternalResourceRef("Shader_shaders_spell_pulse_gdshader"),
+                "shader_parameter/pulse": 0.6,
+                "shader_parameter/tint": Color(0.2, 0.8, 1.0),
+            },
+            external_resources=(
+                IRExternalResource(
+                    type="Shader",
+                    path="res://shaders/spell_pulse.gdshader",
+                    id="Shader_shaders_spell_pulse_gdshader",
+                ),
+            ),
+        )
+
+        self.assertEqual(
+            TresEmitter().emit(resource),
+            """[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://shaders/spell_pulse.gdshader" id="Shader_shaders_spell_pulse_gdshader"]
+
+[resource]
+shader = ExtResource("Shader_shaders_spell_pulse_gdshader")
+shader_parameter/pulse = 0.6
+shader_parameter/tint = Color(0.2, 0.8, 1.0, 1.0)
+""",
+        )
 
     def test_tres_emitter_snapshot_with_label_settings_font_resource(self) -> None:
         resource = IRGeneratedResource(

@@ -49,7 +49,7 @@ Current public concepts include:
 - `InputAction` through `Game.add_input_action(...)`;
 - values: `Vec2`, `Vec3`, `Rect2`, `Color`, `NodePath`, `StringName`;
 - external resources: `ext_resource(...)`, `texture(...)`,
-  `audio_stream(...)`, `font(...)`, `packed_scene(...)`;
+  `audio_stream(...)`, `font(...)`, `shader(...)`, `packed_scene(...)`;
 - scene instances: `scene_instance(...)`;
 - animations: `animation(...)`, `value_track(...)`, `key(...)`;
 - generated sub-resources: `sub_resource(...)`, `rectangle_shape_2d(...)`,

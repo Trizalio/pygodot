@@ -135,7 +135,7 @@ Manual scripts are referenced with `Script.reference(...)` and are not emitted.
 ## `.tres`
 
 The `.tres` emitter is intentionally narrow. It currently supports generated
-`LabelSettings` and `StyleBoxFlat` resources:
+`LabelSettings`, `ShaderMaterial`, and `StyleBoxFlat` resources:
 
 Supported generated `.tres` resource types are declared in one internal
 registry so validation and emission reject unsupported resource types
@@ -156,7 +156,7 @@ Generated `.tres` files are written by `Game.build()`, recorded in the manifest
 under `generated_resources`, and referenced from scenes through ordinary
 `ExtResource(...)` entries. A generated `.tres` can also declare its own
 deterministic `[ext_resource ...]` entries for narrow supported dependencies,
-currently `LabelSettings.font`.
+such as `LabelSettings.font` or a `ShaderMaterial.shader`.
 
 The build step only tracks dependencies explicitly present in normalized IR. It
 does not inspect copied/manual `.tres` files for nested `ExtResource` entries.
@@ -179,6 +179,18 @@ corner_radius_bottom_left = 6
 corner_radius_bottom_right = 6
 corner_radius_top_left = 6
 corner_radius_top_right = 6
+```
+
+Scene-local `ShaderMaterial` sub-resources are emitted by the `.tscn` emitter
+through the generic `sub_resource(...)` path:
+
+```text
+[ext_resource type="Shader" path="res://shaders/spell_pulse.gdshader" id="Shader_shaders_spell_pulse_gdshader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_arcane_burst"]
+shader = ExtResource("Shader_shaders_spell_pulse_gdshader")
+shader_parameter/pulse = 0.65
+shader_parameter/tint = Color(0.2, 0.85, 1.0, 1.0)
 ```
 
 ## Godot-assisted Emission

@@ -42,6 +42,7 @@ from pygodot.dsl.resources import (
     external_resource,
     font,
     packed_scene,
+    shader,
     texture,
 )
 from pygodot.dsl.scene import Scene
@@ -112,6 +113,7 @@ __all__ = [
     "packed_scene",
     "rectangle_shape_2d",
     "scene_instance",
+    "shader",
     "signal",
     "style_box_flat",
     "sub_resource",

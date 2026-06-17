@@ -306,6 +306,15 @@ class ExampleSnapshotTests(SnapshotTestCase):
             TscnEmitter().emit(normalize_scene(scene)),
         )
 
+    def test_ld49_spell_card_scene_snapshot(self) -> None:
+        spell_card = _load_example_game("ld49_spell_card")
+        scene = spell_card.game.scenes[0]
+
+        self.assert_matches_snapshot(
+            "ld49_spell_card_scene.tscn",
+            TscnEmitter().emit(normalize_scene(scene)),
+        )
+
 
 class ExampleBuildTests(unittest.TestCase):
     def test_pong_example_builds_menu_and_game_scenes(self) -> None:
@@ -1132,6 +1141,72 @@ class ExampleBuildTests(unittest.TestCase):
                         "ownership": "copied",
                         "path": "res://assets/unit_atlas.svg",
                         "type": "Texture2D",
+                    },
+                ],
+            )
+
+    def test_ld49_spell_card_example_builds_shader_material_resources(self) -> None:
+        spell_card = _load_example_game("ld49_spell_card")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            build_dir = Path(tmp) / "godot_project"
+            spell_card.game.build_dir = build_dir
+
+            result = spell_card.game.build()
+
+            self.assertEqual(
+                sorted(path.relative_to(build_dir).as_posix() for path in result.written_files),
+                [
+                    ".pygodot/manifest.json",
+                    "project.godot",
+                    "scenes/main.tscn",
+                ],
+            )
+            self.assertEqual(
+                sorted(path.relative_to(build_dir).as_posix() for path in result.copied_resources),
+                [
+                    "materials/spell_edge.tres",
+                    "shaders/spell_pulse.gdshader",
+                ],
+            )
+
+            scene_text = (build_dir / "scenes" / "main.tscn").read_text(encoding="utf-8")
+            copied_material_text = (build_dir / "materials" / "spell_edge.tres").read_text(encoding="utf-8")
+            self.assertIn(
+                '[ext_resource type="Shader" path="res://shaders/spell_pulse.gdshader" '
+                'id="Shader_shaders_spell_pulse_gdshader"]',
+                scene_text,
+            )
+            self.assertIn(
+                '[ext_resource type="ShaderMaterial" path="res://materials/spell_edge.tres" '
+                'id="ShaderMaterial_materials_spell_edge_tres"]',
+                scene_text,
+            )
+            self.assertIn('[sub_resource type="ShaderMaterial" id="ShaderMaterial_arcane_burst"]', scene_text)
+            self.assertIn('shader = ExtResource("Shader_shaders_spell_pulse_gdshader")', scene_text)
+            self.assertIn("shader_parameter/pulse = 0.65", scene_text)
+            self.assertIn("shader_parameter/tint = Color(0.2, 0.85, 1.0, 1.0)", scene_text)
+            self.assertIn('material = SubResource("ShaderMaterial_arcane_burst")', scene_text)
+            self.assertIn('material = ExtResource("ShaderMaterial_materials_spell_edge_tres")', scene_text)
+            self.assertIn('[gd_resource type="ShaderMaterial" load_steps=2 format=3]', copied_material_text)
+
+            manifest = json.loads((build_dir / ".pygodot" / "manifest.json").read_text(encoding="utf-8"))
+            self.assertEqual(
+                manifest["external_resources"],
+                [
+                    {
+                        "copied": True,
+                        "id": "Shader_shaders_spell_pulse_gdshader",
+                        "ownership": "copied",
+                        "path": "res://shaders/spell_pulse.gdshader",
+                        "type": "Shader",
+                    },
+                    {
+                        "copied": True,
+                        "id": "ShaderMaterial_materials_spell_edge_tres",
+                        "ownership": "copied",
+                        "path": "res://materials/spell_edge.tres",
+                        "type": "ShaderMaterial",
                     },
                 ],
             )

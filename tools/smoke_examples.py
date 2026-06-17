@@ -37,6 +37,7 @@ ALL_EXAMPLES = (
     "ld49_ui_shell",
     "ld49_scene_flow",
     "ld49_unit_card",
+    "ld49_spell_card",
 )
 
 

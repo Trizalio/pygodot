@@ -1,0 +1,8 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://shaders/spell_pulse.gdshader" id="1_spell"]
+
+[resource]
+shader = ExtResource("1_spell")
+shader_parameter/pulse = 0.15
+shader_parameter/tint = Color(1, 0.55, 0.2, 1)

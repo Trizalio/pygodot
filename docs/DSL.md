@@ -183,6 +183,7 @@ Node(
     type="Label",
     props={"theme_override_fonts/font": font("res://assets/display_font.tres")},
 )
+ColorRect("Spell", material=ext_resource("res://materials/spell_edge.tres", type="ShaderMaterial"))
 Node2D("Other", resource=ext_resource("res://assets/data.tres", type="Resource"))
 ```
 
@@ -226,6 +227,27 @@ referenced external resource instead of failing the build.
 
 Use source-owned copied `.tres` files with `ext_resource(...)` or typed helpers
 when pygodot should not generate the resource content.
+
+Shader files can be referenced with `shader("res://...")`, which is a small
+typed helper around `ext_resource(..., type="Shader")`. Generated scene
+sub-resources can use it for narrow `ShaderMaterial` cases:
+
+```python
+spell_material = sub_resource(
+    "ShaderMaterial",
+    id_hint="arcane_burst",
+    shader=shader("res://shaders/spell_pulse.gdshader"),
+    **{
+        "shader_parameter/pulse": 0.65,
+        "shader_parameter/tint": Color(0.2, 0.85, 1.0),
+    },
+)
+
+ColorRect("Spell", material=spell_material, size=Vec2(96, 96))
+```
+
+Use source-owned `.tres` materials through `ext_resource(...,
+type="ShaderMaterial")` when the material content should remain manual.
 
 Generated `StyleBoxFlat` resources are available for small reusable UI styles:
 

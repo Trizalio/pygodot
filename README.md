@@ -97,6 +97,7 @@ For a complete external-project walkthrough, see
 | `examples/ld49_ui_shell` | LD49-style menu shell with Control containers and copied art. |
 | `examples/ld49_scene_flow` | LD49-style autoload scene transition slice. |
 | `examples/ld49_unit_card` | LD49-style animated unit scene with copied texture/audio assets. |
+| `examples/ld49_spell_card` | LD49-style shader material spell visual slice. |
 
 ## Run
 

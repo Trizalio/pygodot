@@ -40,6 +40,7 @@ from pygodot import (
     packed_scene,
     rectangle_shape_2d,
     scene_instance,
+    shader,
     signal,
     style_box_flat,
     sub_resource,
@@ -203,6 +204,12 @@ class DslNodeTests(unittest.TestCase):
                 "corner_radius_top_right": 6,
             },
         )
+
+    def test_shader_helper_creates_external_shader_resource(self) -> None:
+        resource = shader("res://shaders/spell_pulse.gdshader")
+
+        self.assertEqual(resource.path, "res://shaders/spell_pulse.gdshader")
+        self.assertEqual(resource.type, "Shader")
 
     def test_node_helper_creates_generic_node(self) -> None:
         script = Script(

@@ -6,6 +6,7 @@ from pygodot import (
     Autoload,
     CollisionShape2D,
     Color,
+    GeneratedResource,
     InputAction,
     Node,
     Node2D,
@@ -19,6 +20,7 @@ from pygodot import (
     label_settings,
     packed_scene,
     rectangle_shape_2d,
+    shader,
     signal,
     style_box_flat,
     sub_resource,
@@ -352,4 +354,53 @@ class NormalizeTests(unittest.TestCase):
                 "border_width_right": 2,
                 "border_width_top": 2,
             },
+        )
+
+    def test_generated_shader_material_becomes_external_ref_and_project_resource(self) -> None:
+        material = GeneratedResource(
+            path="res://materials/spell_pulse.tres",
+            type="ShaderMaterial",
+            props={
+                "shader": shader("res://shaders/spell_pulse.gdshader"),
+                "shader_parameter/pulse": 0.6,
+                "shader_parameter/tint": Color(0.2, 0.8, 1.0),
+            },
+        )
+        project = normalize_project(
+            name="GeneratedResources",
+            main_scene="res://scenes/main.tscn",
+            scenes=[
+                Scene(
+                    path="res://scenes/main.tscn",
+                    root=Node2D("Main", material=material),
+                )
+            ],
+        )
+
+        self.assertEqual(
+            [(resource.type, resource.path, resource.id) for resource in project.scenes[0].external_resources],
+            [
+                (
+                    "ShaderMaterial",
+                    "res://materials/spell_pulse.tres",
+                    "ShaderMaterial_materials_spell_pulse_tres",
+                )
+            ],
+        )
+        self.assertEqual(len(project.generated_resources), 1)
+        resource = project.generated_resources[0]
+        self.assertEqual(resource.type, "ShaderMaterial")
+        self.assertEqual(resource.path, "res://materials/spell_pulse.tres")
+        self.assertEqual(resource.id, "ShaderMaterial_materials_spell_pulse_tres")
+        self.assertEqual(
+            resource.props,
+            {
+                "shader": IRExternalResourceRef("Shader_shaders_spell_pulse_gdshader"),
+                "shader_parameter/pulse": 0.6,
+                "shader_parameter/tint": Color(0.2, 0.8, 1.0),
+            },
+        )
+        self.assertEqual(
+            [(item.type, item.path, item.id) for item in resource.external_resources],
+            [("Shader", "res://shaders/spell_pulse.gdshader", "Shader_shaders_spell_pulse_gdshader")],
         )

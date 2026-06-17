@@ -29,5 +29,9 @@ def font(path: str) -> ExternalResource:
     return ext_resource(path, type="Font")
 
 
+def shader(path: str) -> ExternalResource:
+    return ext_resource(path, type="Shader")
+
+
 def packed_scene(path: str) -> ExternalResource:
     return ext_resource(path, type="PackedScene")

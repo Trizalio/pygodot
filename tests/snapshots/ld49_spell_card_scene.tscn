@@ -1,0 +1,27 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Shader" path="res://shaders/spell_pulse.gdshader" id="Shader_shaders_spell_pulse_gdshader"]
+[ext_resource type="ShaderMaterial" path="res://materials/spell_edge.tres" id="ShaderMaterial_materials_spell_edge_tres"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_arcane_burst"]
+shader = ExtResource("Shader_shaders_spell_pulse_gdshader")
+shader_parameter/pulse = 0.65
+shader_parameter/tint = Color(0.2, 0.85, 1.0, 1.0)
+
+[node name="SpellBench" type="Node2D"]
+
+[node name="Title" type="Label" parent="."]
+position = Vector2(48, 24)
+text = "ShaderMaterial spell visuals"
+
+[node name="GeneratedMaterialSpell" type="ColorRect" parent="."]
+color = Color(1, 1, 1, 1.0)
+material = SubResource("ShaderMaterial_arcane_burst")
+position = Vector2(64, 76)
+size = Vector2(96, 96)
+
+[node name="ExternalMaterialSpell" type="ColorRect" parent="."]
+color = Color(1, 1, 1, 1.0)
+material = ExtResource("ShaderMaterial_materials_spell_edge_tres")
+position = Vector2(200, 76)
+size = Vector2(96, 96)

@@ -13,7 +13,7 @@ Public API is anything users are expected to import from `pygodot` or
 
 - `Game`, `Scene`, `Script`, and public DSL dataclasses;
 - node constructors such as `Node2D`, `Label`, `Timer`, and `Area2D`;
-- resource helpers such as `texture(...)`, `packed_scene(...)`, and
+- resource helpers such as `texture(...)`, `shader(...)`, `packed_scene(...)`, and
   `rectangle_shape_2d(...)`;
 - generated resource helpers such as `label_settings(...)` and
   `style_box_flat(...)`;
@@ -56,7 +56,8 @@ The stable 0.1 surface is:
   `Vec2`, `Vec3`, `Rect2`, `Color`, `NodePath`, and `StringName`;
 - external resource declarations:
   `ExternalResource`, `ext_resource(...)`, `external_resource(...)`,
-  `texture(...)`, `audio_stream(...)`, `font(...)`, and `packed_scene(...)`;
+  `texture(...)`, `audio_stream(...)`, `font(...)`, `shader(...)`, and
+  `packed_scene(...)`;
 - keyboard and mouse button InputMap declaration through
   `Game.add_input_action(..., keys=..., mouse_buttons=...)`;
 - project-level autoload, icon, display stretch, and focused extra project

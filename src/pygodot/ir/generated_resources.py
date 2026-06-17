@@ -12,6 +12,7 @@ class GeneratedResourceSpec:
 
 SUPPORTED_GENERATED_RESOURCE_TYPES: dict[str, GeneratedResourceSpec] = {
     "LabelSettings": GeneratedResourceSpec(type="LabelSettings"),
+    "ShaderMaterial": GeneratedResourceSpec(type="ShaderMaterial"),
     "StyleBoxFlat": GeneratedResourceSpec(type="StyleBoxFlat"),
 }
 
