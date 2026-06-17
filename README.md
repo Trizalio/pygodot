@@ -75,6 +75,9 @@ Godot is only needed when calling `game.run()` or `game.check_run()`.
 For a complete external-project walkthrough, see
 [Getting started](docs/GETTING_STARTED.md).
 
+For the LD49 Godot 3 to Godot 4 port plan, see
+[LD49 migration notes](docs/LD49_MIGRATION_NOTES.md).
+
 ## Examples
 
 | Example | Description |
