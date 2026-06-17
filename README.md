@@ -48,6 +48,7 @@ Runtime logic remains ordinary GDScript inside the generated Godot project.
 | Generated `StyleBoxFlat` | `ui_panel` | narrow UI styling |
 | Control/UI containers | `ld49_ui_shell` | narrow LD49-style helpers |
 | Autoload scene flow | `ld49_scene_flow` | SceneChanger/AudioManager slice |
+| LD49 vertical slice | `ld49_vertical_slice` | final rehearsal example |
 | Build manifest ownership | `resources`, `generated_tres`, `ui_panel` | generated/copied/referenced |
 | Optional real Godot smoke checks | `tools/smoke_examples.py` | optional |
 
@@ -102,6 +103,7 @@ For the LD49 Godot 3 to Godot 4 port plan, see
 | `examples/ld49_unit_card` | LD49-style animated unit scene with copied texture/audio assets. |
 | `examples/ld49_spell_card` | LD49-style shader material spell visual slice. |
 | `examples/ld49_drag_spell` | LD49-style drag-and-drop spell onto tile interaction slice. |
+| `examples/ld49_vertical_slice` | LD49-style final rehearsal with autoloads, grid, drag/drop, unit, and resources. |
 
 ## Run
 

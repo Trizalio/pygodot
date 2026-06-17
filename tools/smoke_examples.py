@@ -39,6 +39,7 @@ ALL_EXAMPLES = (
     "ld49_unit_card",
     "ld49_spell_card",
     "ld49_drag_spell",
+    "ld49_vertical_slice",
 )
 
 

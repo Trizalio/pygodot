@@ -1350,3 +1350,198 @@ class ExampleBuildTests(unittest.TestCase):
                     },
                 ],
             )
+
+    def test_ld49_vertical_slice_example_builds_final_rehearsal(self) -> None:
+        vertical_slice = _load_example_game("ld49_vertical_slice")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            build_dir = Path(tmp) / "godot_project"
+            vertical_slice.game.build_dir = build_dir
+
+            result = vertical_slice.game.build()
+
+            self.assertEqual(
+                sorted(path.relative_to(build_dir).as_posix() for path in result.written_files),
+                [
+                    ".pygodot/manifest.json",
+                    "project.godot",
+                    "scenes/main.tscn",
+                    "scenes/menu.tscn",
+                    "scenes/spell.tscn",
+                    "scenes/tile.tscn",
+                    "scenes/unit.tscn",
+                    "scripts/main.gd",
+                    "scripts/menu.gd",
+                    "scripts/spell.gd",
+                    "scripts/tile.gd",
+                    "scripts/unit.gd",
+                    "ui/panel_style.tres",
+                ],
+            )
+            self.assertEqual(
+                sorted(path.relative_to(build_dir).as_posix() for path in result.copied_resources),
+                [
+                    "assets/unit.svg",
+                    "scripts/audio_manager.gd",
+                    "scripts/game_state.gd",
+                    "scripts/scene_changer.gd",
+                ],
+            )
+            self.assertEqual(
+                sorted(path.relative_to(build_dir).as_posix() for path in result.generated_resources),
+                ["ui/panel_style.tres"],
+            )
+            self.assertEqual(result.referenced_resources, [])
+
+            project_text = (build_dir / "project.godot").read_text(encoding="utf-8")
+            menu_scene_text = (build_dir / "scenes" / "menu.tscn").read_text(encoding="utf-8")
+            main_scene_text = (build_dir / "scenes" / "main.tscn").read_text(encoding="utf-8")
+            spell_scene_text = (build_dir / "scenes" / "spell.tscn").read_text(encoding="utf-8")
+            tile_scene_text = (build_dir / "scenes" / "tile.tscn").read_text(encoding="utf-8")
+            unit_scene_text = (build_dir / "scenes" / "unit.tscn").read_text(encoding="utf-8")
+            panel_style_text = (build_dir / "ui" / "panel_style.tres").read_text(encoding="utf-8")
+            main_script_text = (build_dir / "scripts" / "main.gd").read_text(encoding="utf-8")
+            menu_script_text = (build_dir / "scripts" / "menu.gd").read_text(encoding="utf-8")
+            spell_script_text = (build_dir / "scripts" / "spell.gd").read_text(encoding="utf-8")
+            tile_script_text = (build_dir / "scripts" / "tile.gd").read_text(encoding="utf-8")
+            unit_script_text = (build_dir / "scripts" / "unit.gd").read_text(encoding="utf-8")
+            game_state_text = (build_dir / "scripts" / "game_state.gd").read_text(encoding="utf-8")
+
+            self.assertIn('run/main_scene="res://scenes/menu.tscn"', project_text)
+            self.assertIn("[autoload]", project_text)
+            self.assertIn('GameState="*res://scripts/game_state.gd"', project_text)
+            self.assertIn('SceneChanger="*res://scripts/scene_changer.gd"', project_text)
+            self.assertIn('AudioManager="*res://scripts/audio_manager.gd"', project_text)
+            self.assertIn('config/icon="res://assets/unit.svg"', project_text)
+
+            self.assertIn('[node name="Menu" type="Control"]', menu_scene_text)
+            self.assertIn('[connection signal="pressed" from="Panel/VBox/StartButton" to="."', menu_scene_text)
+            self.assertIn('[node name="Main" type="Control"]', main_scene_text)
+            self.assertIn('[node name="MapGrid" type="GridContainer" parent="Panel/VBox/BoardRow"]', main_scene_text)
+            self.assertEqual(main_scene_text.count('instance=ExtResource("PackedScene_scenes_tile_tscn")'), 25)
+            self.assertIn('[node name="TileA1" parent="Panel/VBox/BoardRow/MapGrid"', main_scene_text)
+            self.assertIn('[node name="TileE5" parent="Panel/VBox/BoardRow/MapGrid"', main_scene_text)
+            self.assertIn('[node name="UnitScout" parent="Panel/VBox/BoardRow/UnitColumn"', main_scene_text)
+            self.assertIn('[node name="SparkSpell" parent="Panel/VBox/SpellBar"', main_scene_text)
+            self.assertIn('spell_id = "guard"', main_scene_text)
+            self.assertIn(
+                '[connection signal="spell_dropped" from="Panel/VBox/BoardRow/MapGrid/TileE5" '
+                'to="." method="_on_tile_spell_dropped"]',
+                main_scene_text,
+            )
+
+            self.assertIn('[node name="Spell" type="Control"]', spell_scene_text)
+            self.assertIn('[node name="Tile" type="Control"]', tile_scene_text)
+            self.assertIn('[node name="Unit" type="Control"]', unit_scene_text)
+            self.assertIn('texture = ExtResource("Texture2D_assets_unit_svg")', unit_scene_text)
+            self.assertIn('[gd_resource type="StyleBoxFlat" format=3]', panel_style_text)
+
+            self.assertIn("SceneChanger.go_to_battle()", menu_script_text)
+            self.assertIn("func _get_drag_data(_at_position: Vector2) -> Variant:", spell_script_text)
+            self.assertIn("func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:", tile_script_text)
+            self.assertIn("func _drop_data(_at_position: Vector2, data: Variant) -> void:", tile_script_text)
+            self.assertIn("create_tween()", tile_script_text)
+            self.assertIn("GameState.apply_spell(tile_id, spell_id)", main_script_text)
+            self.assertIn("AudioManager.play_cue(\"spell_drop\")", main_script_text)
+            self.assertIn("unit.play_feedback()", main_script_text)
+            self.assertIn("func play_feedback() -> void:", unit_script_text)
+            self.assertIn("func apply_spell(tile_id: String, spell_id: String) -> String:", game_state_text)
+
+            manifest = json.loads((build_dir / ".pygodot" / "manifest.json").read_text(encoding="utf-8"))
+            self.assertEqual(manifest["generated_resources"], ["ui/panel_style.tres"])
+            self.assertEqual(
+                manifest["external_resources"],
+                [
+                    {
+                        "copied": False,
+                        "id": "PackedScene_scenes_spell_tscn",
+                        "ownership": "generated",
+                        "path": "res://scenes/spell.tscn",
+                        "type": "PackedScene",
+                    },
+                    {
+                        "copied": False,
+                        "id": "PackedScene_scenes_tile_tscn",
+                        "ownership": "generated",
+                        "path": "res://scenes/tile.tscn",
+                        "type": "PackedScene",
+                    },
+                    {
+                        "copied": False,
+                        "id": "PackedScene_scenes_unit_tscn",
+                        "ownership": "generated",
+                        "path": "res://scenes/unit.tscn",
+                        "type": "PackedScene",
+                    },
+                    {
+                        "copied": True,
+                        "id": "Script_scripts_audio_manager_gd",
+                        "ownership": "copied",
+                        "path": "res://scripts/audio_manager.gd",
+                        "type": "Script",
+                    },
+                    {
+                        "copied": True,
+                        "id": "Script_scripts_game_state_gd",
+                        "ownership": "copied",
+                        "path": "res://scripts/game_state.gd",
+                        "type": "Script",
+                    },
+                    {
+                        "copied": False,
+                        "id": "Script_scripts_main_gd",
+                        "ownership": "generated",
+                        "path": "res://scripts/main.gd",
+                        "type": "Script",
+                    },
+                    {
+                        "copied": False,
+                        "id": "Script_scripts_menu_gd",
+                        "ownership": "generated",
+                        "path": "res://scripts/menu.gd",
+                        "type": "Script",
+                    },
+                    {
+                        "copied": True,
+                        "id": "Script_scripts_scene_changer_gd",
+                        "ownership": "copied",
+                        "path": "res://scripts/scene_changer.gd",
+                        "type": "Script",
+                    },
+                    {
+                        "copied": False,
+                        "id": "Script_scripts_spell_gd",
+                        "ownership": "generated",
+                        "path": "res://scripts/spell.gd",
+                        "type": "Script",
+                    },
+                    {
+                        "copied": False,
+                        "id": "Script_scripts_tile_gd",
+                        "ownership": "generated",
+                        "path": "res://scripts/tile.gd",
+                        "type": "Script",
+                    },
+                    {
+                        "copied": False,
+                        "id": "Script_scripts_unit_gd",
+                        "ownership": "generated",
+                        "path": "res://scripts/unit.gd",
+                        "type": "Script",
+                    },
+                    {
+                        "copied": False,
+                        "id": "StyleBoxFlat_ui_panel_style_tres",
+                        "ownership": "generated",
+                        "path": "res://ui/panel_style.tres",
+                        "type": "StyleBoxFlat",
+                    },
+                    {
+                        "copied": True,
+                        "id": "Texture2D_assets_unit_svg",
+                        "ownership": "copied",
+                        "path": "res://assets/unit.svg",
+                        "type": "Texture2D",
+                    },
+                ],
+            )

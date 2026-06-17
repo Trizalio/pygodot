@@ -27,6 +27,8 @@ The current pygodot examples map to intended LD49 slices:
 - `examples/ld49_unit_card` for animated unit visuals and copied assets;
 - `examples/ld49_spell_card` for shader/material spell visuals;
 - `examples/ld49_drag_spell` for dragging a spell onto a tile.
+- `examples/ld49_vertical_slice` for the final combined rehearsal before the
+  real LD49 port.
 
 ## What Pygodot Should Generate
 

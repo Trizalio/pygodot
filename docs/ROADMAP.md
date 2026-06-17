@@ -56,6 +56,8 @@ Implemented:
 - an LD49-style Control/container menu shell in `examples/ld49_ui_shell`;
 - an LD49-style autoload scene flow slice in `examples/ld49_scene_flow`;
 - an LD49-style animated unit resource slice in `examples/ld49_unit_card`.
+- an LD49-style final rehearsal vertical slice in
+  `examples/ld49_vertical_slice`.
 - LD49 Godot 3 to Godot 4 migration notes in
   `docs/LD49_MIGRATION_NOTES.md`.
 
