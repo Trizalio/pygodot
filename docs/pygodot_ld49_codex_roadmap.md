@@ -49,7 +49,8 @@ Implemented baseline includes:
 - selected node constructors plus generic `node(...)`;
 - narrow LD49-style Control/UI helper constructors;
 - LD49-style autoload scene flow example coverage;
-- typed values: `Vec2`, `Vec3`, `Rect2`, `Color`, `NodePath`;
+- LD49-style animated unit resource slice coverage;
+- typed values: `Vec2`, `Vec3`, `Rect2`, `Color`, `NodePath`, `StringName`;
 - external resource helpers for textures, audio, fonts, generic resources, and packed scenes;
 - generated scenes, scripts, `.tres` resources, and `project.godot`;
 - generated `LabelSettings` resources, including font references;
@@ -63,7 +64,7 @@ Implemented baseline includes:
 - explicit generated/copied/referenced resource ownership in manifest and `BuildResult`;
 - optional real Godot smoke checks;
 - minimal GitHub Actions unit-test CI that does not require Godot;
-- examples covering small scenes, Pong, Snake, Flappy, mouse input, resources, instancing, audio, font, animation, physics, generated `.tres`, UI panel, LD49 UI shell, LD49 scene flow, and template scripts;
+- examples covering small scenes, Pong, Snake, Flappy, mouse input, resources, instancing, audio, font, animation, physics, generated `.tres`, UI panel, LD49 UI shell, LD49 scene flow, LD49 unit card, and template scripts;
 - external-project build smoke coverage and getting started documentation.
 
 Core principles that must remain unchanged:
@@ -228,90 +229,6 @@ python tools/smoke_examples.py --examples <example_name> --frames 20
 ```
 
 Do not make Godot mandatory in ordinary tests or CI.
-
----
-
-# Milestone 5 - Animated Sprite Resource Slice
-
-## Goal
-
-Support the resource pattern used by LD49 unit and spell scenes.
-
-LD49 units and spells use texture atlases, sprite frames, animated sprites, and audio players. In Godot 4, target nodes/resources should likely use `AnimatedSprite2D`, `SpriteFrames`, `AtlasTexture`, and `AudioStreamPlayer`.
-
-## Preferred Strategy
-
-Start with generic `sub_resource(...)` and generic `node(...)`. Add helpers only if the example becomes unreadable.
-
-Possible DSL:
-
-```python
-frame_0 = sub_resource(
-    "AtlasTexture",
-    id_hint="imp_frame_0",
-    atlas=texture("res://assets/small_demon.png"),
-    region=Rect2(0, 0, 50, 50),
-)
-
-frames = sub_resource(
-    "SpriteFrames",
-    id_hint="imp_frames",
-    animations=[...],
-)
-```
-
-If needed later, add narrow helpers:
-
-- `atlas_texture(...)`;
-- `sprite_frames(...)`.
-
-Do not add broad resource DSL in this milestone.
-
-## Example
-
-Add:
-
-```text
-examples/ld49_unit_card/
-  README.md
-  game.py
-  scripts/unit.gd
-```
-
-Scene:
-
-```text
-Unit: Node2D
-  AnimatedSprite2D
-  AudioStreamPlayer spawn
-  AudioStreamPlayer death
-```
-
-## Acceptance Criteria
-
-- Generated subresources can reference external textures.
-- Nested subresource-like data for `SpriteFrames` is deterministic enough for snapshots.
-- Texture/audio assets are copied and recorded in manifest.
-- Example approximates an LD49 unit scene.
-- No full resource hierarchy is introduced.
-- `python -m unittest discover -s tests` passes.
-
-## Anti-Goals
-
-- Do not port every LD49 unit.
-- Do not implement all `SpriteFrames` options.
-- Do not add Godot-assisted resource generation.
-- Do not build a Godot 3 resource converter.
-
-## Suggested Codex Prompt
-
-```text
-Add an LD49-style animated unit resource slice.
-
-Create examples/ld49_unit_card with a Node2D unit, AnimatedSprite2D, SpriteFrames/AtlasTexture resources, and spawn/death AudioStreamPlayer nodes. Prefer generic sub_resource(...) first; add narrow helpers only if the code is unreadable.
-
-Add snapshots, manifest assertions, and build tests.
-```
 
 ---
 
@@ -670,7 +587,6 @@ Verify with:
 Use this order unless the user explicitly says otherwise:
 
 ```text
-5. Animated sprite resource slice
 6. ShaderMaterial/material reference slice
 7. LD49 drag-and-drop spell slice
 8. LD49 Godot 3 -> Godot 4 migration notes

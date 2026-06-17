@@ -167,6 +167,7 @@ Vec3(1, 2, 3)
 Rect2(0, 0, 16, 32)
 Color(1, 1, 1)
 NodePath("../Player")
+StringName("idle")
 ```
 
 Temporary tuple inference exists for simple vectors, but new examples should use
@@ -283,6 +284,32 @@ CollisionShape2D("ProbeShape", shape=shape)
 
 `id_hint` is combined with the resource type to produce deterministic resource
 IDs such as `RectangleShape2D_player_hitbox`.
+
+Generic sub-resources can also model narrow resource shapes before a typed
+helper exists. For example, `examples/ld49_unit_card` uses `AtlasTexture` and
+`SpriteFrames` resources directly:
+
+```python
+frame = sub_resource(
+    "AtlasTexture",
+    id_hint="unit_idle_0",
+    atlas=texture("res://assets/unit_atlas.svg"),
+    region=Rect2(0, 0, 32, 32),
+)
+
+frames = sub_resource(
+    "SpriteFrames",
+    id_hint="unit_frames",
+    animations=[
+        {
+            "frames": [{"duration": 1.0, "texture": frame}],
+            "loop": True,
+            "name": StringName("idle"),
+            "speed": 5.0,
+        }
+    ],
+)
+```
 
 Typed shape helpers are available for common collision shapes:
 

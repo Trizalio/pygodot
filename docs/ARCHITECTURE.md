@@ -47,7 +47,7 @@ Current public concepts include:
 - `Script` and `Script.reference(...)`;
 - `signal(...)`;
 - `InputAction` through `Game.add_input_action(...)`;
-- values: `Vec2`, `Vec3`, `Rect2`, `Color`, `NodePath`;
+- values: `Vec2`, `Vec3`, `Rect2`, `Color`, `NodePath`, `StringName`;
 - external resources: `ext_resource(...)`, `texture(...)`,
   `audio_stream(...)`, `font(...)`, `packed_scene(...)`;
 - scene instances: `scene_instance(...)`;

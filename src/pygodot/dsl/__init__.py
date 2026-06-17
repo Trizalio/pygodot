@@ -55,7 +55,7 @@ from pygodot.dsl.shapes import (
 from pygodot.dsl.script import Script
 from pygodot.dsl.signal import SignalConnection, signal
 from pygodot.dsl.subresources import SubResource, sub_resource
-from pygodot.dsl.values import Color, NodePath, Rect2, Vec2, Vec3
+from pygodot.dsl.values import Color, NodePath, Rect2, StringName, Vec2, Vec3
 
 __all__ = [
     "Animation",
@@ -91,6 +91,7 @@ __all__ = [
     "Script",
     "SignalConnection",
     "Sprite2D",
+    "StringName",
     "SubResource",
     "TextureRect",
     "Timer",

@@ -40,6 +40,7 @@ Runtime logic remains ordinary GDScript inside the generated Godot project.
 | External fonts | `font` | copied `.ttf` and `.tres` |
 | Scene instancing | `instancing` | generated `PackedScene` references |
 | Generated sub-resources | `physics`, `flappy` | basic shapes |
+| Animated sprite resources | `ld49_unit_card` | generic `AtlasTexture` and `SpriteFrames` |
 | `AnimationPlayer` | `animation` | minimal value tracks |
 | `AudioStreamPlayer` | `audio` | basic playback wiring |
 | Generated `LabelSettings` | `generated_tres`, `ui_panel` | supported |
@@ -95,6 +96,7 @@ For a complete external-project walkthrough, see
 | `examples/mouse_input` | Moves a marker and increments a counter on left click. |
 | `examples/ld49_ui_shell` | LD49-style menu shell with Control containers and copied art. |
 | `examples/ld49_scene_flow` | LD49-style autoload scene transition slice. |
+| `examples/ld49_unit_card` | LD49-style animated unit scene with copied texture/audio assets. |
 
 ## Run
 

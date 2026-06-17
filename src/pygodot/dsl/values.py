@@ -35,3 +35,8 @@ class Color:
 @dataclass(slots=True, frozen=True)
 class NodePath:
     path: str
+
+
+@dataclass(slots=True, frozen=True)
+class StringName:
+    value: str

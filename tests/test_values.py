@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from pygodot import Color, NodePath, Rect2, Vec2, Vec3
+from pygodot import Color, NodePath, Rect2, StringName, Vec2, Vec3
 from pygodot.emitters.values import gd_value
 
 
@@ -18,3 +18,4 @@ class ValueSerializationTests(unittest.TestCase):
         self.assertEqual(gd_value(Rect2(1, 2, 30, 40)), "Rect2(1, 2, 30, 40)")
         self.assertEqual(gd_value(Color(1, 0.5, 0.25)), "Color(1, 0.5, 0.25, 1.0)")
         self.assertEqual(gd_value(NodePath("../Player")), 'NodePath("../Player")')
+        self.assertEqual(gd_value(StringName("idle")), '&"idle"')

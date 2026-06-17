@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from pygodot.dsl.values import Color, NodePath, Rect2, Vec2, Vec3
+from pygodot.dsl.values import Color, NodePath, Rect2, StringName, Vec2, Vec3
 from pygodot.ir.model import IRExternalResourceRef, IRPackedFloat32Array, IRStringName, IRSubResourceRef
 
 
@@ -54,6 +54,9 @@ def gd_value(value: Any) -> str:
 
     if isinstance(value, NodePath):
         return f"NodePath({gd_string(value.path)})"
+
+    if isinstance(value, StringName):
+        return "&" + gd_string(value.value)
 
     if isinstance(value, tuple):
         if len(value) == 2:

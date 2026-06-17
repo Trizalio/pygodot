@@ -17,7 +17,8 @@ Implemented:
   `Control`, `ColorRect`, `Sprite2D`, `Label`, `Button`, `Timer`,
   `AnimationPlayer`, `AudioStreamPlayer`, `Area2D`, `CollisionShape2D`, and
   narrow LD49-style Control/UI helpers;
-- typed value wrappers: `Vec2`, `Vec3`, `Rect2`, `Color`, `NodePath`;
+- typed value wrappers: `Vec2`, `Vec3`, `Rect2`, `Color`, `NodePath`,
+  `StringName`;
 - external resources through `ext_resource(...)`, `texture(...)`,
   `audio_stream(...)`, `font(...)`, and `packed_scene(...)`;
 - scene instances through `scene_instance(...)` and generated scene references
@@ -53,7 +54,8 @@ Implemented:
 - a static generated UI panel with reusable `.tres` styles in
   `examples/ui_panel`;
 - an LD49-style Control/container menu shell in `examples/ld49_ui_shell`;
-- an LD49-style autoload scene flow slice in `examples/ld49_scene_flow`.
+- an LD49-style autoload scene flow slice in `examples/ld49_scene_flow`;
+- an LD49-style animated unit resource slice in `examples/ld49_unit_card`.
 
 ## Next Direction
 

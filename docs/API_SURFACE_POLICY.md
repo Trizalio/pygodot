@@ -53,7 +53,7 @@ The stable 0.1 surface is:
 - signals through `SignalConnection` and `signal(...)`, including explicit bind
   arguments;
 - value wrappers:
-  `Vec2`, `Vec3`, `Rect2`, `Color`, and `NodePath`;
+  `Vec2`, `Vec3`, `Rect2`, `Color`, `NodePath`, and `StringName`;
 - external resource declarations:
   `ExternalResource`, `ext_resource(...)`, `external_resource(...)`,
   `texture(...)`, `audio_stream(...)`, `font(...)`, and `packed_scene(...)`;

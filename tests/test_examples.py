@@ -288,6 +288,15 @@ class ExampleSnapshotTests(SnapshotTestCase):
             TscnEmitter().emit(normalize_scene(scene)),
         )
 
+    def test_ld49_unit_card_scene_snapshot(self) -> None:
+        unit_card = _load_example_game("ld49_unit_card")
+        scene = unit_card.game.scenes[0]
+
+        self.assert_matches_snapshot(
+            "ld49_unit_card_scene.tscn",
+            TscnEmitter().emit(normalize_scene(scene)),
+        )
+
 
 class ExampleBuildTests(unittest.TestCase):
     def test_pong_example_builds_menu_and_game_scenes(self) -> None:
@@ -1012,6 +1021,71 @@ class ExampleBuildTests(unittest.TestCase):
                         "ownership": "copied",
                         "path": "res://scripts/scene_changer.gd",
                         "type": "Script",
+                    },
+                ],
+            )
+
+    def test_ld49_unit_card_example_builds_animated_sprite_resources(self) -> None:
+        unit_card = _load_example_game("ld49_unit_card")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            build_dir = Path(tmp) / "godot_project"
+            unit_card.game.build_dir = build_dir
+
+            result = unit_card.game.build()
+
+            self.assertEqual(
+                sorted(path.relative_to(build_dir).as_posix() for path in result.written_files),
+                [
+                    ".pygodot/manifest.json",
+                    "project.godot",
+                    "scenes/unit.tscn",
+                    "scripts/unit.gd",
+                ],
+            )
+            self.assertEqual(
+                sorted(path.relative_to(build_dir).as_posix() for path in result.copied_resources),
+                ["assets/tone.wav", "assets/unit_atlas.svg"],
+            )
+
+            scene_text = (build_dir / "scenes" / "unit.tscn").read_text(encoding="utf-8")
+            script_text = (build_dir / "scripts" / "unit.gd").read_text(encoding="utf-8")
+            self.assertIn('[sub_resource type="AtlasTexture" id="AtlasTexture_unit_idle_0"]', scene_text)
+            self.assertIn('[sub_resource type="SpriteFrames" id="SpriteFrames_unit_frames"]', scene_text)
+            self.assertIn('"name": &"idle"', scene_text)
+            self.assertIn('"texture": SubResource("AtlasTexture_unit_idle_0")', scene_text)
+            self.assertIn('[node name="AnimatedUnit" type="AnimatedSprite2D" parent="."]', scene_text)
+            self.assertIn('sprite_frames = SubResource("SpriteFrames_unit_frames")', scene_text)
+            self.assertIn('[node name="SpawnAudio" type="AudioStreamPlayer" parent="."]', scene_text)
+            self.assertIn('[node name="DeathAudio" type="AudioStreamPlayer" parent="."]', scene_text)
+            self.assertIn('sprite.play("idle")', script_text)
+            self.assertIn("func play_spawn() -> void:", script_text)
+            self.assertIn("spawn_audio.play()", script_text)
+
+            manifest = json.loads((build_dir / ".pygodot" / "manifest.json").read_text(encoding="utf-8"))
+            self.assertEqual(
+                manifest["external_resources"],
+                [
+                    {
+                        "copied": True,
+                        "id": "AudioStream_assets_tone_wav",
+                        "ownership": "copied",
+                        "path": "res://assets/tone.wav",
+                        "type": "AudioStream",
+                    },
+                    {
+                        "copied": False,
+                        "id": "Script_scripts_unit_gd",
+                        "ownership": "generated",
+                        "path": "res://scripts/unit.gd",
+                        "type": "Script",
+                    },
+                    {
+                        "copied": True,
+                        "id": "Texture2D_assets_unit_atlas_svg",
+                        "ownership": "copied",
+                        "path": "res://assets/unit_atlas.svg",
+                        "type": "Texture2D",
                     },
                 ],
             )
