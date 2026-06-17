@@ -8,14 +8,19 @@ from pygodot import (
     Color,
     ColorRect,
     Game,
+    GridContainer,
+    HBoxContainer,
     Label,
     MarginContainer,
     Panel,
     Scene,
     Script,
+    TextureRect,
     VBoxContainer,
     Vec2,
+    scene_instance,
     signal,
+    texture,
 )
 
 ROOT = Path(__file__).parent
@@ -44,45 +49,174 @@ game.add_autoload("GameState", "res://scripts/game_state.gd")
 game.add_autoload("SceneChanger", "res://scripts/scene_changer.gd")
 game.add_autoload("AudioManager", "res://scripts/audio_manager.gd")
 
+hint_scene = Scene(
+    path="res://scenes/hint.tscn",
+    root=Panel(
+        "Hint",
+        custom_minimum_size=Vec2(220, 96),
+        children=[
+            VBoxContainer(
+                "VBox",
+                children=[
+                    Label("Title", text="Hint", horizontal_alignment=1),
+                    Label(
+                        "Body",
+                        text="Stage B shell placeholder",
+                        horizontal_alignment=1,
+                        autowrap_mode=2,
+                    ),
+                ],
+            )
+        ],
+    ),
+)
+hint_resource = hint_scene.as_packed_scene()
+
+
+def map_cells() -> list:
+    cells = []
+    for row in "ABCDE":
+        for column in range(1, 6):
+            cell_id = f"{row}{column}"
+            cells.append(
+                Panel(
+                    f"Tile{cell_id}",
+                    custom_minimum_size=Vec2(58, 48),
+                    children=[
+                        Label(
+                            "Label",
+                            text=cell_id,
+                            horizontal_alignment=1,
+                            vertical_alignment=1,
+                            anchors_preset=15,
+                            offset_right=58,
+                            offset_bottom=48,
+                        )
+                    ],
+                )
+            )
+    return cells
+
+
+def spell_buttons() -> list:
+    return [
+        Button("FireballButton", text="Fireball", custom_minimum_size=Vec2(128, 42)),
+        Button("ShieldButton", text="Shield", custom_minimum_size=Vec2(128, 42)),
+        Button("WaitButton", text="Wait", custom_minimum_size=Vec2(128, 42)),
+    ]
+
+
+game.add_scene(hint_scene)
+
 game.add_scene(
     Scene(
         path="res://scenes/main.tscn",
         root=MarginContainer(
             "Main",
             script=file_script("main"),
-            groups=["ld49_port", "stage_a"],
+            groups=["ld49_port", "stage_b"],
             anchors_preset=15,
             offset_right=540,
             offset_bottom=750,
             children=[
+                TextureRect(
+                    "Background",
+                    texture=texture("res://resources/icon.svg"),
+                    anchors_preset=15,
+                    offset_right=540,
+                    offset_bottom=750,
+                    expand_mode=1,
+                    stretch_mode=6,
+                    modulate=Color(0.18, 0.22, 0.25, 0.25),
+                ),
                 Panel(
-                    "Panel",
+                    "Shell",
+                    anchors_preset=15,
+                    offset_left=18,
+                    offset_top=18,
+                    offset_right=522,
+                    offset_bottom=732,
                     children=[
                         VBoxContainer(
                             "VBox",
+                            anchors_preset=15,
+                            offset_left=14,
+                            offset_top=14,
+                            offset_right=490,
+                            offset_bottom=700,
                             children=[
-                                Label(
-                                    "Title",
-                                    text="LD49 pygodot skeleton",
-                                    horizontal_alignment=1,
-                                    theme_override_font_sizes={"font_size": 30},
+                                HBoxContainer(
+                                    "ScorePanel",
+                                    children=[
+                                        Label(
+                                            "Title",
+                                            text="LD49 battle shell",
+                                            custom_minimum_size=Vec2(180, 32),
+                                            theme_override_font_sizes={"font_size": 22},
+                                        ),
+                                        Label(
+                                            "ScoreLabel",
+                                            text="Score 0",
+                                            custom_minimum_size=Vec2(96, 32),
+                                            horizontal_alignment=1,
+                                        ),
+                                        Label(
+                                            "TurnLabel",
+                                            text="Turn 1",
+                                            custom_minimum_size=Vec2(88, 32),
+                                            horizontal_alignment=1,
+                                        ),
+                                        Label(
+                                            "StatusLabel",
+                                            text="Stage B shell",
+                                            custom_minimum_size=Vec2(150, 32),
+                                            horizontal_alignment=1,
+                                        ),
+                                    ],
                                 ),
-                                Label(
-                                    "StatusLabel",
-                                    text="Waiting for Stage A",
-                                    horizontal_alignment=1,
+                                HBoxContainer(
+                                    "GameBody",
+                                    children=[
+                                        GridContainer(
+                                            "MapGrid",
+                                            columns=5,
+                                            custom_minimum_size=Vec2(320, 260),
+                                            children=map_cells(),
+                                        ),
+                                        VBoxContainer(
+                                            "SidePanel",
+                                            custom_minimum_size=Vec2(160, 260),
+                                            children=[
+                                                Label("SpellsTitle", text="Spells", horizontal_alignment=1),
+                                                VBoxContainer("SpellsPanel", children=spell_buttons()),
+                                                Label("HintsTitle", text="Hints", horizontal_alignment=1),
+                                                scene_instance("HintPanel", hint_resource),
+                                            ],
+                                        ),
+                                    ],
                                 ),
-                                Button(
-                                    "IntroButton",
-                                    text="Open Intro",
-                                    custom_minimum_size=Vec2(260, 46),
-                                    signals=[signal("pressed", target=".", method="_on_intro_pressed")],
-                                ),
-                                Button(
-                                    "FaderButton",
-                                    text="Preview Fader",
-                                    custom_minimum_size=Vec2(260, 46),
-                                    signals=[signal("pressed", target=".", method="_on_fader_pressed")],
+                                HBoxContainer(
+                                    "DebugBar",
+                                    children=[
+                                        Button(
+                                            "IntroButton",
+                                            text="Open Intro",
+                                            custom_minimum_size=Vec2(140, 40),
+                                            signals=[signal("pressed", target=".", method="_on_intro_pressed")],
+                                        ),
+                                        Button(
+                                            "FaderButton",
+                                            text="Preview Fader",
+                                            custom_minimum_size=Vec2(140, 40),
+                                            signals=[signal("pressed", target=".", method="_on_fader_pressed")],
+                                        ),
+                                        Button(
+                                            "ResetButton",
+                                            text="Reset State",
+                                            custom_minimum_size=Vec2(140, 40),
+                                            signals=[signal("pressed", target=".", method="_on_reset_pressed")],
+                                        ),
+                                    ],
                                 ),
                             ],
                         )
