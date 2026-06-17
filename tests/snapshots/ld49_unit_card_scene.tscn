@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="AudioStream" path="res://assets/tone.wav" id="AudioStream_assets_tone_wav"]
 [ext_resource type="Script" path="res://scripts/unit.gd" id="Script_scripts_unit_gd"]
@@ -19,13 +19,18 @@ region = Rect2(64, 0, 32, 32)
 [sub_resource type="SpriteFrames" id="SpriteFrames_unit_frames"]
 animations = [{"frames": [{"duration": 1.0, "texture": SubResource("AtlasTexture_unit_idle_0")}, {"duration": 1.0, "texture": SubResource("AtlasTexture_unit_idle_1")}], "loop": true, "name": &"idle", "speed": 5.0}, {"frames": [{"duration": 1.0, "texture": SubResource("AtlasTexture_unit_death_0")}], "loop": false, "name": &"death", "speed": 1.0}]
 
-[node name="Unit" type="Node2D"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_rectangle_96_96"]
+size = Vector2(96, 96)
+
+[node name="Unit" type="Area2D"]
 script = ExtResource("Script_scripts_unit_gd")
 
 [node name="AnimatedUnit" type="AnimatedSprite2D" parent="."]
-position = Vector2(160, 104)
 scale = Vector2(3, 3)
 sprite_frames = SubResource("SpriteFrames_unit_frames")
+
+[node name="ClickShape" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_rectangle_96_96")
 
 [node name="SpawnAudio" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("AudioStream_assets_tone_wav")
@@ -34,3 +39,6 @@ volume_db = -8
 [node name="DeathAudio" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("AudioStream_assets_tone_wav")
 volume_db = -12
+
+
+[connection signal="input_event" from="." to="." method="_on_unit_input_event"]

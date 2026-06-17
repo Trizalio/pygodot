@@ -4,8 +4,11 @@ import os
 from pathlib import Path
 
 from pygodot import (
+    Area2D,
     AudioStreamPlayer,
+    CollisionShape2D,
     Game,
+    Label,
     Node2D,
     Rect2,
     Scene,
@@ -14,6 +17,9 @@ from pygodot import (
     Vec2,
     audio_stream,
     node,
+    rectangle_shape_2d,
+    scene_instance,
+    signal,
     sub_resource,
     texture,
 )
@@ -23,7 +29,7 @@ ROOT = Path(__file__).parent
 UNIT_SCRIPT = Script.from_file(
     source="scripts/unit.gd",
     path="res://scripts/unit.gd",
-    extends="Node2D",
+    extends="Area2D",
 )
 
 frame_idle_0 = sub_resource(
@@ -72,39 +78,75 @@ game = Game(
     name="LD49UnitCard",
     source_root=ROOT,
     build_dir=ROOT / "build" / "godot_project",
-    main_scene="res://scenes/unit.tscn",
+    main_scene="res://scenes/main.tscn",
     godot_bin=os.environ.get("GODOT_BIN", "godot"),
 )
 game.set_window(size=Vec2(320, 240))
 
+unit_scene = Scene(
+    path="res://scenes/unit.tscn",
+    root=Area2D(
+        "Unit",
+        script=UNIT_SCRIPT,
+        signals=[
+            signal("input_event", target=".", method="_on_unit_input_event"),
+        ],
+        children=[
+            node(
+                "AnimatedUnit",
+                "AnimatedSprite2D",
+                sprite_frames=sprite_frames,
+                scale=Vec2(3, 3),
+            ),
+            CollisionShape2D(
+                "ClickShape",
+                shape=rectangle_shape_2d(size=Vec2(96, 96)),
+            ),
+            AudioStreamPlayer(
+                "SpawnAudio",
+                stream=audio_stream("res://assets/tone.wav"),
+                volume_db=-8,
+            ),
+            AudioStreamPlayer(
+                "DeathAudio",
+                stream=audio_stream("res://assets/tone.wav"),
+                volume_db=-12,
+            ),
+        ],
+    ),
+)
+
 game.add_scene(
     Scene(
-        path="res://scenes/unit.tscn",
+        path="res://scenes/main.tscn",
         root=Node2D(
-            "Unit",
-            script=UNIT_SCRIPT,
+            "UnitField",
             children=[
-                node(
-                    "AnimatedUnit",
-                    "AnimatedSprite2D",
-                    sprite_frames=sprite_frames,
-                    position=Vec2(160, 104),
-                    scale=Vec2(3, 3),
+                Label(
+                    "Hint",
+                    text="Click a unit to play its death animation",
+                    position=Vec2(36, 28),
                 ),
-                AudioStreamPlayer(
-                    "SpawnAudio",
-                    stream=audio_stream("res://assets/tone.wav"),
-                    volume_db=-8,
+                scene_instance(
+                    "UnitA",
+                    unit_scene.as_packed_scene(),
+                    position=Vec2(80, 128),
                 ),
-                AudioStreamPlayer(
-                    "DeathAudio",
-                    stream=audio_stream("res://assets/tone.wav"),
-                    volume_db=-12,
+                scene_instance(
+                    "UnitB",
+                    unit_scene.as_packed_scene(),
+                    position=Vec2(160, 128),
+                ),
+                scene_instance(
+                    "UnitC",
+                    unit_scene.as_packed_scene(),
+                    position=Vec2(240, 128),
                 ),
             ],
         ),
     )
 )
+game.add_scene(unit_scene)
 
 if __name__ == "__main__":
     game.run()

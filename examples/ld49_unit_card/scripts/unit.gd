@@ -11,3 +11,7 @@ func play_spawn() -> void:
 func play_death() -> void:
     sprite.play("death")
     death_audio.play()
+
+func _on_unit_input_event(_viewport, event: InputEvent, _shape_idx: int) -> void:
+    if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+        play_death()

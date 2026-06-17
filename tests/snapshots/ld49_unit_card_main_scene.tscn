@@ -1,0 +1,18 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/unit.tscn" id="PackedScene_scenes_unit_tscn"]
+
+[node name="UnitField" type="Node2D"]
+
+[node name="Hint" type="Label" parent="."]
+position = Vector2(36, 28)
+text = "Click a unit to play its death animation"
+
+[node name="UnitA" parent="." instance=ExtResource("PackedScene_scenes_unit_tscn")]
+position = Vector2(80, 128)
+
+[node name="UnitB" parent="." instance=ExtResource("PackedScene_scenes_unit_tscn")]
+position = Vector2(160, 128)
+
+[node name="UnitC" parent="." instance=ExtResource("PackedScene_scenes_unit_tscn")]
+position = Vector2(240, 128)

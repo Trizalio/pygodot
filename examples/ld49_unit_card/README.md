@@ -7,3 +7,7 @@ resource, then attaches those frames to an `AnimatedSprite2D` node declared with
 
 The spawn/death audio players use copied source assets. Runtime behavior remains
 ordinary file-backed GDScript.
+
+The main scene instantiates the reusable unit scene several times. Each unit has
+a click collision shape wired to its `input_event` signal, so clicking a unit
+plays its death animation and death cue independently.

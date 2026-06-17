@@ -288,9 +288,18 @@ class ExampleSnapshotTests(SnapshotTestCase):
             TscnEmitter().emit(normalize_scene(scene)),
         )
 
-    def test_ld49_unit_card_scene_snapshot(self) -> None:
+    def test_ld49_unit_card_main_scene_snapshot(self) -> None:
         unit_card = _load_example_game("ld49_unit_card")
-        scene = unit_card.game.scenes[0]
+        scene = _find_scene(unit_card.game, "res://scenes/main.tscn")
+
+        self.assert_matches_snapshot(
+            "ld49_unit_card_main_scene.tscn",
+            TscnEmitter().emit(normalize_scene(scene)),
+        )
+
+    def test_ld49_unit_card_unit_scene_snapshot(self) -> None:
+        unit_card = _load_example_game("ld49_unit_card")
+        scene = _find_scene(unit_card.game, "res://scenes/unit.tscn")
 
         self.assert_matches_snapshot(
             "ld49_unit_card_scene.tscn",
@@ -1039,6 +1048,7 @@ class ExampleBuildTests(unittest.TestCase):
                 [
                     ".pygodot/manifest.json",
                     "project.godot",
+                    "scenes/main.tscn",
                     "scenes/unit.tscn",
                     "scripts/unit.gd",
                 ],
@@ -1048,19 +1058,48 @@ class ExampleBuildTests(unittest.TestCase):
                 ["assets/tone.wav", "assets/unit_atlas.svg"],
             )
 
+            main_scene_text = (build_dir / "scenes" / "main.tscn").read_text(encoding="utf-8")
             scene_text = (build_dir / "scenes" / "unit.tscn").read_text(encoding="utf-8")
             script_text = (build_dir / "scripts" / "unit.gd").read_text(encoding="utf-8")
+            self.assertIn(
+                '[ext_resource type="PackedScene" path="res://scenes/unit.tscn" '
+                'id="PackedScene_scenes_unit_tscn"]',
+                main_scene_text,
+            )
+            self.assertIn('[node name="UnitField" type="Node2D"]', main_scene_text)
+            self.assertIn(
+                '[node name="UnitA" parent="." instance=ExtResource("PackedScene_scenes_unit_tscn")]',
+                main_scene_text,
+            )
+            self.assertIn(
+                '[node name="UnitB" parent="." instance=ExtResource("PackedScene_scenes_unit_tscn")]',
+                main_scene_text,
+            )
+            self.assertIn(
+                '[node name="UnitC" parent="." instance=ExtResource("PackedScene_scenes_unit_tscn")]',
+                main_scene_text,
+            )
             self.assertIn('[sub_resource type="AtlasTexture" id="AtlasTexture_unit_idle_0"]', scene_text)
             self.assertIn('[sub_resource type="SpriteFrames" id="SpriteFrames_unit_frames"]', scene_text)
+            self.assertIn('[sub_resource type="RectangleShape2D" id="RectangleShape2D_rectangle_96_96"]', scene_text)
             self.assertIn('"name": &"idle"', scene_text)
             self.assertIn('"texture": SubResource("AtlasTexture_unit_idle_0")', scene_text)
+            self.assertIn('[node name="Unit" type="Area2D"]', scene_text)
             self.assertIn('[node name="AnimatedUnit" type="AnimatedSprite2D" parent="."]', scene_text)
+            self.assertIn('[node name="ClickShape" type="CollisionShape2D" parent="."]', scene_text)
             self.assertIn('sprite_frames = SubResource("SpriteFrames_unit_frames")', scene_text)
             self.assertIn('[node name="SpawnAudio" type="AudioStreamPlayer" parent="."]', scene_text)
             self.assertIn('[node name="DeathAudio" type="AudioStreamPlayer" parent="."]', scene_text)
+            self.assertIn(
+                '[connection signal="input_event" from="." to="." method="_on_unit_input_event"]',
+                scene_text,
+            )
             self.assertIn('sprite.play("idle")', script_text)
             self.assertIn("func play_spawn() -> void:", script_text)
             self.assertIn("spawn_audio.play()", script_text)
+            self.assertIn("func play_death() -> void:", script_text)
+            self.assertIn("func _on_unit_input_event(", script_text)
+            self.assertIn("play_death()", script_text)
 
             manifest = json.loads((build_dir / ".pygodot" / "manifest.json").read_text(encoding="utf-8"))
             self.assertEqual(
@@ -1072,6 +1111,13 @@ class ExampleBuildTests(unittest.TestCase):
                         "ownership": "copied",
                         "path": "res://assets/tone.wav",
                         "type": "AudioStream",
+                    },
+                    {
+                        "copied": False,
+                        "id": "PackedScene_scenes_unit_tscn",
+                        "ownership": "generated",
+                        "path": "res://scenes/unit.tscn",
+                        "type": "PackedScene",
                     },
                     {
                         "copied": False,
