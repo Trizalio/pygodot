@@ -15,6 +15,8 @@ Implemented so far:
 - source-owned autoload scripts, including `AudioManager`.
 - Stage B `main.tscn` shell with a score panel, `TextureRect` background, 5x5
   map grid, spells panel, debug buttons, and a generated hint scene instance.
+- Stage C core runtime singletons: `GameState`, `Matrix`, `MatrixUtils`,
+  `Rand`, `Utils`, `SceneChanger`, and `AudioManager`.
 
 Runtime behavior remains ordinary GDScript. This folder does not contain an
 automatic Godot 3 to Godot 4 converter and does not claim to be a full LD49

@@ -5,9 +5,7 @@
 func _ready() -> void:
     GameState.reset()
     AudioManager.play_cue("main_ready")
-    status_label.text = "%s. %s" % [GameState.describe_state(), AudioManager.describe_state()]
-    score_label.text = "Score 0"
-    turn_label.text = "Turn 1"
+    _refresh_runtime_labels()
 
 func _on_intro_pressed() -> void:
     AudioManager.play_cue("open_intro")
@@ -20,6 +18,13 @@ func _on_fader_pressed() -> void:
 func _on_reset_pressed() -> void:
     GameState.reset()
     AudioManager.stop_music()
-    status_label.text = "%s. %s" % [GameState.describe_state(), AudioManager.describe_state()]
-    score_label.text = "Score 0"
-    turn_label.text = "Turn 1"
+    _refresh_runtime_labels()
+
+func _refresh_runtime_labels() -> void:
+    status_label.text = "%s. %s. %s" % [
+        GameState.describe_state(),
+        GameState.describe_matrix(),
+        AudioManager.describe_state(),
+    ]
+    score_label.text = GameState.describe_score()
+    turn_label.text = GameState.describe_turn()

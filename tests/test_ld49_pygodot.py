@@ -36,7 +36,11 @@ class LD49PygodotSkeletonTests(unittest.TestCase):
                     "resources/icon.svg",
                     "scripts/audio_manager.gd",
                     "scripts/game_state.gd",
+                    "scripts/matrix.gd",
+                    "scripts/matrix_utils.gd",
+                    "scripts/rand.gd",
                     "scripts/scene_changer.gd",
+                    "scripts/utils.gd",
                 ],
             )
             self.assertEqual(result.generated_resources, [])
@@ -48,6 +52,11 @@ class LD49PygodotSkeletonTests(unittest.TestCase):
             intro_scene_text = (build_dir / "scenes" / "intro.tscn").read_text(encoding="utf-8")
             fader_scene_text = (build_dir / "scenes" / "fader.tscn").read_text(encoding="utf-8")
             main_script_text = (build_dir / "scripts" / "main.gd").read_text(encoding="utf-8")
+            game_state_text = (build_dir / "scripts" / "game_state.gd").read_text(encoding="utf-8")
+            matrix_text = (build_dir / "scripts" / "matrix.gd").read_text(encoding="utf-8")
+            matrix_utils_text = (build_dir / "scripts" / "matrix_utils.gd").read_text(encoding="utf-8")
+            rand_text = (build_dir / "scripts" / "rand.gd").read_text(encoding="utf-8")
+            utils_text = (build_dir / "scripts" / "utils.gd").read_text(encoding="utf-8")
             scene_changer_text = (build_dir / "scripts" / "scene_changer.gd").read_text(encoding="utf-8")
             audio_manager_text = (build_dir / "scripts" / "audio_manager.gd").read_text(encoding="utf-8")
 
@@ -55,6 +64,10 @@ class LD49PygodotSkeletonTests(unittest.TestCase):
             self.assertIn('run/main_scene="res://scenes/main.tscn"', project_text)
             self.assertIn('config/icon="res://resources/icon.svg"', project_text)
             self.assertIn("[autoload]", project_text)
+            self.assertIn('Matrix="*res://scripts/matrix.gd"', project_text)
+            self.assertIn('MatrixUtils="*res://scripts/matrix_utils.gd"', project_text)
+            self.assertIn('Rand="*res://scripts/rand.gd"', project_text)
+            self.assertIn('Utils="*res://scripts/utils.gd"', project_text)
             self.assertIn('GameState="*res://scripts/game_state.gd"', project_text)
             self.assertIn('SceneChanger="*res://scripts/scene_changer.gd"', project_text)
             self.assertIn('AudioManager="*res://scripts/audio_manager.gd"', project_text)
@@ -97,6 +110,13 @@ class LD49PygodotSkeletonTests(unittest.TestCase):
             self.assertIn("SceneChanger.go_to_intro()", main_script_text)
             self.assertIn("SceneChanger.show_fader()", main_script_text)
             self.assertIn("func _on_reset_pressed() -> void:", main_script_text)
+            self.assertIn("GameState.describe_matrix()", main_script_text)
+            self.assertIn("func apply_spell(cell_id: String, spell_id: String) -> String:", game_state_text)
+            self.assertIn("Matrix.reset(5, 5)", game_state_text)
+            self.assertIn("func set_cell(cell_id: String, value: Variant) -> void:", matrix_text)
+            self.assertIn("func neighbors(cell: String, width: int, height: int) -> Array[String]:", matrix_utils_text)
+            self.assertIn("func choose(items: Array) -> Variant:", rand_text)
+            self.assertIn("func describe_spell_drop(spell_id: String, cell_id: String) -> String:", utils_text)
             self.assertIn("const INTRO_SCENE := \"res://scenes/intro.tscn\"", scene_changer_text)
             self.assertIn("func play_cue(name: String) -> void:", audio_manager_text)
 
@@ -148,9 +168,37 @@ class LD49PygodotSkeletonTests(unittest.TestCase):
                     },
                     {
                         "copied": True,
+                        "id": "Script_scripts_matrix_gd",
+                        "ownership": "copied",
+                        "path": "res://scripts/matrix.gd",
+                        "type": "Script",
+                    },
+                    {
+                        "copied": True,
+                        "id": "Script_scripts_matrix_utils_gd",
+                        "ownership": "copied",
+                        "path": "res://scripts/matrix_utils.gd",
+                        "type": "Script",
+                    },
+                    {
+                        "copied": True,
+                        "id": "Script_scripts_rand_gd",
+                        "ownership": "copied",
+                        "path": "res://scripts/rand.gd",
+                        "type": "Script",
+                    },
+                    {
+                        "copied": True,
                         "id": "Script_scripts_scene_changer_gd",
                         "ownership": "copied",
                         "path": "res://scripts/scene_changer.gd",
+                        "type": "Script",
+                    },
+                    {
+                        "copied": True,
+                        "id": "Script_scripts_utils_gd",
+                        "ownership": "copied",
+                        "path": "res://scripts/utils.gd",
                         "type": "Script",
                     },
                     {
