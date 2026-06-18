@@ -86,6 +86,8 @@ Implemented:
   younger units move before older units to increase jams and clashes.
 - LD49 movement readability in `ld49_pygodot/`, including next-cell previews
   and per-unit queued movement playback.
+- LD49 event focus playback in `ld49_pygodot/`, including one-at-a-time
+  neighbor effects and named per-unit movement previews.
 
 ## Next Direction
 

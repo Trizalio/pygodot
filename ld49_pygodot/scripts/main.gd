@@ -49,21 +49,43 @@ func _on_tile_spell_dropped(tile_id: String, spell_id: String, display_name: Str
 
 func _play_turn_phases(action_name: String) -> void:
     turn_playback_active = true
-    var traits := GameState.resolve_neighbor_traits()
-    if traits.is_empty():
+    GameState.begin_neighbor_phase()
+    if not GameState.has_queued_neighbor_event():
         status_label.text = "%s: no neighbor effects" % action_name
-    else:
-        status_label.text = "%s: %s" % [action_name, traits]
-    _refresh_tiles()
-    _refresh_counters()
-    await _pause_turn_phase()
-    var previews := GameState.begin_movement_phase()
-    _show_movement_preview(previews)
-    status_label.text = "%s: movement order preview" % action_name
-    _refresh_counters()
-    await _pause_turn_phase()
+        _refresh_tiles()
+        _refresh_counters()
+        await _pause_turn_phase()
+    while GameState.has_queued_neighbor_event():
+        var event := GameState.peek_neighbor_event()
+        _show_neighbor_event(event)
+        status_label.text = "%s: %s -> %s (%s)" % [
+            action_name,
+            event.get("actor_name", ""),
+            event.get("target_name", ""),
+            event.get("effect", ""),
+        ]
+        _refresh_counters()
+        await _pause_unit_step()
+        var trait_result := GameState.resolve_next_neighbor_event()
+        status_label.text = "%s: %s" % [action_name, trait_result]
+        _refresh_tiles()
+        _refresh_counters()
+        await _pause_unit_step()
+    _clear_focus_preview()
+    GameState.begin_movement_phase()
     AudioManager.play_cue("units_move")
     while GameState.has_queued_movement():
+        var preview := GameState.peek_next_unit_move()
+        _show_next_movement_preview(preview)
+        if not preview.is_empty():
+            status_label.text = "%s: next %s %s -> %s" % [
+                action_name,
+                preview.get("display_name", ""),
+                preview.get("from", ""),
+                preview.get("to", ""),
+            ]
+            _refresh_counters()
+            await _pause_unit_step()
         var moved := GameState.move_next_unit()
         if moved.is_empty():
             continue
@@ -71,7 +93,7 @@ func _play_turn_phases(action_name: String) -> void:
         _refresh_tiles()
         _refresh_counters()
         await _pause_unit_step()
-    _clear_movement_preview()
+    _clear_focus_preview()
     var spawned := GameState.spawn_wave()
     status_label.text = "%s: %s" % [action_name, spawned]
     _refresh_tiles()
@@ -130,21 +152,31 @@ func _clear_spell_preview() -> void:
         if tile.has_method("clear_preview"):
             tile.clear_preview()
 
-func _show_movement_preview(previews: Array) -> void:
-    _clear_movement_preview()
-    for preview in previews:
-        var from_tile := _tile_by_id(str(preview.get("from", "")))
-        if from_tile != null and from_tile.has_method("set_movement_preview"):
-            from_tile.set_movement_preview("from", str(preview.get("outcome", "")))
-        var from_cell := str(preview.get("from", ""))
-        var to_cell := str(preview.get("to", ""))
-        if to_cell == "CASTLE" or to_cell.is_empty() or to_cell == from_cell:
-            continue
-        var to_tile := _tile_by_id(to_cell)
-        if to_tile != null and to_tile.has_method("set_movement_preview"):
-            to_tile.set_movement_preview("to", str(preview.get("outcome", "")))
+func _show_neighbor_event(event: Dictionary) -> void:
+    _clear_focus_preview()
+    var actor_tile := _tile_by_id(str(event.get("actor_cell", "")))
+    if actor_tile != null and actor_tile.has_method("set_focus_preview"):
+        actor_tile.set_focus_preview("actor", str(event.get("actor_name", "")), str(event.get("effect", "")))
+    var target_tile := _tile_by_id(str(event.get("target_cell", "")))
+    if target_tile != null and target_tile.has_method("set_focus_preview"):
+        target_tile.set_focus_preview("target", str(event.get("target_name", "")), str(event.get("effect", "")))
 
-func _clear_movement_preview() -> void:
+func _show_next_movement_preview(preview: Dictionary) -> void:
+    _clear_focus_preview()
+    if preview.is_empty():
+        return
+    var from_tile := _tile_by_id(str(preview.get("from", "")))
+    if from_tile != null and from_tile.has_method("set_movement_preview"):
+        from_tile.set_movement_preview("from", str(preview.get("outcome", "")), str(preview.get("display_name", "")))
+    var from_cell := str(preview.get("from", ""))
+    var to_cell := str(preview.get("to", ""))
+    if to_cell == "CASTLE" or to_cell.is_empty() or to_cell == from_cell:
+        return
+    var to_tile := _tile_by_id(to_cell)
+    if to_tile != null and to_tile.has_method("set_movement_preview"):
+        to_tile.set_movement_preview("to", str(preview.get("outcome", "")), str(preview.get("display_name", "")))
+
+func _clear_focus_preview() -> void:
     for tile in map_grid.get_children():
         if tile.has_method("clear_preview"):
             tile.clear_preview()

@@ -94,10 +94,15 @@ func set_preview(role: String, spell_id: String) -> void:
     else:
         modulate = _preview_color(spell_id)
 
-func set_movement_preview(role: String, outcome: String) -> void:
+func set_movement_preview(role: String, outcome: String, display_name: String) -> void:
     preview_active = true
-    state.text = _movement_preview_label(role, outcome)
+    state.text = _movement_preview_label(role, outcome, display_name)
     modulate = _movement_preview_color(role, outcome)
+
+func set_focus_preview(role: String, display_name: String, effect: String) -> void:
+    preview_active = true
+    state.text = _focus_preview_label(role, display_name, effect)
+    modulate = _focus_preview_color(role, effect)
 
 func clear_preview() -> void:
     if not preview_active:
@@ -191,14 +196,15 @@ func _preview_color(spell_id: String) -> Color:
         _:
             return Color(1.0, 0.85, 0.35, 1.0)
 
-func _movement_preview_label(role: String, outcome: String) -> String:
+func _movement_preview_label(role: String, outcome: String, display_name: String) -> String:
+    var short_name := _short_name(display_name)
     if outcome == "frozen":
-        return "Frozen"
+        return "%s Frozen" % short_name
     if outcome == "castle":
-        return "Castle"
+        return "%s Castle" % short_name
     if outcome == "blocked":
-        return "Block" if role == "to" else "Move"
-    return "Next" if role == "to" else "Move"
+        return "%s Block" % short_name if role == "to" else "%s Move" % short_name
+    return "%s Next" % short_name if role == "to" else "%s Move" % short_name
 
 func _movement_preview_color(role: String, outcome: String) -> Color:
     if outcome == "frozen":
@@ -210,3 +216,38 @@ func _movement_preview_color(role: String, outcome: String) -> Color:
     if role == "to":
         return Color(0.55, 0.85, 1.0, 1.0)
     return Color(1.0, 0.85, 0.35, 1.0)
+
+func _focus_preview_label(role: String, display_name: String, effect: String) -> String:
+    var short_name := _short_name(display_name)
+    if role == "actor":
+        return "%s Acts" % short_name
+    return "%s %s" % [short_name, _effect_label(effect)]
+
+func _focus_preview_color(role: String, effect: String) -> Color:
+    if role == "actor":
+        return Color(1.0, 0.85, 0.35, 1.0)
+    match effect:
+        "scorch":
+            return Color(1.0, 0.45, 0.25, 1.0)
+        "horde":
+            return Color(0.7, 1.0, 0.5, 1.0)
+        "brace":
+            return Color(0.45, 0.9, 0.65, 1.0)
+        _:
+            return Color(1.0, 0.85, 0.35, 1.0)
+
+func _effect_label(effect: String) -> String:
+    match effect:
+        "scorch":
+            return "Scorch"
+        "horde":
+            return "Horde"
+        "brace":
+            return "Brace"
+        _:
+            return effect.capitalize()
+
+func _short_name(display_name: String) -> String:
+    if display_name.length() <= 5:
+        return display_name
+    return display_name.substr(0, 5)

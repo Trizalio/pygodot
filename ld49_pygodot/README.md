@@ -41,6 +41,8 @@ Implemented so far:
   older units, increasing jams, clashes, and board pressure.
 - Movement readability pass with next-cell previews and per-unit queued
   movement playback instead of resolving all movement in one visual step.
+- Event focus pass with one-at-a-time neighbor effect playback and per-unit
+  movement previews that name the acting unit before it moves.
 
 Runtime behavior remains ordinary GDScript. This folder does not contain an
 automatic Godot 3 to Godot 4 converter and does not claim to be a full LD49
