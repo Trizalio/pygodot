@@ -62,13 +62,20 @@ hint_scene = Scene(
         children=[
             VBoxContainer(
                 "VBox",
+                anchors_preset=15,
+                offset_left=10,
+                offset_top=8,
+                offset_right=350,
+                offset_bottom=84,
                 children=[
                     Label("Title", text="Hint", horizontal_alignment=1),
                     Label(
                         "Body",
                         text="Drag spells onto units, advance turns, and clear the unstable board.",
+                        custom_minimum_size=Vec2(340, 48),
                         horizontal_alignment=1,
                         autowrap_mode=2,
+                        clip_text=True,
                     ),
                 ],
             )
@@ -94,8 +101,22 @@ tile_scene = Scene(
                 offset_right=62,
                 offset_bottom=52,
                 children=[
-                    Label("Label", text="A1", horizontal_alignment=1, mouse_filter=2),
-                    Label("State", text="Empty", horizontal_alignment=1, mouse_filter=2),
+                    Label(
+                        "Label",
+                        text="A1",
+                        custom_minimum_size=Vec2(58, 20),
+                        horizontal_alignment=1,
+                        mouse_filter=2,
+                        clip_text=True,
+                    ),
+                    Label(
+                        "State",
+                        text="Empty",
+                        custom_minimum_size=Vec2(58, 24),
+                        horizontal_alignment=1,
+                        mouse_filter=2,
+                        clip_text=True,
+                    ),
                 ],
             )
         ],

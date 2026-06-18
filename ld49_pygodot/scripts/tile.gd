@@ -19,9 +19,9 @@ func reset_state() -> void:
     _clear_highlight()
 
 func set_unit(display_name: String, hp: int, status: String) -> void:
-    unit_summary = "%s HP %d" % [display_name, hp]
+    unit_summary = "%s:%d" % [display_name.substr(0, 3), hp]
     if not status.is_empty() and status != "ready":
-        unit_summary = "%s %s" % [unit_summary, status]
+        unit_summary = "%s %s" % [unit_summary, _status_abbrev(status)]
     _refresh_state(unit_summary)
 
 func clear_unit() -> void:
@@ -71,3 +71,20 @@ func _flash(color: Color) -> void:
 
 func _refresh_state(text: String) -> void:
     state.text = text
+
+func _status_abbrev(status: String) -> String:
+    match status:
+        "burning":
+            return "Brn"
+        "frozen":
+            return "Frz"
+        "shielded":
+            return "Shd"
+        "healed":
+            return "Hld"
+        "moving":
+            return "Mov"
+        "defeated":
+            return "Def"
+        _:
+            return status.substr(0, 3)
