@@ -48,7 +48,8 @@ REQUIRED_SCENE_MARKERS = {
     "scenes/main.tscn": [
         'instance=ExtResource("PackedScene_scenes_tile_tscn")',
         'instance=ExtResource("PackedScene_scenes_spell_tscn")',
-        "Advance Units",
+        "Castle 0/6 D:0 U:0 G:0",
+        "Pass Turn",
     ],
     "scenes/end.tscn": ["Battle Complete", "stage_f"],
     "scenes/spell.tscn": ["Script_scripts_spell_gd"],

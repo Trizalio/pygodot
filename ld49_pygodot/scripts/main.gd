@@ -1,7 +1,8 @@
 @onready var status_label := $Shell/VBox/ScorePanel/StatusLabel
 @onready var score_label := $Shell/VBox/ScorePanel/ScoreLabel
 @onready var turn_label := $Shell/VBox/ScorePanel/TurnLabel
-@onready var map_grid := $Shell/VBox/GameBody/MapGrid
+@onready var castle_label := $Shell/VBox/GameBody/BoardPanel/CastlePanel/CastleLabel
+@onready var map_grid := $Shell/VBox/GameBody/BoardPanel/MapGrid
 
 func _ready() -> void:
     GameState.reset()
@@ -26,22 +27,21 @@ func _on_reset_pressed() -> void:
     _refresh_runtime_labels()
 
 func _on_advance_units_pressed() -> void:
-    status_label.text = GameState.advance_units()
-    GameState.next_turn()
+    status_label.text = GameState.resolve_turn()
     AudioManager.play_cue("units_move")
     _refresh_tiles()
-    score_label.text = GameState.describe_score()
-    turn_label.text = GameState.describe_turn()
+    _refresh_runtime_labels()
     _finish_if_complete()
 
 func _on_tile_spell_dropped(tile_id: String, spell_id: String, display_name: String) -> void:
     var summary := GameState.apply_spell(tile_id, spell_id)
-    GameState.next_turn()
+    var turn_summary := GameState.resolve_turn()
     AudioManager.play_cue("cast_%s" % spell_id)
     _refresh_tiles()
-    status_label.text = "%s cast on %s. %s" % [display_name, tile_id, summary]
+    status_label.text = "%s cast on %s. %s. %s" % [display_name, tile_id, summary, turn_summary]
     score_label.text = GameState.describe_score()
     turn_label.text = GameState.describe_turn()
+    castle_label.text = GameState.describe_castle()
     _finish_if_complete()
 
 func _connect_tiles() -> void:
@@ -75,3 +75,4 @@ func _refresh_runtime_labels() -> void:
     ]
     score_label.text = GameState.describe_score()
     turn_label.text = GameState.describe_turn()
+    castle_label.text = GameState.describe_castle()

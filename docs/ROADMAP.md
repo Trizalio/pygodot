@@ -73,6 +73,8 @@ Implemented:
   validator and manual playtest checklist.
 - LD49 UX polish for readable manual playtests, including wider viewport,
   readable board tiles, and non-overlapping spell/debug panels.
+- LD49 pressure loop in `ld49_pygodot/`, including castle capacity, automatic
+  movement after spells, turn spawns, and neighbor-aware spell effects.
 
 ## Next Direction
 

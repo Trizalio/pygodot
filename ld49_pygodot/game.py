@@ -316,11 +316,34 @@ game.add_scene(
                                 HBoxContainer(
                                     "GameBody",
                                     children=[
-                                        GridContainer(
-                                            "MapGrid",
-                                            columns=5,
-                                            custom_minimum_size=Vec2(520, 430),
-                                            children=map_cells(),
+                                        VBoxContainer(
+                                            "BoardPanel",
+                                            custom_minimum_size=Vec2(520, 500),
+                                            children=[
+                                                Panel(
+                                                    "CastlePanel",
+                                                    custom_minimum_size=Vec2(520, 58),
+                                                    children=[
+                                                        Label(
+                                                            "CastleLabel",
+                                                            text="Castle 0/6 D:0 U:0 G:0",
+                                                            anchors_preset=15,
+                                                            offset_left=8,
+                                                            offset_top=8,
+                                                            offset_right=512,
+                                                            offset_bottom=50,
+                                                            horizontal_alignment=1,
+                                                            vertical_alignment=1,
+                                                        )
+                                                    ],
+                                                ),
+                                                GridContainer(
+                                                    "MapGrid",
+                                                    columns=5,
+                                                    custom_minimum_size=Vec2(520, 430),
+                                                    children=map_cells(),
+                                                ),
+                                            ],
                                         ),
                                         VBoxContainer(
                                             "SidePanel",
@@ -354,7 +377,7 @@ game.add_scene(
                                         ),
                                         debug_button(
                                             "AdvanceUnitsButton",
-                                            "Advance Units",
+                                            "Pass Turn",
                                             "_on_advance_units_pressed",
                                         ),
                                     ],
