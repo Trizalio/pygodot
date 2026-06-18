@@ -3,6 +3,7 @@
 @onready var turn_label := $Shell/VBox/ScorePanel/TurnLabel
 @onready var castle_label := $Shell/VBox/GameBody/BoardPanel/CastlePanel/CastleLabel
 @onready var map_grid := $Shell/VBox/GameBody/BoardPanel/MapGrid
+var turn_playback_active := false
 
 func _ready() -> void:
     GameState.reset()
@@ -20,6 +21,8 @@ func _on_fader_pressed() -> void:
     SceneChanger.show_fader()
 
 func _on_reset_pressed() -> void:
+    if turn_playback_active:
+        return
     GameState.reset()
     _reset_tiles()
     _refresh_tiles()
@@ -27,22 +30,47 @@ func _on_reset_pressed() -> void:
     _refresh_runtime_labels()
 
 func _on_advance_units_pressed() -> void:
-    status_label.text = GameState.resolve_turn()
-    AudioManager.play_cue("units_move")
-    _refresh_tiles()
-    _refresh_runtime_labels()
-    _finish_if_complete()
+    if turn_playback_active:
+        return
+    await _play_turn_phases("Pass")
 
 func _on_tile_spell_dropped(tile_id: String, spell_id: String, display_name: String) -> void:
+    if turn_playback_active:
+        return
+    turn_playback_active = true
     var summary := GameState.apply_spell(tile_id, spell_id)
-    var turn_summary := GameState.resolve_turn()
     AudioManager.play_cue("cast_%s" % spell_id)
+    status_label.text = "%s cast on %s. %s" % [display_name, tile_id, summary]
     _refresh_tiles()
-    status_label.text = "%s cast on %s. %s. %s" % [display_name, tile_id, summary, turn_summary]
-    score_label.text = GameState.describe_score()
-    turn_label.text = GameState.describe_turn()
-    castle_label.text = GameState.describe_castle()
+    _refresh_counters()
+    await _pause_turn_phase()
+    await _play_turn_phases(display_name)
+
+func _play_turn_phases(action_name: String) -> void:
+    turn_playback_active = true
+    var traits := GameState.resolve_neighbor_traits()
+    if traits.is_empty():
+        status_label.text = "%s: no neighbor effects" % action_name
+    else:
+        status_label.text = "%s: %s" % [action_name, traits]
+    _refresh_tiles()
+    _refresh_counters()
+    await _pause_turn_phase()
+    var moved := GameState.move_units()
+    AudioManager.play_cue("units_move")
+    status_label.text = "%s: %s" % [action_name, moved]
+    _refresh_tiles()
+    _refresh_counters()
+    await _pause_turn_phase()
+    var spawned := GameState.spawn_wave()
+    status_label.text = "%s: %s" % [action_name, spawned]
+    _refresh_tiles()
+    _refresh_counters()
     _finish_if_complete()
+    turn_playback_active = false
+
+func _pause_turn_phase() -> void:
+    await get_tree().create_timer(0.45).timeout
 
 func _connect_tiles() -> void:
     for tile in map_grid.get_children():
@@ -73,6 +101,9 @@ func _refresh_runtime_labels() -> void:
         GameState.describe_matrix(),
         AudioManager.describe_state(),
     ]
+    _refresh_counters()
+
+func _refresh_counters() -> void:
     score_label.text = GameState.describe_score()
     turn_label.text = GameState.describe_turn()
     castle_label.text = GameState.describe_castle()

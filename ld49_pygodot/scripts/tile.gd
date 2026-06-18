@@ -27,6 +27,7 @@ func set_unit(display_name: String, hp: int, status: String) -> void:
         _refresh_state("")
     else:
         _refresh_state(_status_label(status))
+        _flash(_status_color(status))
 
 func clear_unit() -> void:
     unit_summary = ""
@@ -106,3 +107,20 @@ func _status_label(status: String) -> String:
             return "Rage"
         _:
             return status.capitalize()
+
+func _status_color(status: String) -> Color:
+    match status:
+        "burning", "scorched", "raging":
+            return Color(1.0, 0.45, 0.25, 1.0)
+        "frozen":
+            return Color(0.45, 0.75, 1.0, 1.0)
+        "shielded", "braced", "stacked":
+            return Color(0.45, 0.9, 0.65, 1.0)
+        "healed", "horde":
+            return Color(0.7, 1.0, 0.5, 1.0)
+        "moving":
+            return Color(1.0, 0.85, 0.35, 1.0)
+        "blocked", "clash":
+            return Color(1.0, 0.55, 0.45, 1.0)
+        _:
+            return Color(1.0, 0.85, 0.35, 1.0)

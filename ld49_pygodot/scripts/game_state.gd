@@ -52,10 +52,9 @@ func apply_spell(cell_id: String, spell_id: String) -> String:
     return last_event
 
 func resolve_turn() -> String:
-    var traits := _resolve_neighbor_traits()
-    var moved := _move_units()
-    var spawned := _spawn_wave()
-    turn += 1
+    var traits := resolve_neighbor_traits()
+    var moved := move_units()
+    var spawned := spawn_wave()
     if traits.is_empty():
         last_event = "%s; %s" % [moved, spawned]
     else:
@@ -64,6 +63,19 @@ func resolve_turn() -> String:
 
 func advance_units() -> String:
     return resolve_turn()
+
+func resolve_neighbor_traits() -> String:
+    last_event = _resolve_neighbor_traits()
+    return last_event
+
+func move_units() -> String:
+    last_event = _move_units()
+    return last_event
+
+func spawn_wave() -> String:
+    last_event = _spawn_wave()
+    turn += 1
+    return last_event
 
 func _move_units() -> String:
     var moved := PackedStringArray()

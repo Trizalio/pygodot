@@ -78,6 +78,8 @@ Implemented:
 - LD49 faction/neighbor interactions in `ld49_pygodot/`, including demon
   scorch auras, undead horde healing, greenskin bracing, ally-chain
   Shield/Heal targeting, and faction-flavored clash outcomes.
+- LD49 turn readability in `ld49_pygodot/`, including phased
+  spell/neighbor/movement/spawn playback and status-colored tile flashes.
 
 ## Next Direction
 
