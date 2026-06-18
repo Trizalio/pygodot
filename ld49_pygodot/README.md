@@ -30,6 +30,9 @@ Implemented so far:
   non-overlapping spell/score/debug panels for manual playtests.
 - LD49 pressure loop pass with a castle counter, automatic movement after each
   spell, turn spawns, and neighbor-aware Fireball/Frost effects.
+- Faction/neighbor rules pass with demon scorch auras, undead horde healing,
+  greenskin bracing, ally-chain Shield/Heal targeting, and faction-flavored
+  clash outcomes.
 
 Runtime behavior remains ordinary GDScript. This folder does not contain an
 automatic Godot 3 to Godot 4 converter and does not claim to be a full LD49

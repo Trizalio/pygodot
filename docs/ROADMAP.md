@@ -75,6 +75,9 @@ Implemented:
   readable board tiles, and non-overlapping spell/debug panels.
 - LD49 pressure loop in `ld49_pygodot/`, including castle capacity, automatic
   movement after spells, turn spawns, and neighbor-aware spell effects.
+- LD49 faction/neighbor interactions in `ld49_pygodot/`, including demon
+  scorch auras, undead horde healing, greenskin bracing, ally-chain
+  Shield/Heal targeting, and faction-flavored clash outcomes.
 
 ## Next Direction
 

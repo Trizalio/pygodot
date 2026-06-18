@@ -52,10 +52,14 @@ func apply_spell(cell_id: String, spell_id: String) -> String:
     return last_event
 
 func resolve_turn() -> String:
+    var traits := _resolve_neighbor_traits()
     var moved := _move_units()
     var spawned := _spawn_wave()
     turn += 1
-    last_event = "%s; %s" % [moved, spawned]
+    if traits.is_empty():
+        last_event = "%s; %s" % [moved, spawned]
+    else:
+        last_event = "%s; %s; %s" % [traits, moved, spawned]
     return last_event
 
 func advance_units() -> String:
@@ -149,6 +153,18 @@ func _target_cells_for_spell(cell_id: String, spell_id: String) -> Array[String]
     if spell_id == "fireball" or spell_id == "frost":
         for neighbor in MatrixUtils.neighbors(cell_id, Matrix.width, Matrix.height):
             cells.append(neighbor)
+    if spell_id == "shield" or spell_id == "heal":
+        var anchor_id := _unit_id_at(cell_id)
+        if not anchor_id.is_empty():
+            var anchor: Dictionary = units[anchor_id]
+            var faction := str(anchor["faction"])
+            for neighbor in MatrixUtils.neighbors(cell_id, Matrix.width, Matrix.height):
+                var neighbor_id := _unit_id_at(neighbor)
+                if neighbor_id.is_empty():
+                    continue
+                var neighbor_unit: Dictionary = units[neighbor_id]
+                if str(neighbor_unit["faction"]) == faction:
+                    cells.append(neighbor)
     return cells
 
 func _apply_spell_to_cell(cell_id: String, spell_id: String) -> String:
@@ -273,7 +289,18 @@ func _tick_status(unit_id: String) -> String:
         unit["status"] = "ready"
         units[unit_id] = unit
         return "%s:frozen" % unit["display_name"]
-    if status == "shielded" or status == "healed":
+    if [
+        "shielded",
+        "healed",
+        "moving",
+        "blocked",
+        "clash",
+        "scorched",
+        "horde",
+        "braced",
+        "stacked",
+        "raging",
+    ].has(status):
         unit["status"] = "ready"
         units[unit_id] = unit
     return ""
@@ -303,10 +330,33 @@ func _unit_id_at(cell_id: String) -> String:
 func _clash_units(attacker_id: String, blocker_id: String, cell_id: String) -> String:
     var attacker: Dictionary = units[attacker_id]
     var blocker: Dictionary = units[blocker_id]
-    _damage_unit(attacker, 1)
-    _damage_unit(blocker, 1)
-    attacker["status"] = "blocked"
-    blocker["status"] = "clash"
+    var attacker_faction := str(attacker["faction"])
+    var blocker_faction := str(blocker["faction"])
+    if attacker_faction == blocker_faction:
+        attacker["status"] = "stacked"
+        blocker["status"] = "stacked"
+        units[attacker_id] = attacker
+        units[blocker_id] = blocker
+        return "%s stacked behind %s at %s" % [attacker["display_name"], blocker["display_name"], cell_id]
+    var attacker_damage := 1
+    var blocker_damage := 1
+    if attacker_faction == "demon":
+        blocker_damage += 1
+        attacker["status"] = "raging"
+    else:
+        attacker["status"] = "blocked"
+    if blocker_faction == "undead":
+        blocker["shield"] = int(blocker.get("shield", 0)) + 1
+    if attacker_faction == "greenskin":
+        blocker_damage += 1
+        attacker_damage += 1
+        attacker["status"] = "raging"
+    _damage_unit(attacker, attacker_damage)
+    _damage_unit(blocker, blocker_damage)
+    if blocker_faction == "undead":
+        blocker["status"] = "braced"
+    else:
+        blocker["status"] = "clash"
     units[attacker_id] = attacker
     units[blocker_id] = blocker
     if int(attacker["hp"]) <= 0:
@@ -318,6 +368,77 @@ func _clash_units(attacker_id: String, blocker_id: String, cell_id: String) -> S
         units[blocker_id] = blocker
         _exit_matrix(blocker_id)
     return "%s blocked by %s at %s" % [attacker["display_name"], blocker["display_name"], cell_id]
+
+func _resolve_neighbor_traits() -> String:
+    var events := PackedStringArray()
+    for unit_id in units.keys():
+        if not units.has(unit_id):
+            continue
+        var unit: Dictionary = units[unit_id]
+        if str(unit.get("status", "")) == "defeated":
+            continue
+        var faction := str(unit["faction"])
+        var cell_id := str(unit["cell_id"])
+        var neighbors := _neighbor_unit_ids(cell_id)
+        if faction == "demon":
+            for neighbor_id in neighbors:
+                if not units.has(neighbor_id):
+                    continue
+                var neighbor: Dictionary = units[neighbor_id]
+                if str(neighbor["faction"]) == faction:
+                    continue
+                _damage_unit(neighbor, 1)
+                if int(neighbor["hp"]) <= 0:
+                    _defeat_unit(neighbor_id, neighbor)
+                    events.append("%s scorched %s" % [unit["display_name"], neighbor["display_name"]])
+                else:
+                    neighbor["status"] = "scorched"
+                    units[neighbor_id] = neighbor
+                    events.append("%s scorched %s" % [unit["display_name"], neighbor["display_name"]])
+        elif faction == "undead":
+            if _has_neighbor_faction(neighbors, "undead"):
+                var old_hp := int(unit["hp"])
+                unit["hp"] = min(int(unit["max_hp"]), old_hp + 1)
+                unit["status"] = "horde"
+                units[unit_id] = unit
+                if int(unit["hp"]) > old_hp:
+                    events.append("%s horde healed" % unit["display_name"])
+        elif faction == "greenskin":
+            if _has_enemy_neighbor(neighbors, faction):
+                unit["shield"] = int(unit.get("shield", 0)) + 1
+                unit["status"] = "braced"
+                units[unit_id] = unit
+                events.append("%s braced" % unit["display_name"])
+    if events.is_empty():
+        return ""
+    return "neighbors %s" % ", ".join(events)
+
+func _neighbor_unit_ids(cell_id: String) -> Array[String]:
+    var result: Array[String] = []
+    for neighbor in MatrixUtils.neighbors(cell_id, Matrix.width, Matrix.height):
+        var unit_id := _unit_id_at(neighbor)
+        if not unit_id.is_empty():
+            result.append(unit_id)
+    return result
+
+func _has_neighbor_faction(unit_ids: Array[String], faction: String) -> bool:
+    for unit_id in unit_ids:
+        if units.has(unit_id) and str(units[unit_id]["faction"]) == faction:
+            return true
+    return false
+
+func _has_enemy_neighbor(unit_ids: Array[String], faction: String) -> bool:
+    for unit_id in unit_ids:
+        if units.has(unit_id) and str(units[unit_id]["faction"]) != faction:
+            return true
+    return false
+
+func _defeat_unit(unit_id: String, unit: Dictionary) -> void:
+    unit["hp"] = 0
+    unit["status"] = "defeated"
+    units[unit_id] = unit
+    _exit_matrix(unit_id)
+    score += 15
 
 func _exit_matrix(unit_id: String) -> void:
     var unit: Dictionary = units[unit_id]

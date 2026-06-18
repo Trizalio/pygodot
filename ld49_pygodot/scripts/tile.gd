@@ -94,5 +94,15 @@ func _status_label(status: String) -> String:
             return "Moving"
         "defeated":
             return "Defeated"
+        "scorched":
+            return "Scorch"
+        "horde":
+            return "Horde"
+        "braced":
+            return "Braced"
+        "stacked":
+            return "Stack"
+        "raging":
+            return "Rage"
         _:
             return status.capitalize()
