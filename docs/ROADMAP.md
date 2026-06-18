@@ -71,6 +71,8 @@ Implemented:
   variants, status ticking, shield/heal effects, and a generated end scene.
 - Stage G validation in `ld49_pygodot/`, including a generated-project
   validator and manual playtest checklist.
+- LD49 UX polish for readable manual playtests, including wider viewport and
+  non-overlapping spell/unit/debug panels.
 
 ## Next Direction
 
