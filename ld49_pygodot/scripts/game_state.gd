@@ -63,10 +63,10 @@ func advance_units() -> String:
 
 func _move_units() -> String:
     var moved := PackedStringArray()
-    for unit_id in units:
+    for unit_id in units.keys():
         var unit: Dictionary = units[unit_id]
         var status := str(unit.get("status", ""))
-        if status == "defeated" or status == "escaped":
+        if status == "defeated":
             continue
         var tick_result: String = _tick_status(unit_id)
         unit = units[unit_id]
@@ -80,11 +80,10 @@ func _move_units() -> String:
         var to_cell: String = _next_cell(from_cell)
         if to_cell == "CASTLE":
             _exit_matrix(unit_id)
-            unit["status"] = "escaped"
-            units[unit_id] = unit
             var faction := str(unit["faction"])
             castle_counts[faction] = int(castle_counts.get(faction, 0)) + 1
             moved.append("%s reached castle" % unit["display_name"])
+            units.erase(unit_id)
             continue
         var blocker_id := _unit_id_at(to_cell)
         if not blocker_id.is_empty():
