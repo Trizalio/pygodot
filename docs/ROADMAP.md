@@ -80,6 +80,8 @@ Implemented:
   Shield/Heal targeting, and faction-flavored clash outcomes.
 - LD49 turn readability in `ld49_pygodot/`, including phased
   spell/neighbor/movement/spawn playback and status-colored tile flashes.
+- LD49 spell targeting preview in `ld49_pygodot/`, including drag-hover
+  affected-area highlighting for direct, area, and ally-chain spell targets.
 
 ## Next Direction
 

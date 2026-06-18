@@ -1,4 +1,6 @@
 signal spell_dropped(tile_id: String, spell_id: String, display_name: String)
+signal spell_hovered(tile_id: String, spell_id: String)
+signal spell_hover_ended()
 
 @export var tile_id := "A1"
 
@@ -6,8 +8,11 @@ signal spell_dropped(tile_id: String, spell_id: String, display_name: String)
 @onready var unit_label := $VBox/Unit
 @onready var state := $VBox/State
 var highlighted := false
+var preview_active := false
+var preview_spell_id := ""
 var flash_tween: Tween
 var unit_summary := ""
+var state_text := ""
 
 func _ready() -> void:
     set_process(false)
@@ -18,6 +23,7 @@ func reset_state() -> void:
     unit_summary = ""
     _refresh_unit("Empty")
     _refresh_state("")
+    clear_preview()
     _clear_highlight()
 
 func set_unit(display_name: String, hp: int, status: String) -> void:
@@ -41,7 +47,11 @@ func _process(_delta: float) -> void:
 func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
     var can_drop: bool = data is Dictionary and data.get("type") == "spell"
     if can_drop:
+        var spell_id := str(data.get("spell_id", "unknown"))
         _set_highlight(true)
+        if preview_spell_id != spell_id:
+            preview_spell_id = spell_id
+            spell_hovered.emit(tile_id, spell_id)
     return can_drop
 
 func _drop_data(_at_position: Vector2, data: Variant) -> void:
@@ -55,6 +65,7 @@ func _drop_data(_at_position: Vector2, data: Variant) -> void:
 func _notification(what: int) -> void:
     if what == NOTIFICATION_DRAG_END:
         _clear_highlight()
+        spell_hover_ended.emit()
 
 func _set_highlight(enabled: bool) -> void:
     if highlighted == enabled:
@@ -64,8 +75,30 @@ func _set_highlight(enabled: bool) -> void:
     modulate = Color(1.0, 0.85, 0.35, 1.0) if enabled else Color.WHITE
 
 func _clear_highlight() -> void:
+    if not highlighted and preview_spell_id.is_empty():
+        return
     highlighted = false
+    preview_spell_id = ""
     set_process(false)
+    if not preview_active:
+        modulate = Color.WHITE
+
+func set_preview(role: String, spell_id: String) -> void:
+    preview_active = true
+    var label := "Area"
+    if role == "primary":
+        label = "Target"
+    state.text = "%s %s" % [_spell_label(spell_id), label]
+    if role == "primary":
+        modulate = Color(1.0, 0.8, 0.2, 1.0)
+    else:
+        modulate = _preview_color(spell_id)
+
+func clear_preview() -> void:
+    if not preview_active:
+        return
+    preview_active = false
+    state.text = state_text
     modulate = Color.WHITE
 
 func _flash(color: Color) -> void:
@@ -76,7 +109,9 @@ func _flash(color: Color) -> void:
     flash_tween.tween_property(self, "modulate", Color.WHITE, 0.35)
 
 func _refresh_state(text: String) -> void:
-    state.text = text
+    state_text = text
+    if not preview_active:
+        state.text = text
 
 func _refresh_unit(text: String) -> void:
     unit_label.text = text
@@ -122,5 +157,31 @@ func _status_color(status: String) -> Color:
             return Color(1.0, 0.85, 0.35, 1.0)
         "blocked", "clash":
             return Color(1.0, 0.55, 0.45, 1.0)
+        _:
+            return Color(1.0, 0.85, 0.35, 1.0)
+
+func _spell_label(spell_id: String) -> String:
+    match spell_id:
+        "fireball":
+            return "Fire"
+        "frost":
+            return "Frost"
+        "shield":
+            return "Shield"
+        "heal":
+            return "Heal"
+        _:
+            return spell_id.capitalize()
+
+func _preview_color(spell_id: String) -> Color:
+    match spell_id:
+        "fireball":
+            return Color(1.0, 0.55, 0.35, 1.0)
+        "frost":
+            return Color(0.5, 0.78, 1.0, 1.0)
+        "shield":
+            return Color(0.5, 0.95, 0.65, 1.0)
+        "heal":
+            return Color(0.75, 1.0, 0.5, 1.0)
         _:
             return Color(1.0, 0.85, 0.35, 1.0)

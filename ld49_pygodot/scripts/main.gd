@@ -38,6 +38,7 @@ func _on_tile_spell_dropped(tile_id: String, spell_id: String, display_name: Str
     if turn_playback_active:
         return
     turn_playback_active = true
+    _clear_spell_preview()
     var summary := GameState.apply_spell(tile_id, spell_id)
     AudioManager.play_cue("cast_%s" % spell_id)
     status_label.text = "%s cast on %s. %s" % [display_name, tile_id, summary]
@@ -76,6 +77,10 @@ func _connect_tiles() -> void:
     for tile in map_grid.get_children():
         if tile.has_signal("spell_dropped") and not tile.spell_dropped.is_connected(_on_tile_spell_dropped):
             tile.spell_dropped.connect(_on_tile_spell_dropped)
+        if tile.has_signal("spell_hovered") and not tile.spell_hovered.is_connected(_on_tile_spell_hovered):
+            tile.spell_hovered.connect(_on_tile_spell_hovered)
+        if tile.has_signal("spell_hover_ended") and not tile.spell_hover_ended.is_connected(_clear_spell_preview):
+            tile.spell_hover_ended.connect(_clear_spell_preview)
 
 func _reset_tiles() -> void:
     for tile in map_grid.get_children():
@@ -89,6 +94,35 @@ func _refresh_tiles() -> void:
         var unit := GameState.unit_at(tile.tile_id)
         if not unit.is_empty() and tile.has_method("set_unit"):
             tile.set_unit(unit["display_name"], unit["hp"], unit["status"])
+
+func _on_tile_spell_hovered(tile_id: String, spell_id: String) -> void:
+    if turn_playback_active:
+        return
+    _clear_spell_preview()
+    var targets := GameState.preview_spell_targets(tile_id, spell_id)
+    for target_id in targets:
+        var tile := _tile_by_id(target_id)
+        if tile == null or not tile.has_method("set_preview"):
+            continue
+        var role := "area"
+        if target_id == tile_id:
+            role = "primary"
+        tile.set_preview(role, spell_id)
+    if targets.size() > 1:
+        status_label.text = "%s will affect %d cells" % [spell_id.capitalize(), targets.size()]
+    else:
+        status_label.text = "%s targets %s" % [spell_id.capitalize(), tile_id]
+
+func _clear_spell_preview() -> void:
+    for tile in map_grid.get_children():
+        if tile.has_method("clear_preview"):
+            tile.clear_preview()
+
+func _tile_by_id(tile_id: String) -> Node:
+    for tile in map_grid.get_children():
+        if str(tile.tile_id) == tile_id:
+            return tile
+    return null
 
 func _finish_if_complete() -> void:
     if GameState.is_complete():

@@ -35,6 +35,8 @@ Implemented so far:
   clash outcomes.
 - Turn readability pass with phased spell/neighbor/movement/spawn playback,
   short pauses between phases, and status-colored tile flashes.
+- Spell preview pass with drag-hover affected-area highlighting for direct,
+  area, and ally-chain spell targets.
 
 Runtime behavior remains ordinary GDScript. This folder does not contain an
 automatic Godot 3 to Godot 4 converter and does not claim to be a full LD49

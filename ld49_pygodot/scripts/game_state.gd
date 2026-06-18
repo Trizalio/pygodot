@@ -160,6 +160,11 @@ func unit_at(cell_id: String) -> Dictionary:
         return {}
     return units.get(unit_id, {}).duplicate()
 
+func preview_spell_targets(cell_id: String, spell_id: String) -> Array[String]:
+    if not Matrix.is_valid_cell(cell_id):
+        return []
+    return _target_cells_for_spell(cell_id, spell_id)
+
 func _target_cells_for_spell(cell_id: String, spell_id: String) -> Array[String]:
     var cells: Array[String] = [cell_id]
     if spell_id == "fireball" or spell_id == "frost":
