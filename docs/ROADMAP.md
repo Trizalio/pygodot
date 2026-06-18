@@ -69,6 +69,8 @@ Implemented:
   undead, and greenskin units, matrix movement, and a damage/status path.
 - Stage F content pass in `ld49_pygodot/`, including additional spell
   variants, status ticking, shield/heal effects, and a generated end scene.
+- Stage G validation in `ld49_pygodot/`, including a generated-project
+  validator and manual playtest checklist.
 
 ## Next Direction
 

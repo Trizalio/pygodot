@@ -24,6 +24,8 @@ Implemented so far:
   matrix-backed movement, and a Fireball damage/status path.
 - Stage F content pass with Frost, Shield, and Heal spell variants, status
   ticking, shielded/healed/frozen/burning effects, and a generated end scene.
+- Stage G validation with a project-specific build-output validator and manual
+  playtest checklist in `VALIDATION.md`.
 
 Runtime behavior remains ordinary GDScript. This folder does not contain an
 automatic Godot 3 to Godot 4 converter and does not claim to be a full LD49
@@ -41,4 +43,12 @@ Run a short Godot smoke check when `GODOT_BIN` is configured:
 ```powershell
 $env:PYTHONPATH = "src"
 python -c "from ld49_pygodot.game import game; result = game.check_run(frames=20); print(result.returncode)"
+```
+
+Validate the generated project contract:
+
+```powershell
+$env:PYTHONPATH = "src"
+python -c "from ld49_pygodot.game import game; game.build()"
+python tools/validate_ld49_pygodot.py
 ```

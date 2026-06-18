@@ -6,6 +6,7 @@ import unittest
 from pathlib import Path
 
 from ld49_pygodot.game import game
+from ld49_pygodot.validation import validate_build
 
 
 class LD49PygodotSkeletonTests(unittest.TestCase):
@@ -341,6 +342,25 @@ class LD49PygodotSkeletonTests(unittest.TestCase):
                     },
                 ],
             )
+
+    def test_stage_g_validation_accepts_generated_project(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            build_dir = Path(tmp) / "godot_project"
+            game.build_dir = build_dir
+
+            game.build()
+
+            self.assertEqual(validate_build(build_dir), [])
+
+    def test_stage_g_validation_reports_missing_required_file(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            build_dir = Path(tmp) / "godot_project"
+            game.build_dir = build_dir
+
+            game.build()
+            (build_dir / "scenes" / "unit.tscn").unlink()
+
+            self.assertIn("missing required file: scenes/unit.tscn", validate_build(build_dir))
 
 
 if __name__ == "__main__":
