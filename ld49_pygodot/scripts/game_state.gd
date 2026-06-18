@@ -65,7 +65,8 @@ func _move_units() -> String:
     var moved := PackedStringArray()
     for unit_id in units:
         var unit: Dictionary = units[unit_id]
-        if str(unit.get("status", "")) == "defeated":
+        var status := str(unit.get("status", ""))
+        if status == "defeated" or status == "escaped":
             continue
         var tick_result: String = _tick_status(unit_id)
         unit = units[unit_id]
