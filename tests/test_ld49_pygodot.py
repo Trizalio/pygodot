@@ -25,9 +25,13 @@ class LD49PygodotSkeletonTests(unittest.TestCase):
                     "scenes/hint.tscn",
                     "scenes/intro.tscn",
                     "scenes/main.tscn",
+                    "scenes/spell.tscn",
+                    "scenes/tile.tscn",
                     "scripts/fader.gd",
                     "scripts/intro.gd",
                     "scripts/main.gd",
+                    "scripts/spell.gd",
+                    "scripts/tile.gd",
                 ],
             )
             self.assertEqual(
@@ -49,9 +53,13 @@ class LD49PygodotSkeletonTests(unittest.TestCase):
             project_text = (build_dir / "project.godot").read_text(encoding="utf-8")
             main_scene_text = (build_dir / "scenes" / "main.tscn").read_text(encoding="utf-8")
             hint_scene_text = (build_dir / "scenes" / "hint.tscn").read_text(encoding="utf-8")
+            spell_scene_text = (build_dir / "scenes" / "spell.tscn").read_text(encoding="utf-8")
+            tile_scene_text = (build_dir / "scenes" / "tile.tscn").read_text(encoding="utf-8")
             intro_scene_text = (build_dir / "scenes" / "intro.tscn").read_text(encoding="utf-8")
             fader_scene_text = (build_dir / "scenes" / "fader.tscn").read_text(encoding="utf-8")
             main_script_text = (build_dir / "scripts" / "main.gd").read_text(encoding="utf-8")
+            spell_script_text = (build_dir / "scripts" / "spell.gd").read_text(encoding="utf-8")
+            tile_script_text = (build_dir / "scripts" / "tile.gd").read_text(encoding="utf-8")
             game_state_text = (build_dir / "scripts" / "game_state.gd").read_text(encoding="utf-8")
             matrix_text = (build_dir / "scripts" / "matrix.gd").read_text(encoding="utf-8")
             matrix_utils_text = (build_dir / "scripts" / "matrix_utils.gd").read_text(encoding="utf-8")
@@ -86,13 +94,16 @@ class LD49PygodotSkeletonTests(unittest.TestCase):
             self.assertIn('[node name="TurnLabel" type="Label" parent="Shell/VBox/ScorePanel"]', main_scene_text)
             self.assertIn('[node name="MapGrid" type="GridContainer" parent="Shell/VBox/GameBody"]', main_scene_text)
             self.assertIn("columns = 5", main_scene_text)
-            self.assertEqual(main_scene_text.count('type="Panel" parent="Shell/VBox/GameBody/MapGrid"'), 25)
-            self.assertIn('[node name="TileA1" type="Panel" parent="Shell/VBox/GameBody/MapGrid"]', main_scene_text)
-            self.assertIn('[node name="TileE5" type="Panel" parent="Shell/VBox/GameBody/MapGrid"]', main_scene_text)
+            self.assertEqual(main_scene_text.count('instance=ExtResource("PackedScene_scenes_tile_tscn")'), 25)
+            self.assertIn('[node name="TileA1" parent="Shell/VBox/GameBody/MapGrid" instance=ExtResource("PackedScene_scenes_tile_tscn")]', main_scene_text)
+            self.assertIn('[node name="TileE5" parent="Shell/VBox/GameBody/MapGrid" instance=ExtResource("PackedScene_scenes_tile_tscn")]', main_scene_text)
             self.assertIn('[node name="SpellsPanel" type="VBoxContainer" parent="Shell/VBox/GameBody/SidePanel"]', main_scene_text)
-            self.assertIn('[node name="FireballButton" type="Button" parent="Shell/VBox/GameBody/SidePanel/SpellsPanel"]', main_scene_text)
+            self.assertIn('[node name="FireballSpell" parent="Shell/VBox/GameBody/SidePanel/SpellsPanel" instance=ExtResource("PackedScene_scenes_spell_tscn")]', main_scene_text)
+            self.assertIn('spell_id = "fireball"', main_scene_text)
             self.assertIn('[node name="HintPanel" parent="Shell/VBox/GameBody/SidePanel" instance=ExtResource("PackedScene_scenes_hint_tscn")]', main_scene_text)
             self.assertIn('[node name="Hint" type="Panel"]', hint_scene_text)
+            self.assertIn('[node name="Spell" type="Panel"]', spell_scene_text)
+            self.assertIn('[node name="Tile" type="Panel"]', tile_scene_text)
             self.assertIn('[node name="Intro" type="MarginContainer" groups=["ld49_port", "stage_a"]]', intro_scene_text)
             self.assertIn('[node name="Fader" type="MarginContainer" groups=["ld49_port", "stage_a"]]', fader_scene_text)
             self.assertIn(
@@ -110,7 +121,16 @@ class LD49PygodotSkeletonTests(unittest.TestCase):
             self.assertIn("SceneChanger.go_to_intro()", main_script_text)
             self.assertIn("SceneChanger.show_fader()", main_script_text)
             self.assertIn("func _on_reset_pressed() -> void:", main_script_text)
+            self.assertIn("func _connect_tiles() -> void:", main_script_text)
+            self.assertIn("tile.spell_dropped.connect(_on_tile_spell_dropped)", main_script_text)
+            self.assertIn("func _on_tile_spell_dropped(tile_id: String, spell_id: String, display_name: String) -> void:", main_script_text)
             self.assertIn("GameState.describe_matrix()", main_script_text)
+            self.assertIn("func _get_drag_data(_at_position: Vector2) -> Variant:", spell_script_text)
+            self.assertIn('"spell_id": spell_id', spell_script_text)
+            self.assertIn("signal spell_dropped(tile_id: String, spell_id: String, display_name: String)", tile_script_text)
+            self.assertIn("func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:", tile_script_text)
+            self.assertIn("func _drop_data(_at_position: Vector2, data: Variant) -> void:", tile_script_text)
+            self.assertIn("spell_dropped.emit(tile_id, spell_id, display_name)", tile_script_text)
             self.assertIn("func apply_spell(cell_id: String, spell_id: String) -> String:", game_state_text)
             self.assertIn("Matrix.reset(5, 5)", game_state_text)
             self.assertIn("func set_cell(cell_id: String, value: Variant) -> void:", matrix_text)
@@ -129,6 +149,20 @@ class LD49PygodotSkeletonTests(unittest.TestCase):
                         "id": "PackedScene_scenes_hint_tscn",
                         "ownership": "generated",
                         "path": "res://scenes/hint.tscn",
+                        "type": "PackedScene",
+                    },
+                    {
+                        "copied": False,
+                        "id": "PackedScene_scenes_spell_tscn",
+                        "ownership": "generated",
+                        "path": "res://scenes/spell.tscn",
+                        "type": "PackedScene",
+                    },
+                    {
+                        "copied": False,
+                        "id": "PackedScene_scenes_tile_tscn",
+                        "ownership": "generated",
+                        "path": "res://scenes/tile.tscn",
                         "type": "PackedScene",
                     },
                     {
@@ -192,6 +226,20 @@ class LD49PygodotSkeletonTests(unittest.TestCase):
                         "id": "Script_scripts_scene_changer_gd",
                         "ownership": "copied",
                         "path": "res://scripts/scene_changer.gd",
+                        "type": "Script",
+                    },
+                    {
+                        "copied": False,
+                        "id": "Script_scripts_spell_gd",
+                        "ownership": "generated",
+                        "path": "res://scripts/spell.gd",
+                        "type": "Script",
+                    },
+                    {
+                        "copied": False,
+                        "id": "Script_scripts_tile_gd",
+                        "ownership": "generated",
+                        "path": "res://scripts/tile.gd",
                         "type": "Script",
                     },
                     {

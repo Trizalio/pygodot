@@ -26,11 +26,11 @@ from pygodot import (
 ROOT = Path(__file__).parent
 
 
-def file_script(name: str) -> Script:
+def file_script(name: str, *, extends: str = "MarginContainer") -> Script:
     return Script.from_file(
         source=f"scripts/{name}.gd",
         path=f"res://scripts/{name}.gd",
-        extends="MarginContainer",
+        extends=extends,
     )
 
 
@@ -76,6 +76,58 @@ hint_scene = Scene(
 )
 hint_resource = hint_scene.as_packed_scene()
 
+tile_scene = Scene(
+    path="res://scenes/tile.tscn",
+    root=Panel(
+        "Tile",
+        script=file_script("tile", extends="Panel"),
+        custom_minimum_size=Vec2(58, 48),
+        mouse_filter=0,
+        children=[
+            VBoxContainer(
+                "VBox",
+                anchors_preset=15,
+                mouse_filter=2,
+                offset_left=4,
+                offset_top=4,
+                offset_right=54,
+                offset_bottom=44,
+                children=[
+                    Label("Label", text="A1", horizontal_alignment=1, mouse_filter=2),
+                    Label("State", text="Empty", horizontal_alignment=1, mouse_filter=2),
+                ],
+            )
+        ],
+    ),
+)
+tile_resource = tile_scene.as_packed_scene()
+
+spell_scene = Scene(
+    path="res://scenes/spell.tscn",
+    root=Panel(
+        "Spell",
+        script=file_script("spell", extends="Panel"),
+        custom_minimum_size=Vec2(132, 54),
+        mouse_filter=0,
+        children=[
+            VBoxContainer(
+                "VBox",
+                anchors_preset=15,
+                mouse_filter=2,
+                offset_left=8,
+                offset_top=6,
+                offset_right=124,
+                offset_bottom=48,
+                children=[
+                    Label("Title", text="Fireball", horizontal_alignment=1, mouse_filter=2),
+                    Label("Hint", text="drag to tile", horizontal_alignment=1, mouse_filter=2),
+                ],
+            )
+        ],
+    ),
+)
+spell_resource = spell_scene.as_packed_scene()
+
 
 def map_cells() -> list:
     cells = []
@@ -83,20 +135,10 @@ def map_cells() -> list:
         for column in range(1, 6):
             cell_id = f"{row}{column}"
             cells.append(
-                Panel(
+                scene_instance(
                     f"Tile{cell_id}",
-                    custom_minimum_size=Vec2(58, 48),
-                    children=[
-                        Label(
-                            "Label",
-                            text=cell_id,
-                            horizontal_alignment=1,
-                            vertical_alignment=1,
-                            anchors_preset=15,
-                            offset_right=58,
-                            offset_bottom=48,
-                        )
-                    ],
+                    tile_resource,
+                    tile_id=cell_id,
                 )
             )
     return cells
@@ -104,13 +146,18 @@ def map_cells() -> list:
 
 def spell_buttons() -> list:
     return [
-        Button("FireballButton", text="Fireball", custom_minimum_size=Vec2(128, 42)),
-        Button("ShieldButton", text="Shield", custom_minimum_size=Vec2(128, 42)),
-        Button("WaitButton", text="Wait", custom_minimum_size=Vec2(128, 42)),
+        scene_instance(
+            "FireballSpell",
+            spell_resource,
+            spell_id="fireball",
+            display_name="Fireball",
+        ),
     ]
 
 
 game.add_scene(hint_scene)
+game.add_scene(tile_scene)
+game.add_scene(spell_scene)
 
 game.add_scene(
     Scene(
