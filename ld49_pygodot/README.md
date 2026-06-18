@@ -22,6 +22,8 @@ Implemented so far:
   update path.
 - Stage E unit scene/card wiring with Imp, Bones, and Gob units, simple
   matrix-backed movement, and a Fireball damage/status path.
+- Stage F content pass with Frost, Shield, and Heal spell variants, status
+  ticking, shielded/healed/frozen/burning effects, and a generated end scene.
 
 Runtime behavior remains ordinary GDScript. This folder does not contain an
 automatic Godot 3 to Godot 4 converter and does not claim to be a full LD49

@@ -67,6 +67,8 @@ Implemented:
   Fireball drag/drop path from spell panel to map tile.
 - Stage E unit scene/card wiring in `ld49_pygodot/`, including demon,
   undead, and greenskin units, matrix movement, and a damage/status path.
+- Stage F content pass in `ld49_pygodot/`, including additional spell
+  variants, status ticking, shield/heal effects, and a generated end scene.
 
 ## Next Direction
 

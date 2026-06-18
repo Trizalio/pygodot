@@ -3,6 +3,7 @@
 @export var faction := "neutral"
 @export var cell_id := "A1"
 @export var hp := 1
+@export var shield := 0
 @export var status := "ready"
 
 @onready var name_label := $VBox/Name
@@ -17,10 +18,11 @@ func apply_state(data: Dictionary) -> void:
     faction = str(data.get("faction", faction))
     cell_id = str(data.get("cell_id", cell_id))
     hp = int(data.get("hp", hp))
+    shield = int(data.get("shield", shield))
     status = str(data.get("status", status))
     refresh()
 
 func refresh() -> void:
     name_label.text = "%s (%s)" % [display_name, faction]
-    stats_label.text = "HP %d @ %s" % [hp, cell_id]
+    stats_label.text = "HP %d SH %d @ %s" % [hp, shield, cell_id]
     status_label.text = status

@@ -120,7 +120,7 @@ spell_scene = Scene(
                 offset_bottom=48,
                 children=[
                     Label("Title", text="Fireball", horizontal_alignment=1, mouse_filter=2),
-                    Label("Hint", text="drag to tile", horizontal_alignment=1, mouse_filter=2),
+                    Label("Hint", text="2 damage + burn", horizontal_alignment=1, mouse_filter=2),
                 ],
             )
         ],
@@ -177,6 +177,28 @@ def spell_buttons() -> list:
             spell_resource,
             spell_id="fireball",
             display_name="Fireball",
+            hint_text="2 damage + burn",
+        ),
+        scene_instance(
+            "FrostSpell",
+            spell_resource,
+            spell_id="frost",
+            display_name="Frost",
+            hint_text="1 damage + freeze",
+        ),
+        scene_instance(
+            "ShieldSpell",
+            spell_resource,
+            spell_id="shield",
+            display_name="Shield",
+            hint_text="add armor",
+        ),
+        scene_instance(
+            "HealSpell",
+            spell_resource,
+            spell_id="heal",
+            display_name="Heal",
+            hint_text="restore hp",
         ),
     ]
 
@@ -335,6 +357,40 @@ game.add_scene(
                                             signals=[signal("pressed", target=".", method="_on_advance_units_pressed")],
                                         ),
                                     ],
+                                ),
+                            ],
+                        )
+                    ],
+                )
+            ],
+        ),
+    )
+)
+
+game.add_scene(
+    Scene(
+        path="res://scenes/end.tscn",
+        root=MarginContainer(
+            "End",
+            script=file_script("end"),
+            groups=["ld49_port", "stage_f"],
+            anchors_preset=15,
+            offset_right=540,
+            offset_bottom=750,
+            children=[
+                Panel(
+                    "Panel",
+                    children=[
+                        VBoxContainer(
+                            "VBox",
+                            children=[
+                                Label("Title", text="Battle Complete", horizontal_alignment=1),
+                                Label("StatusLabel", text="All unstable units defeated", horizontal_alignment=1),
+                                Button(
+                                    "BackButton",
+                                    text="Back To Main",
+                                    custom_minimum_size=Vec2(260, 46),
+                                    signals=[signal("pressed", target=".", method="_on_back_pressed")],
                                 ),
                             ],
                         )

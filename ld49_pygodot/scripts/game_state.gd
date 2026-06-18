@@ -39,15 +39,7 @@ func apply_spell(cell_id: String, spell_id: String) -> String:
     if target_id.is_empty():
         last_event = Utils.describe_spell_drop(spell_id, cell_id)
         return last_event
-    var target: Dictionary = units[target_id]
-    target["hp"] = int(target["hp"]) - 2
-    target["status"] = "burning"
-    if int(target["hp"]) <= 0:
-        target["status"] = "defeated"
-        _exit_matrix(target_id)
-        score += 15
-    units[target_id] = target
-    last_event = "%s hit %s at %s" % [spell_id, target["display_name"], cell_id]
+    last_event = _apply_spell_to_unit(target_id, spell_id, cell_id)
     return last_event
 
 func advance_units() -> String:
@@ -55,6 +47,14 @@ func advance_units() -> String:
     for unit_id in units:
         var unit: Dictionary = units[unit_id]
         if str(unit.get("status", "")) == "defeated":
+            continue
+        var tick_result: String = _tick_status(unit_id)
+        unit = units[unit_id]
+        if str(unit.get("status", "")) == "defeated":
+            moved.append(tick_result)
+            continue
+        if tick_result.ends_with(":frozen"):
+            moved.append(tick_result)
             continue
         var from_cell := str(unit["cell_id"])
         var to_cell: String = _next_cell(from_cell)
@@ -88,6 +88,13 @@ func describe_turn() -> String:
 func describe_matrix() -> String:
     return "%d occupied / %d cells" % [Matrix.occupied_count(), Matrix.width * Matrix.height]
 
+func is_complete() -> bool:
+    for unit_id in units:
+        var unit: Dictionary = units[unit_id]
+        if str(unit.get("status", "")) != "defeated":
+            return false
+    return true
+
 func list_units() -> Array:
     var result: Array = []
     for unit_id in units:
@@ -108,8 +115,73 @@ func _make_unit(unit_id: String, display_name: String, faction: String, cell_id:
         "faction": faction,
         "cell_id": cell_id,
         "hp": hp,
+        "max_hp": hp,
+        "shield": 0,
         "status": "ready",
     }
+
+func _apply_spell_to_unit(unit_id: String, spell_id: String, cell_id: String) -> String:
+    var unit: Dictionary = units[unit_id]
+    match spell_id:
+        "fireball":
+            _damage_unit(unit, 2)
+            unit["status"] = "burning"
+        "frost":
+            _damage_unit(unit, 1)
+            unit["status"] = "frozen"
+        "shield":
+            unit["shield"] = int(unit.get("shield", 0)) + 2
+            unit["status"] = "shielded"
+        "heal":
+            unit["hp"] = min(int(unit.get("max_hp", unit["hp"])), int(unit["hp"]) + 2)
+            unit["status"] = "healed"
+        _:
+            _damage_unit(unit, 1)
+            unit["status"] = "hit"
+    if int(unit["hp"]) <= 0:
+        unit["hp"] = 0
+        unit["status"] = "defeated"
+        units[unit_id] = unit
+        _exit_matrix(unit_id)
+        score += 15
+        return "%s defeated %s at %s" % [spell_id, unit["display_name"], cell_id]
+    units[unit_id] = unit
+    return "%s affected %s at %s" % [spell_id, unit["display_name"], cell_id]
+
+func _tick_status(unit_id: String) -> String:
+    var unit: Dictionary = units[unit_id]
+    var status := str(unit.get("status", "ready"))
+    if status == "burning":
+        _damage_unit(unit, 1)
+        if int(unit["hp"]) <= 0:
+            unit["hp"] = 0
+            unit["status"] = "defeated"
+            units[unit_id] = unit
+            _exit_matrix(unit_id)
+            score += 15
+            return "%s:burned-out" % unit["display_name"]
+        unit["status"] = "ready"
+        units[unit_id] = unit
+        return "%s:burn-tick" % unit["display_name"]
+    if status == "frozen":
+        unit["status"] = "ready"
+        units[unit_id] = unit
+        return "%s:frozen" % unit["display_name"]
+    if status == "shielded" or status == "healed":
+        unit["status"] = "ready"
+        units[unit_id] = unit
+    return ""
+
+func _damage_unit(unit: Dictionary, amount: int) -> void:
+    var shield: int = int(unit.get("shield", 0))
+    var remaining := amount
+    if shield > 0:
+        var absorbed: int = min(shield, remaining)
+        shield -= absorbed
+        remaining -= absorbed
+    unit["shield"] = shield
+    if remaining > 0:
+        unit["hp"] = int(unit["hp"]) - remaining
 
 func _enter_matrix(unit_id: String) -> void:
     var unit: Dictionary = units[unit_id]

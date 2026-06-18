@@ -21,6 +21,7 @@ class LD49PygodotSkeletonTests(unittest.TestCase):
                 [
                     ".pygodot/manifest.json",
                     "project.godot",
+                    "scenes/end.tscn",
                     "scenes/fader.tscn",
                     "scenes/hint.tscn",
                     "scenes/intro.tscn",
@@ -28,6 +29,7 @@ class LD49PygodotSkeletonTests(unittest.TestCase):
                     "scenes/spell.tscn",
                     "scenes/tile.tscn",
                     "scenes/unit.tscn",
+                    "scripts/end.gd",
                     "scripts/fader.gd",
                     "scripts/intro.gd",
                     "scripts/main.gd",
@@ -54,12 +56,14 @@ class LD49PygodotSkeletonTests(unittest.TestCase):
 
             project_text = (build_dir / "project.godot").read_text(encoding="utf-8")
             main_scene_text = (build_dir / "scenes" / "main.tscn").read_text(encoding="utf-8")
+            end_scene_text = (build_dir / "scenes" / "end.tscn").read_text(encoding="utf-8")
             hint_scene_text = (build_dir / "scenes" / "hint.tscn").read_text(encoding="utf-8")
             spell_scene_text = (build_dir / "scenes" / "spell.tscn").read_text(encoding="utf-8")
             tile_scene_text = (build_dir / "scenes" / "tile.tscn").read_text(encoding="utf-8")
             unit_scene_text = (build_dir / "scenes" / "unit.tscn").read_text(encoding="utf-8")
             intro_scene_text = (build_dir / "scenes" / "intro.tscn").read_text(encoding="utf-8")
             fader_scene_text = (build_dir / "scenes" / "fader.tscn").read_text(encoding="utf-8")
+            end_script_text = (build_dir / "scripts" / "end.gd").read_text(encoding="utf-8")
             main_script_text = (build_dir / "scripts" / "main.gd").read_text(encoding="utf-8")
             spell_script_text = (build_dir / "scripts" / "spell.gd").read_text(encoding="utf-8")
             tile_script_text = (build_dir / "scripts" / "tile.gd").read_text(encoding="utf-8")
@@ -104,6 +108,13 @@ class LD49PygodotSkeletonTests(unittest.TestCase):
             self.assertIn('[node name="SpellsPanel" type="VBoxContainer" parent="Shell/VBox/GameBody/SidePanel"]', main_scene_text)
             self.assertIn('[node name="FireballSpell" parent="Shell/VBox/GameBody/SidePanel/SpellsPanel" instance=ExtResource("PackedScene_scenes_spell_tscn")]', main_scene_text)
             self.assertIn('spell_id = "fireball"', main_scene_text)
+            self.assertIn('[node name="FrostSpell" parent="Shell/VBox/GameBody/SidePanel/SpellsPanel" instance=ExtResource("PackedScene_scenes_spell_tscn")]', main_scene_text)
+            self.assertIn('spell_id = "frost"', main_scene_text)
+            self.assertIn('[node name="ShieldSpell" parent="Shell/VBox/GameBody/SidePanel/SpellsPanel" instance=ExtResource("PackedScene_scenes_spell_tscn")]', main_scene_text)
+            self.assertIn('spell_id = "shield"', main_scene_text)
+            self.assertIn('[node name="HealSpell" parent="Shell/VBox/GameBody/SidePanel/SpellsPanel" instance=ExtResource("PackedScene_scenes_spell_tscn")]', main_scene_text)
+            self.assertIn('spell_id = "heal"', main_scene_text)
+            self.assertIn('hint_text = "restore hp"', main_scene_text)
             self.assertIn('[node name="UnitsPanel" type="VBoxContainer" parent="Shell/VBox/GameBody/SidePanel"]', main_scene_text)
             self.assertIn('[node name="ImpUnit" parent="Shell/VBox/GameBody/SidePanel/UnitsPanel" instance=ExtResource("PackedScene_scenes_unit_tscn")]', main_scene_text)
             self.assertIn('faction = "demon"', main_scene_text)
@@ -114,6 +125,8 @@ class LD49PygodotSkeletonTests(unittest.TestCase):
             self.assertIn('[node name="AdvanceUnitsButton" type="Button" parent="Shell/VBox/DebugBar"]', main_scene_text)
             self.assertIn('[node name="HintPanel" parent="Shell/VBox/GameBody/SidePanel" instance=ExtResource("PackedScene_scenes_hint_tscn")]', main_scene_text)
             self.assertIn('[node name="Hint" type="Panel"]', hint_scene_text)
+            self.assertIn('[node name="End" type="MarginContainer" groups=["ld49_port", "stage_f"]]', end_scene_text)
+            self.assertIn('[connection signal="pressed" from="Panel/VBox/BackButton" to="." method="_on_back_pressed"]', end_scene_text)
             self.assertIn('[node name="Spell" type="Panel"]', spell_scene_text)
             self.assertIn('[node name="Tile" type="Panel"]', tile_scene_text)
             self.assertIn('[node name="Unit" type="Panel"]', unit_scene_text)
@@ -137,6 +150,8 @@ class LD49PygodotSkeletonTests(unittest.TestCase):
             )
             self.assertIn("SceneChanger.go_to_intro()", main_script_text)
             self.assertIn("SceneChanger.show_fader()", main_script_text)
+            self.assertIn("SceneChanger.go_to_end()", main_script_text)
+            self.assertIn("func _finish_if_complete() -> void:", main_script_text)
             self.assertIn("func _on_reset_pressed() -> void:", main_script_text)
             self.assertIn("func _connect_tiles() -> void:", main_script_text)
             self.assertIn("func _reset_tiles() -> void:", main_script_text)
@@ -149,6 +164,9 @@ class LD49PygodotSkeletonTests(unittest.TestCase):
             self.assertIn("GameState.describe_matrix()", main_script_text)
             self.assertIn("func _get_drag_data(_at_position: Vector2) -> Variant:", spell_script_text)
             self.assertIn('"spell_id": spell_id', spell_script_text)
+            self.assertIn('hint.text = hint_text', spell_script_text)
+            self.assertIn("func _on_back_pressed() -> void:", end_script_text)
+            self.assertIn("GameState.describe_score()", end_script_text)
             self.assertIn("func reset_state() -> void:", tile_script_text)
             self.assertIn("func _process(_delta: float) -> void:", tile_script_text)
             self.assertIn("get_global_rect().has_point(get_global_mouse_position())", tile_script_text)
@@ -158,16 +176,24 @@ class LD49PygodotSkeletonTests(unittest.TestCase):
             self.assertIn("spell_dropped.emit(tile_id, spell_id, display_name)", tile_script_text)
             self.assertIn("func set_unit(display_name: String, hp: int, status: String) -> void:", tile_script_text)
             self.assertIn("func apply_state(data: Dictionary) -> void:", unit_script_text)
-            self.assertIn("name_label.text = \"%s (%s)\" % [display_name, faction]", unit_script_text)
+            self.assertIn("shield = int(data.get(\"shield\", shield))", unit_script_text)
+            self.assertIn("HP %d SH %d @ %s", unit_script_text)
             self.assertIn("func apply_spell(cell_id: String, spell_id: String) -> String:", game_state_text)
             self.assertIn('"imp": _make_unit("imp", "Imp", "demon", "A1", 4)', game_state_text)
             self.assertIn('"bones": _make_unit("bones", "Bones", "undead", "C3", 5)', game_state_text)
             self.assertIn('"gob": _make_unit("gob", "Gob", "greenskin", "E1", 3)', game_state_text)
             self.assertIn("func advance_units() -> String:", game_state_text)
+            self.assertIn("func is_complete() -> bool:", game_state_text)
+            self.assertIn("func _apply_spell_to_unit(unit_id: String, spell_id: String, cell_id: String) -> String:", game_state_text)
+            self.assertIn('"frost":', game_state_text)
+            self.assertIn('"shield":', game_state_text)
+            self.assertIn('"heal":', game_state_text)
+            self.assertIn("func _tick_status(unit_id: String) -> String:", game_state_text)
+            self.assertIn("func _damage_unit(unit: Dictionary, amount: int) -> void:", game_state_text)
             self.assertIn("func unit_at(cell_id: String) -> Dictionary:", game_state_text)
             self.assertIn("func _enter_matrix(unit_id: String) -> void:", game_state_text)
             self.assertIn("func _exit_matrix(unit_id: String) -> void:", game_state_text)
-            self.assertIn('target["status"] = "burning"', game_state_text)
+            self.assertIn('unit["status"] = "burning"', game_state_text)
             self.assertIn("Matrix.reset(5, 5)", game_state_text)
             self.assertIn("func set_cell(cell_id: String, value: Variant) -> void:", matrix_text)
             self.assertIn("func neighbors(cell: String, width: int, height: int) -> Array[String]:", matrix_utils_text)
@@ -213,6 +239,13 @@ class LD49PygodotSkeletonTests(unittest.TestCase):
                         "id": "Script_scripts_audio_manager_gd",
                         "ownership": "copied",
                         "path": "res://scripts/audio_manager.gd",
+                        "type": "Script",
+                    },
+                    {
+                        "copied": False,
+                        "id": "Script_scripts_end_gd",
+                        "ownership": "generated",
+                        "path": "res://scripts/end.gd",
                         "type": "Script",
                     },
                     {

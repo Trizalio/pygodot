@@ -36,6 +36,7 @@ func _on_advance_units_pressed() -> void:
     _refresh_tiles()
     score_label.text = GameState.describe_score()
     turn_label.text = GameState.describe_turn()
+    _finish_if_complete()
 
 func _on_tile_spell_dropped(tile_id: String, spell_id: String, display_name: String) -> void:
     var summary := GameState.apply_spell(tile_id, spell_id)
@@ -46,6 +47,7 @@ func _on_tile_spell_dropped(tile_id: String, spell_id: String, display_name: Str
     status_label.text = "%s cast on %s. %s" % [display_name, tile_id, summary]
     score_label.text = GameState.describe_score()
     turn_label.text = GameState.describe_turn()
+    _finish_if_complete()
 
 func _connect_tiles() -> void:
     for tile in map_grid.get_children():
@@ -72,6 +74,11 @@ func _refresh_units() -> void:
     for unit_card in units_panel.get_children():
         if unit_card.has_method("apply_state") and unit_by_id.has(unit_card.unit_id):
             unit_card.apply_state(unit_by_id[unit_card.unit_id])
+
+func _finish_if_complete() -> void:
+    if GameState.is_complete():
+        AudioManager.play_cue("battle_complete")
+        SceneChanger.go_to_end()
 
 func _refresh_runtime_labels() -> void:
     status_label.text = "%s. %s. %s" % [
