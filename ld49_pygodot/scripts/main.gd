@@ -19,6 +19,7 @@ func _on_fader_pressed() -> void:
 
 func _on_reset_pressed() -> void:
     GameState.reset()
+    _reset_tiles()
     AudioManager.stop_music()
     _refresh_runtime_labels()
 
@@ -34,6 +35,11 @@ func _connect_tiles() -> void:
     for tile in map_grid.get_children():
         if tile.has_signal("spell_dropped") and not tile.spell_dropped.is_connected(_on_tile_spell_dropped):
             tile.spell_dropped.connect(_on_tile_spell_dropped)
+
+func _reset_tiles() -> void:
+    for tile in map_grid.get_children():
+        if tile.has_method("reset_state"):
+            tile.reset_state()
 
 func _refresh_runtime_labels() -> void:
     status_label.text = "%s. %s. %s" % [
