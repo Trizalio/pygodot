@@ -82,6 +82,8 @@ Implemented:
   spell/neighbor/movement/spawn playback and status-colored tile flashes.
 - LD49 spell targeting preview in `ld49_pygodot/`, including drag-hover
   affected-area highlighting for direct, area, and ally-chain spell targets.
+- LD49-compatible movement order in `ld49_pygodot/`, where later-spawned
+  younger units move before older units to increase jams and clashes.
 
 ## Next Direction
 

@@ -10,6 +10,7 @@ var units: Dictionary = {}
 var castle_capacity := 6
 var castle_counts := {"demon": 0, "undead": 0, "greenskin": 0}
 var spawn_index := 0
+var unit_order := 0
 
 func reset() -> void:
     Matrix.reset(5, 5)
@@ -21,6 +22,7 @@ func reset() -> void:
     last_cell_id = ""
     castle_counts = {"demon": 0, "undead": 0, "greenskin": 0}
     spawn_index = 0
+    unit_order = 0
     units = {
         "imp": _make_unit("imp", "Imp", "demon", "B1", 4),
         "bones": _make_unit("bones", "Bones", "undead", "C3", 5),
@@ -79,7 +81,7 @@ func spawn_wave() -> String:
 
 func _move_units() -> String:
     var moved := PackedStringArray()
-    for unit_id in units.keys():
+    for unit_id in _movement_order():
         var unit: Dictionary = units[unit_id]
         var status := str(unit.get("status", ""))
         if status == "defeated":
@@ -191,6 +193,8 @@ func _apply_spell_to_cell(cell_id: String, spell_id: String) -> String:
     return _apply_spell_to_unit(target_id, spell_id, cell_id)
 
 func _make_unit(unit_id: String, display_name: String, faction: String, cell_id: String, hp: int) -> Dictionary:
+    var order := unit_order
+    unit_order += 1
     return {
         "unit_id": unit_id,
         "display_name": display_name,
@@ -200,6 +204,7 @@ func _make_unit(unit_id: String, display_name: String, faction: String, cell_id:
         "max_hp": hp,
         "shield": 0,
         "status": "ready",
+        "spawn_order": order,
     }
 
 func _apply_spell_to_unit(unit_id: String, spell_id: String, cell_id: String) -> String:
@@ -343,6 +348,22 @@ func _enter_matrix(unit_id: String) -> void:
 func _unit_id_at(cell_id: String) -> String:
     var cell: Dictionary = Matrix.get_cell(cell_id, {})
     return str(cell.get("unit_id", ""))
+
+func _movement_order() -> Array:
+    var ordered := units.keys()
+    ordered.sort_custom(_younger_unit_first)
+    return ordered
+
+func _younger_unit_first(left_id: String, right_id: String) -> bool:
+    if not units.has(left_id):
+        return false
+    if not units.has(right_id):
+        return true
+    var left_order := int(units[left_id].get("spawn_order", 0))
+    var right_order := int(units[right_id].get("spawn_order", 0))
+    if left_order == right_order:
+        return left_id < right_id
+    return left_order > right_order
 
 func _clash_units(attacker_id: String, blocker_id: String, cell_id: String) -> String:
     var attacker: Dictionary = units[attacker_id]

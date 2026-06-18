@@ -37,6 +37,8 @@ Implemented so far:
   short pauses between phases, and status-colored tile flashes.
 - Spell preview pass with drag-hover affected-area highlighting for direct,
   area, and ally-chain spell targets.
+- LD49-compatible movement order where later-spawned younger units move before
+  older units, increasing jams, clashes, and board pressure.
 
 Runtime behavior remains ordinary GDScript. This folder does not contain an
 automatic Godot 3 to Godot 4 converter and does not claim to be a full LD49
