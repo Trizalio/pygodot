@@ -20,14 +20,14 @@ Implemented so far:
 - Stage D reusable tile and spell scenes with drag/drop spell targeting,
   runtime tile signal wiring, and a simple `GameState.apply_spell(...)` turn
   update path.
-- Stage E unit scene/card wiring with Imp, Bones, and Gob units, simple
+- Stage E unit state with Imp, Bones, and Gob units on the board, simple
   matrix-backed movement, and a Fireball damage/status path.
 - Stage F content pass with Frost, Shield, and Heal spell variants, status
   ticking, shielded/healed/frozen/burning effects, and a generated end scene.
 - Stage G validation with a project-specific build-output validator and manual
   playtest checklist in `VALIDATION.md`.
-- UX polish pass with a wider validation viewport, readable spell/unit cards,
-  and non-overlapping score/debug panels for manual playtests.
+- UX polish pass with a wider validation viewport, readable board tiles, and
+  non-overlapping spell/score/debug panels for manual playtests.
 
 Runtime behavior remains ordinary GDScript. This folder does not contain an
 automatic Godot 3 to Godot 4 converter and does not claim to be a full LD49

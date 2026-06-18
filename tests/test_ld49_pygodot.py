@@ -104,14 +104,13 @@ class LD49PygodotPortTests(unittest.TestCase):
             self.assertIn('[node name="TurnLabel" type="Label" parent="Shell/VBox/ScorePanel"]', main_scene_text)
             self.assertIn('[node name="MapGrid" type="GridContainer" parent="Shell/VBox/GameBody"]', main_scene_text)
             self.assertIn("columns = 5", main_scene_text)
-            self.assertIn("custom_minimum_size = Vector2(360, 310)", main_scene_text)
+            self.assertIn("custom_minimum_size = Vector2(520, 430)", main_scene_text)
             self.assertEqual(main_scene_text.count('instance=ExtResource("PackedScene_scenes_tile_tscn")'), 25)
             self.assertIn('[node name="TileA1" parent="Shell/VBox/GameBody/MapGrid" instance=ExtResource("PackedScene_scenes_tile_tscn")]', main_scene_text)
             self.assertIn('[node name="TileE5" parent="Shell/VBox/GameBody/MapGrid" instance=ExtResource("PackedScene_scenes_tile_tscn")]', main_scene_text)
             self.assertIn('[node name="SidePanel" type="VBoxContainer" parent="Shell/VBox/GameBody"]', main_scene_text)
-            self.assertIn("custom_minimum_size = Vector2(390, 540)", main_scene_text)
-            self.assertIn('[node name="SpellsPanel" type="GridContainer" parent="Shell/VBox/GameBody/SidePanel"]', main_scene_text)
-            self.assertIn("columns = 2", main_scene_text)
+            self.assertIn("custom_minimum_size = Vector2(220, 360)", main_scene_text)
+            self.assertIn('[node name="SpellsPanel" type="VBoxContainer" parent="Shell/VBox/GameBody/SidePanel"]', main_scene_text)
             self.assertIn('[node name="FireballSpell" parent="Shell/VBox/GameBody/SidePanel/SpellsPanel" instance=ExtResource("PackedScene_scenes_spell_tscn")]', main_scene_text)
             self.assertIn('spell_id = "fireball"', main_scene_text)
             self.assertIn('[node name="FrostSpell" parent="Shell/VBox/GameBody/SidePanel/SpellsPanel" instance=ExtResource("PackedScene_scenes_spell_tscn")]', main_scene_text)
@@ -121,24 +120,20 @@ class LD49PygodotPortTests(unittest.TestCase):
             self.assertIn('[node name="HealSpell" parent="Shell/VBox/GameBody/SidePanel/SpellsPanel" instance=ExtResource("PackedScene_scenes_spell_tscn")]', main_scene_text)
             self.assertIn('spell_id = "heal"', main_scene_text)
             self.assertIn('hint_text = "restore hp"', main_scene_text)
-            self.assertIn('[node name="UnitsPanel" type="VBoxContainer" parent="Shell/VBox/GameBody/SidePanel"]', main_scene_text)
-            self.assertIn('[node name="ImpUnit" parent="Shell/VBox/GameBody/SidePanel/UnitsPanel" instance=ExtResource("PackedScene_scenes_unit_tscn")]', main_scene_text)
-            self.assertIn('faction = "demon"', main_scene_text)
-            self.assertIn('[node name="BonesUnit" parent="Shell/VBox/GameBody/SidePanel/UnitsPanel" instance=ExtResource("PackedScene_scenes_unit_tscn")]', main_scene_text)
-            self.assertIn('faction = "undead"', main_scene_text)
-            self.assertIn('[node name="GobUnit" parent="Shell/VBox/GameBody/SidePanel/UnitsPanel" instance=ExtResource("PackedScene_scenes_unit_tscn")]', main_scene_text)
-            self.assertIn('faction = "greenskin"', main_scene_text)
+            self.assertNotIn("UnitsPanel", main_scene_text)
+            self.assertNotIn("PackedScene_scenes_unit_tscn", main_scene_text)
             self.assertIn('[node name="AdvanceUnitsButton" type="Button" parent="Shell/VBox/DebugBar"]', main_scene_text)
             self.assertIn("custom_minimum_size = Vector2(170, 42)", main_scene_text)
             self.assertIn('[node name="HintPanel" parent="Shell/VBox/GameBody/SidePanel" instance=ExtResource("PackedScene_scenes_hint_tscn")]', main_scene_text)
             self.assertIn('[node name="Hint" type="Panel"]', hint_scene_text)
-            self.assertIn("custom_minimum_size = Vector2(340, 48)", hint_scene_text)
+            self.assertIn("custom_minimum_size = Vector2(200, 72)", hint_scene_text)
             self.assertIn("clip_text = true", hint_scene_text)
             self.assertIn('[node name="End" type="MarginContainer" groups=["ld49_port", "stage_f"]]', end_scene_text)
             self.assertIn('[connection signal="pressed" from="Panel/VBox/BackButton" to="." method="_on_back_pressed"]', end_scene_text)
             self.assertIn('[node name="Spell" type="Panel"]', spell_scene_text)
             self.assertIn('[node name="Tile" type="Panel"]', tile_scene_text)
-            self.assertIn("custom_minimum_size = Vector2(58, 24)", tile_scene_text)
+            self.assertIn('[node name="Unit" type="Label" parent="VBox"]', tile_scene_text)
+            self.assertIn("custom_minimum_size = Vector2(88, 24)", tile_scene_text)
             self.assertIn("clip_text = true", tile_scene_text)
             self.assertIn('[node name="Unit" type="Panel"]', unit_scene_text)
             self.assertIn('[node name="Intro" type="MarginContainer" groups=["ld49_port", "stage_a_g"]]', intro_scene_text)
@@ -169,7 +164,7 @@ class LD49PygodotPortTests(unittest.TestCase):
             self.assertIn("tile.reset_state()", main_script_text)
             self.assertIn("func _on_advance_units_pressed() -> void:", main_script_text)
             self.assertIn("GameState.advance_units()", main_script_text)
-            self.assertIn("func _refresh_units() -> void:", main_script_text)
+            self.assertNotIn("func _refresh_units() -> void:", main_script_text)
             self.assertIn("tile.spell_dropped.connect(_on_tile_spell_dropped)", main_script_text)
             self.assertIn("func _on_tile_spell_dropped(tile_id: String, spell_id: String, display_name: String) -> void:", main_script_text)
             self.assertIn("GameState.describe_matrix()", main_script_text)
@@ -186,8 +181,8 @@ class LD49PygodotPortTests(unittest.TestCase):
             self.assertIn("func _drop_data(_at_position: Vector2, data: Variant) -> void:", tile_script_text)
             self.assertIn("spell_dropped.emit(tile_id, spell_id, display_name)", tile_script_text)
             self.assertIn("func set_unit(display_name: String, hp: int, status: String) -> void:", tile_script_text)
-            self.assertIn('unit_summary = "%s:%d" % [display_name.substr(0, 3), hp]', tile_script_text)
-            self.assertIn("func _status_abbrev(status: String) -> String:", tile_script_text)
+            self.assertIn('unit_summary = "%s HP %d" % [display_name, hp]', tile_script_text)
+            self.assertIn("func _status_label(status: String) -> String:", tile_script_text)
             self.assertIn("func apply_state(data: Dictionary) -> void:", unit_script_text)
             self.assertIn("shield = int(data.get(\"shield\", shield))", unit_script_text)
             self.assertIn("HP %d SH %d @ %s", unit_script_text)
@@ -238,13 +233,6 @@ class LD49PygodotPortTests(unittest.TestCase):
                         "id": "PackedScene_scenes_tile_tscn",
                         "ownership": "generated",
                         "path": "res://scenes/tile.tscn",
-                        "type": "PackedScene",
-                    },
-                    {
-                        "copied": False,
-                        "id": "PackedScene_scenes_unit_tscn",
-                        "ownership": "generated",
-                        "path": "res://scenes/unit.tscn",
                         "type": "PackedScene",
                     },
                     {

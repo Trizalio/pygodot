@@ -58,21 +58,21 @@ hint_scene = Scene(
     path="res://scenes/hint.tscn",
     root=Panel(
         "Hint",
-        custom_minimum_size=Vec2(360, 92),
+        custom_minimum_size=Vec2(220, 118),
         children=[
             VBoxContainer(
                 "VBox",
                 anchors_preset=15,
                 offset_left=10,
                 offset_top=8,
-                offset_right=350,
-                offset_bottom=84,
+                offset_right=210,
+                offset_bottom=110,
                 children=[
                     Label("Title", text="Hint", horizontal_alignment=1),
                     Label(
                         "Body",
                         text="Drag spells onto units, advance turns, and clear the unstable board.",
-                        custom_minimum_size=Vec2(340, 48),
+                        custom_minimum_size=Vec2(200, 72),
                         horizontal_alignment=1,
                         autowrap_mode=2,
                         clip_text=True,
@@ -89,7 +89,7 @@ tile_scene = Scene(
     root=Panel(
         "Tile",
         script=file_script("tile", extends="Panel"),
-        custom_minimum_size=Vec2(66, 56),
+        custom_minimum_size=Vec2(96, 78),
         mouse_filter=0,
         children=[
             VBoxContainer(
@@ -98,21 +98,29 @@ tile_scene = Scene(
                 mouse_filter=2,
                 offset_left=4,
                 offset_top=4,
-                offset_right=62,
-                offset_bottom=52,
+                offset_right=92,
+                offset_bottom=74,
                 children=[
                     Label(
                         "Label",
                         text="A1",
-                        custom_minimum_size=Vec2(58, 20),
+                        custom_minimum_size=Vec2(88, 20),
+                        horizontal_alignment=1,
+                        mouse_filter=2,
+                        clip_text=True,
+                    ),
+                    Label(
+                        "Unit",
+                        text="Empty",
+                        custom_minimum_size=Vec2(88, 24),
                         horizontal_alignment=1,
                         mouse_filter=2,
                         clip_text=True,
                     ),
                     Label(
                         "State",
-                        text="Empty",
-                        custom_minimum_size=Vec2(58, 24),
+                        text="",
+                        custom_minimum_size=Vec2(88, 22),
                         horizontal_alignment=1,
                         mouse_filter=2,
                         clip_text=True,
@@ -234,38 +242,6 @@ def debug_button(name: str, text: str, method: str) -> Button:
     )
 
 
-def unit_cards() -> list:
-    return [
-        scene_instance(
-            "ImpUnit",
-            unit_resource,
-            unit_id="imp",
-            display_name="Imp",
-            faction="demon",
-            cell_id="A1",
-            hp=4,
-        ),
-        scene_instance(
-            "BonesUnit",
-            unit_resource,
-            unit_id="bones",
-            display_name="Bones",
-            faction="undead",
-            cell_id="C3",
-            hp=5,
-        ),
-        scene_instance(
-            "GobUnit",
-            unit_resource,
-            unit_id="gob",
-            display_name="Gob",
-            faction="greenskin",
-            cell_id="E1",
-            hp=3,
-        ),
-    ]
-
-
 game.add_scene(hint_scene)
 game.add_scene(tile_scene)
 game.add_scene(spell_scene)
@@ -343,17 +319,15 @@ game.add_scene(
                                         GridContainer(
                                             "MapGrid",
                                             columns=5,
-                                            custom_minimum_size=Vec2(360, 310),
+                                            custom_minimum_size=Vec2(520, 430),
                                             children=map_cells(),
                                         ),
                                         VBoxContainer(
                                             "SidePanel",
-                                            custom_minimum_size=Vec2(390, 540),
+                                            custom_minimum_size=Vec2(220, 360),
                                             children=[
                                                 Label("SpellsTitle", text="Spells", horizontal_alignment=1),
-                                                GridContainer("SpellsPanel", columns=2, children=spell_buttons()),
-                                                Label("UnitsTitle", text="Units", horizontal_alignment=1),
-                                                VBoxContainer("UnitsPanel", children=unit_cards()),
+                                                VBoxContainer("SpellsPanel", children=spell_buttons()),
                                                 Label("HintsTitle", text="Hints", horizontal_alignment=1),
                                                 scene_instance("HintPanel", hint_resource),
                                             ],

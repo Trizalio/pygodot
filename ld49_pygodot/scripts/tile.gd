@@ -3,6 +3,7 @@ signal spell_dropped(tile_id: String, spell_id: String, display_name: String)
 @export var tile_id := "A1"
 
 @onready var title := $VBox/Label
+@onready var unit_label := $VBox/Unit
 @onready var state := $VBox/State
 var highlighted := false
 var flash_tween: Tween
@@ -15,18 +16,22 @@ func _ready() -> void:
 
 func reset_state() -> void:
     unit_summary = ""
-    _refresh_state("Empty")
+    _refresh_unit("Empty")
+    _refresh_state("")
     _clear_highlight()
 
 func set_unit(display_name: String, hp: int, status: String) -> void:
-    unit_summary = "%s:%d" % [display_name.substr(0, 3), hp]
-    if not status.is_empty() and status != "ready":
-        unit_summary = "%s %s" % [unit_summary, _status_abbrev(status)]
-    _refresh_state(unit_summary)
+    unit_summary = "%s HP %d" % [display_name, hp]
+    _refresh_unit(unit_summary)
+    if status.is_empty() or status == "ready":
+        _refresh_state("")
+    else:
+        _refresh_state(_status_label(status))
 
 func clear_unit() -> void:
     unit_summary = ""
-    _refresh_state("Empty")
+    _refresh_unit("Empty")
+    _refresh_state("")
 
 func _process(_delta: float) -> void:
     if highlighted and not get_global_rect().has_point(get_global_mouse_position()):
@@ -72,19 +77,22 @@ func _flash(color: Color) -> void:
 func _refresh_state(text: String) -> void:
     state.text = text
 
-func _status_abbrev(status: String) -> String:
+func _refresh_unit(text: String) -> void:
+    unit_label.text = text
+
+func _status_label(status: String) -> String:
     match status:
         "burning":
-            return "Brn"
+            return "Burning"
         "frozen":
-            return "Frz"
+            return "Frozen"
         "shielded":
-            return "Shd"
+            return "Shield"
         "healed":
-            return "Hld"
+            return "Healed"
         "moving":
-            return "Mov"
+            return "Moving"
         "defeated":
-            return "Def"
+            return "Defeated"
         _:
-            return status.substr(0, 3)
+            return status.capitalize()

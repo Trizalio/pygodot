@@ -48,7 +48,6 @@ REQUIRED_SCENE_MARKERS = {
     "scenes/main.tscn": [
         'instance=ExtResource("PackedScene_scenes_tile_tscn")',
         'instance=ExtResource("PackedScene_scenes_spell_tscn")',
-        'instance=ExtResource("PackedScene_scenes_unit_tscn")',
         "Advance Units",
     ],
     "scenes/end.tscn": ["Battle Complete", "stage_f"],
@@ -126,7 +125,6 @@ def _validate_manifest(manifest: dict, issues: list[str]) -> None:
         "res://scenes/hint.tscn",
         "res://scenes/spell.tscn",
         "res://scenes/tile.tscn",
-        "res://scenes/unit.tscn",
     ]:
         resource = resources_by_path.get(path)
         if resource is None:
