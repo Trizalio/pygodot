@@ -94,6 +94,11 @@ func set_preview(role: String, spell_id: String) -> void:
     else:
         modulate = _preview_color(spell_id)
 
+func set_movement_preview(role: String, outcome: String) -> void:
+    preview_active = true
+    state.text = _movement_preview_label(role, outcome)
+    modulate = _movement_preview_color(role, outcome)
+
 func clear_preview() -> void:
     if not preview_active:
         return
@@ -185,3 +190,23 @@ func _preview_color(spell_id: String) -> Color:
             return Color(0.75, 1.0, 0.5, 1.0)
         _:
             return Color(1.0, 0.85, 0.35, 1.0)
+
+func _movement_preview_label(role: String, outcome: String) -> String:
+    if outcome == "frozen":
+        return "Frozen"
+    if outcome == "castle":
+        return "Castle"
+    if outcome == "blocked":
+        return "Block" if role == "to" else "Move"
+    return "Next" if role == "to" else "Move"
+
+func _movement_preview_color(role: String, outcome: String) -> Color:
+    if outcome == "frozen":
+        return Color(0.45, 0.75, 1.0, 1.0)
+    if outcome == "castle":
+        return Color(1.0, 0.9, 0.45, 1.0)
+    if outcome == "blocked":
+        return Color(1.0, 0.5, 0.45, 1.0)
+    if role == "to":
+        return Color(0.55, 0.85, 1.0, 1.0)
+    return Color(1.0, 0.85, 0.35, 1.0)

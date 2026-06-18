@@ -39,6 +39,8 @@ Implemented so far:
   area, and ally-chain spell targets.
 - LD49-compatible movement order where later-spawned younger units move before
   older units, increasing jams, clashes, and board pressure.
+- Movement readability pass with next-cell previews and per-unit queued
+  movement playback instead of resolving all movement in one visual step.
 
 Runtime behavior remains ordinary GDScript. This folder does not contain an
 automatic Godot 3 to Godot 4 converter and does not claim to be a full LD49

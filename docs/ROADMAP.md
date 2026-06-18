@@ -84,6 +84,8 @@ Implemented:
   affected-area highlighting for direct, area, and ally-chain spell targets.
 - LD49-compatible movement order in `ld49_pygodot/`, where later-spawned
   younger units move before older units to increase jams and clashes.
+- LD49 movement readability in `ld49_pygodot/`, including next-cell previews
+  and per-unit queued movement playback.
 
 ## Next Direction
 

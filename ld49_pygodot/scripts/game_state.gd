@@ -11,6 +11,7 @@ var castle_capacity := 6
 var castle_counts := {"demon": 0, "undead": 0, "greenskin": 0}
 var spawn_index := 0
 var unit_order := 0
+var movement_queue: Array = []
 
 func reset() -> void:
     Matrix.reset(5, 5)
@@ -23,6 +24,7 @@ func reset() -> void:
     castle_counts = {"demon": 0, "undead": 0, "greenskin": 0}
     spawn_index = 0
     unit_order = 0
+    movement_queue = []
     units = {
         "imp": _make_unit("imp", "Imp", "demon", "B1", 4),
         "bones": _make_unit("bones", "Bones", "undead", "C3", 5),
@@ -74,6 +76,23 @@ func move_units() -> String:
     last_event = _move_units()
     return last_event
 
+func begin_movement_phase() -> Array:
+    movement_queue = _movement_order()
+    return preview_unit_moves()
+
+func has_queued_movement() -> bool:
+    return not movement_queue.is_empty()
+
+func move_next_unit() -> String:
+    while not movement_queue.is_empty():
+        var unit_id := str(movement_queue.pop_front())
+        if not units.has(unit_id):
+            continue
+        last_event = _move_unit(unit_id)
+        return last_event
+    last_event = "no units moved"
+    return last_event
+
 func spawn_wave() -> String:
     last_event = _spawn_wave()
     turn += 1
@@ -82,37 +101,11 @@ func spawn_wave() -> String:
 func _move_units() -> String:
     var moved := PackedStringArray()
     for unit_id in _movement_order():
-        var unit: Dictionary = units[unit_id]
-        var status := str(unit.get("status", ""))
-        if status == "defeated":
+        if not units.has(unit_id):
             continue
-        var tick_result: String = _tick_status(unit_id)
-        unit = units[unit_id]
-        if str(unit.get("status", "")) == "defeated":
-            moved.append(tick_result)
-            continue
-        if tick_result.ends_with(":frozen"):
-            moved.append(tick_result)
-            continue
-        var from_cell := str(unit["cell_id"])
-        var to_cell: String = _next_cell(from_cell)
-        if to_cell == "CASTLE":
-            _exit_matrix(unit_id)
-            var faction := str(unit["faction"])
-            castle_counts[faction] = int(castle_counts.get(faction, 0)) + 1
-            moved.append("%s reached castle" % unit["display_name"])
-            units.erase(unit_id)
-            continue
-        var blocker_id := _unit_id_at(to_cell)
-        if not blocker_id.is_empty():
-            moved.append(_clash_units(unit_id, blocker_id, to_cell))
-            continue
-        _exit_matrix(unit_id)
-        unit["cell_id"] = to_cell
-        unit["status"] = "moving"
-        units[unit_id] = unit
-        _enter_matrix(unit_id)
-        moved.append("%s:%s->%s" % [unit["display_name"], from_cell, to_cell])
+        var event := _move_unit(unit_id)
+        if not event.is_empty():
+            moved.append(event)
     if moved.is_empty():
         last_event = "no units moved"
     else:
@@ -166,6 +159,34 @@ func preview_spell_targets(cell_id: String, spell_id: String) -> Array[String]:
     if not Matrix.is_valid_cell(cell_id):
         return []
     return _target_cells_for_spell(cell_id, spell_id)
+
+func preview_unit_moves() -> Array:
+    var previews: Array = []
+    for unit_id in movement_queue:
+        if not units.has(unit_id):
+            continue
+        var unit: Dictionary = units[unit_id]
+        var status := str(unit.get("status", ""))
+        if status == "defeated":
+            continue
+        var from_cell := str(unit["cell_id"])
+        var to_cell := _next_cell(from_cell)
+        var outcome := "move"
+        if status == "frozen":
+            to_cell = from_cell
+            outcome = "frozen"
+        elif to_cell == "CASTLE":
+            outcome = "castle"
+        elif not _unit_id_at(to_cell).is_empty():
+            outcome = "blocked"
+        previews.append({
+            "unit_id": unit_id,
+            "display_name": str(unit["display_name"]),
+            "from": from_cell,
+            "to": to_cell,
+            "outcome": outcome,
+        })
+    return previews
 
 func _target_cells_for_spell(cell_id: String, spell_id: String) -> Array[String]:
     var cells: Array[String] = [cell_id]
@@ -348,6 +369,37 @@ func _enter_matrix(unit_id: String) -> void:
 func _unit_id_at(cell_id: String) -> String:
     var cell: Dictionary = Matrix.get_cell(cell_id, {})
     return str(cell.get("unit_id", ""))
+
+func _move_unit(unit_id: String) -> String:
+    var unit: Dictionary = units[unit_id]
+    var status := str(unit.get("status", ""))
+    if status == "defeated":
+        return ""
+    var tick_result: String = _tick_status(unit_id)
+    if not units.has(unit_id):
+        return tick_result
+    unit = units[unit_id]
+    if str(unit.get("status", "")) == "defeated":
+        return tick_result
+    if tick_result.ends_with(":frozen"):
+        return tick_result
+    var from_cell := str(unit["cell_id"])
+    var to_cell: String = _next_cell(from_cell)
+    if to_cell == "CASTLE":
+        _exit_matrix(unit_id)
+        var faction := str(unit["faction"])
+        castle_counts[faction] = int(castle_counts.get(faction, 0)) + 1
+        units.erase(unit_id)
+        return "%s reached castle" % unit["display_name"]
+    var blocker_id := _unit_id_at(to_cell)
+    if not blocker_id.is_empty():
+        return _clash_units(unit_id, blocker_id, to_cell)
+    _exit_matrix(unit_id)
+    unit["cell_id"] = to_cell
+    unit["status"] = "moving"
+    units[unit_id] = unit
+    _enter_matrix(unit_id)
+    return "%s:%s->%s" % [unit["display_name"], from_cell, to_cell]
 
 func _movement_order() -> Array:
     var ordered := units.keys()

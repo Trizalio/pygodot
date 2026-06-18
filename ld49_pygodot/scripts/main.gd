@@ -57,12 +57,21 @@ func _play_turn_phases(action_name: String) -> void:
     _refresh_tiles()
     _refresh_counters()
     await _pause_turn_phase()
-    var moved := GameState.move_units()
-    AudioManager.play_cue("units_move")
-    status_label.text = "%s: %s" % [action_name, moved]
-    _refresh_tiles()
+    var previews := GameState.begin_movement_phase()
+    _show_movement_preview(previews)
+    status_label.text = "%s: movement order preview" % action_name
     _refresh_counters()
     await _pause_turn_phase()
+    AudioManager.play_cue("units_move")
+    while GameState.has_queued_movement():
+        var moved := GameState.move_next_unit()
+        if moved.is_empty():
+            continue
+        status_label.text = "%s: %s" % [action_name, moved]
+        _refresh_tiles()
+        _refresh_counters()
+        await _pause_unit_step()
+    _clear_movement_preview()
     var spawned := GameState.spawn_wave()
     status_label.text = "%s: %s" % [action_name, spawned]
     _refresh_tiles()
@@ -72,6 +81,9 @@ func _play_turn_phases(action_name: String) -> void:
 
 func _pause_turn_phase() -> void:
     await get_tree().create_timer(0.45).timeout
+
+func _pause_unit_step() -> void:
+    await get_tree().create_timer(0.24).timeout
 
 func _connect_tiles() -> void:
     for tile in map_grid.get_children():
@@ -114,6 +126,25 @@ func _on_tile_spell_hovered(tile_id: String, spell_id: String) -> void:
         status_label.text = "%s targets %s" % [spell_id.capitalize(), tile_id]
 
 func _clear_spell_preview() -> void:
+    for tile in map_grid.get_children():
+        if tile.has_method("clear_preview"):
+            tile.clear_preview()
+
+func _show_movement_preview(previews: Array) -> void:
+    _clear_movement_preview()
+    for preview in previews:
+        var from_tile := _tile_by_id(str(preview.get("from", "")))
+        if from_tile != null and from_tile.has_method("set_movement_preview"):
+            from_tile.set_movement_preview("from", str(preview.get("outcome", "")))
+        var from_cell := str(preview.get("from", ""))
+        var to_cell := str(preview.get("to", ""))
+        if to_cell == "CASTLE" or to_cell.is_empty() or to_cell == from_cell:
+            continue
+        var to_tile := _tile_by_id(to_cell)
+        if to_tile != null and to_tile.has_method("set_movement_preview"):
+            to_tile.set_movement_preview("to", str(preview.get("outcome", "")))
+
+func _clear_movement_preview() -> void:
     for tile in map_grid.get_children():
         if tile.has_method("clear_preview"):
             tile.clear_preview()
