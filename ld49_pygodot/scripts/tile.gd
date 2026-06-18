@@ -6,6 +6,7 @@ signal spell_dropped(tile_id: String, spell_id: String, display_name: String)
 @onready var state := $VBox/State
 var highlighted := false
 var flash_tween: Tween
+var unit_summary := ""
 
 func _ready() -> void:
     set_process(false)
@@ -13,8 +14,19 @@ func _ready() -> void:
     reset_state()
 
 func reset_state() -> void:
-    state.text = "Empty"
+    unit_summary = ""
+    _refresh_state("Empty")
     _clear_highlight()
+
+func set_unit(display_name: String, hp: int, status: String) -> void:
+    unit_summary = "%s HP %d" % [display_name, hp]
+    if not status.is_empty() and status != "ready":
+        unit_summary = "%s %s" % [unit_summary, status]
+    _refresh_state(unit_summary)
+
+func clear_unit() -> void:
+    unit_summary = ""
+    _refresh_state("Empty")
 
 func _process(_delta: float) -> void:
     if highlighted and not get_global_rect().has_point(get_global_mouse_position()):
@@ -30,7 +42,7 @@ func _drop_data(_at_position: Vector2, data: Variant) -> void:
     var spell_id := str(data.get("spell_id", "unknown"))
     var display_name := str(data.get("display_name", spell_id))
     _clear_highlight()
-    state.text = display_name
+    _refresh_state(display_name)
     _flash(Color(1.0, 0.45, 0.25, 1.0))
     spell_dropped.emit(tile_id, spell_id, display_name)
 
@@ -56,3 +68,6 @@ func _flash(color: Color) -> void:
     modulate = color
     flash_tween = create_tween()
     flash_tween.tween_property(self, "modulate", Color.WHITE, 0.35)
+
+func _refresh_state(text: String) -> void:
+    state.text = text

@@ -65,6 +65,8 @@ Implemented:
 - Stage C core runtime scripts in `ld49_pygodot/scripts/`.
 - Stage D reusable tile and spell scenes in `ld49_pygodot/`, including a
   Fireball drag/drop path from spell panel to map tile.
+- Stage E unit scene/card wiring in `ld49_pygodot/`, including demon,
+  undead, and greenskin units, matrix movement, and a damage/status path.
 
 ## Next Direction
 

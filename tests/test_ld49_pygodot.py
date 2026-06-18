@@ -27,11 +27,13 @@ class LD49PygodotSkeletonTests(unittest.TestCase):
                     "scenes/main.tscn",
                     "scenes/spell.tscn",
                     "scenes/tile.tscn",
+                    "scenes/unit.tscn",
                     "scripts/fader.gd",
                     "scripts/intro.gd",
                     "scripts/main.gd",
                     "scripts/spell.gd",
                     "scripts/tile.gd",
+                    "scripts/unit.gd",
                 ],
             )
             self.assertEqual(
@@ -55,11 +57,13 @@ class LD49PygodotSkeletonTests(unittest.TestCase):
             hint_scene_text = (build_dir / "scenes" / "hint.tscn").read_text(encoding="utf-8")
             spell_scene_text = (build_dir / "scenes" / "spell.tscn").read_text(encoding="utf-8")
             tile_scene_text = (build_dir / "scenes" / "tile.tscn").read_text(encoding="utf-8")
+            unit_scene_text = (build_dir / "scenes" / "unit.tscn").read_text(encoding="utf-8")
             intro_scene_text = (build_dir / "scenes" / "intro.tscn").read_text(encoding="utf-8")
             fader_scene_text = (build_dir / "scenes" / "fader.tscn").read_text(encoding="utf-8")
             main_script_text = (build_dir / "scripts" / "main.gd").read_text(encoding="utf-8")
             spell_script_text = (build_dir / "scripts" / "spell.gd").read_text(encoding="utf-8")
             tile_script_text = (build_dir / "scripts" / "tile.gd").read_text(encoding="utf-8")
+            unit_script_text = (build_dir / "scripts" / "unit.gd").read_text(encoding="utf-8")
             game_state_text = (build_dir / "scripts" / "game_state.gd").read_text(encoding="utf-8")
             matrix_text = (build_dir / "scripts" / "matrix.gd").read_text(encoding="utf-8")
             matrix_utils_text = (build_dir / "scripts" / "matrix_utils.gd").read_text(encoding="utf-8")
@@ -100,10 +104,19 @@ class LD49PygodotSkeletonTests(unittest.TestCase):
             self.assertIn('[node name="SpellsPanel" type="VBoxContainer" parent="Shell/VBox/GameBody/SidePanel"]', main_scene_text)
             self.assertIn('[node name="FireballSpell" parent="Shell/VBox/GameBody/SidePanel/SpellsPanel" instance=ExtResource("PackedScene_scenes_spell_tscn")]', main_scene_text)
             self.assertIn('spell_id = "fireball"', main_scene_text)
+            self.assertIn('[node name="UnitsPanel" type="VBoxContainer" parent="Shell/VBox/GameBody/SidePanel"]', main_scene_text)
+            self.assertIn('[node name="ImpUnit" parent="Shell/VBox/GameBody/SidePanel/UnitsPanel" instance=ExtResource("PackedScene_scenes_unit_tscn")]', main_scene_text)
+            self.assertIn('faction = "demon"', main_scene_text)
+            self.assertIn('[node name="BonesUnit" parent="Shell/VBox/GameBody/SidePanel/UnitsPanel" instance=ExtResource("PackedScene_scenes_unit_tscn")]', main_scene_text)
+            self.assertIn('faction = "undead"', main_scene_text)
+            self.assertIn('[node name="GobUnit" parent="Shell/VBox/GameBody/SidePanel/UnitsPanel" instance=ExtResource("PackedScene_scenes_unit_tscn")]', main_scene_text)
+            self.assertIn('faction = "greenskin"', main_scene_text)
+            self.assertIn('[node name="AdvanceUnitsButton" type="Button" parent="Shell/VBox/DebugBar"]', main_scene_text)
             self.assertIn('[node name="HintPanel" parent="Shell/VBox/GameBody/SidePanel" instance=ExtResource("PackedScene_scenes_hint_tscn")]', main_scene_text)
             self.assertIn('[node name="Hint" type="Panel"]', hint_scene_text)
             self.assertIn('[node name="Spell" type="Panel"]', spell_scene_text)
             self.assertIn('[node name="Tile" type="Panel"]', tile_scene_text)
+            self.assertIn('[node name="Unit" type="Panel"]', unit_scene_text)
             self.assertIn('[node name="Intro" type="MarginContainer" groups=["ld49_port", "stage_a"]]', intro_scene_text)
             self.assertIn('[node name="Fader" type="MarginContainer" groups=["ld49_port", "stage_a"]]', fader_scene_text)
             self.assertIn(
@@ -118,12 +131,19 @@ class LD49PygodotSkeletonTests(unittest.TestCase):
                 '[connection signal="pressed" from="Shell/VBox/DebugBar/ResetButton" to="." method="_on_reset_pressed"]',
                 main_scene_text,
             )
+            self.assertIn(
+                '[connection signal="pressed" from="Shell/VBox/DebugBar/AdvanceUnitsButton" to="." method="_on_advance_units_pressed"]',
+                main_scene_text,
+            )
             self.assertIn("SceneChanger.go_to_intro()", main_script_text)
             self.assertIn("SceneChanger.show_fader()", main_script_text)
             self.assertIn("func _on_reset_pressed() -> void:", main_script_text)
             self.assertIn("func _connect_tiles() -> void:", main_script_text)
             self.assertIn("func _reset_tiles() -> void:", main_script_text)
             self.assertIn("tile.reset_state()", main_script_text)
+            self.assertIn("func _on_advance_units_pressed() -> void:", main_script_text)
+            self.assertIn("GameState.advance_units()", main_script_text)
+            self.assertIn("func _refresh_units() -> void:", main_script_text)
             self.assertIn("tile.spell_dropped.connect(_on_tile_spell_dropped)", main_script_text)
             self.assertIn("func _on_tile_spell_dropped(tile_id: String, spell_id: String, display_name: String) -> void:", main_script_text)
             self.assertIn("GameState.describe_matrix()", main_script_text)
@@ -136,7 +156,18 @@ class LD49PygodotSkeletonTests(unittest.TestCase):
             self.assertIn("func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:", tile_script_text)
             self.assertIn("func _drop_data(_at_position: Vector2, data: Variant) -> void:", tile_script_text)
             self.assertIn("spell_dropped.emit(tile_id, spell_id, display_name)", tile_script_text)
+            self.assertIn("func set_unit(display_name: String, hp: int, status: String) -> void:", tile_script_text)
+            self.assertIn("func apply_state(data: Dictionary) -> void:", unit_script_text)
+            self.assertIn("name_label.text = \"%s (%s)\" % [display_name, faction]", unit_script_text)
             self.assertIn("func apply_spell(cell_id: String, spell_id: String) -> String:", game_state_text)
+            self.assertIn('"imp": _make_unit("imp", "Imp", "demon", "A1", 4)', game_state_text)
+            self.assertIn('"bones": _make_unit("bones", "Bones", "undead", "C3", 5)', game_state_text)
+            self.assertIn('"gob": _make_unit("gob", "Gob", "greenskin", "E1", 3)', game_state_text)
+            self.assertIn("func advance_units() -> String:", game_state_text)
+            self.assertIn("func unit_at(cell_id: String) -> Dictionary:", game_state_text)
+            self.assertIn("func _enter_matrix(unit_id: String) -> void:", game_state_text)
+            self.assertIn("func _exit_matrix(unit_id: String) -> void:", game_state_text)
+            self.assertIn('target["status"] = "burning"', game_state_text)
             self.assertIn("Matrix.reset(5, 5)", game_state_text)
             self.assertIn("func set_cell(cell_id: String, value: Variant) -> void:", matrix_text)
             self.assertIn("func neighbors(cell: String, width: int, height: int) -> Array[String]:", matrix_utils_text)
@@ -168,6 +199,13 @@ class LD49PygodotSkeletonTests(unittest.TestCase):
                         "id": "PackedScene_scenes_tile_tscn",
                         "ownership": "generated",
                         "path": "res://scenes/tile.tscn",
+                        "type": "PackedScene",
+                    },
+                    {
+                        "copied": False,
+                        "id": "PackedScene_scenes_unit_tscn",
+                        "ownership": "generated",
+                        "path": "res://scenes/unit.tscn",
                         "type": "PackedScene",
                     },
                     {
@@ -245,6 +283,13 @@ class LD49PygodotSkeletonTests(unittest.TestCase):
                         "id": "Script_scripts_tile_gd",
                         "ownership": "generated",
                         "path": "res://scripts/tile.gd",
+                        "type": "Script",
+                    },
+                    {
+                        "copied": False,
+                        "id": "Script_scripts_unit_gd",
+                        "ownership": "generated",
+                        "path": "res://scripts/unit.gd",
                         "type": "Script",
                     },
                     {

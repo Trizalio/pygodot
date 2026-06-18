@@ -128,6 +128,32 @@ spell_scene = Scene(
 )
 spell_resource = spell_scene.as_packed_scene()
 
+unit_scene = Scene(
+    path="res://scenes/unit.tscn",
+    root=Panel(
+        "Unit",
+        script=file_script("unit", extends="Panel"),
+        custom_minimum_size=Vec2(148, 64),
+        children=[
+            VBoxContainer(
+                "VBox",
+                anchors_preset=15,
+                mouse_filter=2,
+                offset_left=8,
+                offset_top=6,
+                offset_right=140,
+                offset_bottom=58,
+                children=[
+                    Label("Name", text="Unit", horizontal_alignment=1, mouse_filter=2),
+                    Label("Stats", text="HP 1", horizontal_alignment=1, mouse_filter=2),
+                    Label("Status", text="ready", horizontal_alignment=1, mouse_filter=2),
+                ],
+            )
+        ],
+    ),
+)
+unit_resource = unit_scene.as_packed_scene()
+
 
 def map_cells() -> list:
     cells = []
@@ -155,9 +181,42 @@ def spell_buttons() -> list:
     ]
 
 
+def unit_cards() -> list:
+    return [
+        scene_instance(
+            "ImpUnit",
+            unit_resource,
+            unit_id="imp",
+            display_name="Imp",
+            faction="demon",
+            cell_id="A1",
+            hp=4,
+        ),
+        scene_instance(
+            "BonesUnit",
+            unit_resource,
+            unit_id="bones",
+            display_name="Bones",
+            faction="undead",
+            cell_id="C3",
+            hp=5,
+        ),
+        scene_instance(
+            "GobUnit",
+            unit_resource,
+            unit_id="gob",
+            display_name="Gob",
+            faction="greenskin",
+            cell_id="E1",
+            hp=3,
+        ),
+    ]
+
+
 game.add_scene(hint_scene)
 game.add_scene(tile_scene)
 game.add_scene(spell_scene)
+game.add_scene(unit_scene)
 
 game.add_scene(
     Scene(
@@ -240,6 +299,8 @@ game.add_scene(
                                             children=[
                                                 Label("SpellsTitle", text="Spells", horizontal_alignment=1),
                                                 VBoxContainer("SpellsPanel", children=spell_buttons()),
+                                                Label("UnitsTitle", text="Units", horizontal_alignment=1),
+                                                VBoxContainer("UnitsPanel", children=unit_cards()),
                                                 Label("HintsTitle", text="Hints", horizontal_alignment=1),
                                                 scene_instance("HintPanel", hint_resource),
                                             ],
@@ -266,6 +327,12 @@ game.add_scene(
                                             text="Reset State",
                                             custom_minimum_size=Vec2(140, 40),
                                             signals=[signal("pressed", target=".", method="_on_reset_pressed")],
+                                        ),
+                                        Button(
+                                            "AdvanceUnitsButton",
+                                            text="Advance Units",
+                                            custom_minimum_size=Vec2(140, 40),
+                                            signals=[signal("pressed", target=".", method="_on_advance_units_pressed")],
                                         ),
                                     ],
                                 ),
