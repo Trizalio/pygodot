@@ -88,6 +88,8 @@ Implemented:
   and per-unit queued movement playback.
 - LD49 event focus playback in `ld49_pygodot/`, including one-at-a-time
   neighbor effects and named per-unit movement previews.
+- LD49 board noise polish in `ld49_pygodot/`, including blank empty cells and
+  muted coordinate labels.
 
 ## Next Direction
 

@@ -21,7 +21,7 @@ func _ready() -> void:
 
 func reset_state() -> void:
     unit_summary = ""
-    _refresh_unit("Empty")
+    _refresh_unit("")
     _refresh_state("")
     clear_preview()
     _clear_highlight()
@@ -37,7 +37,7 @@ func set_unit(display_name: String, hp: int, status: String) -> void:
 
 func clear_unit() -> void:
     unit_summary = ""
-    _refresh_unit("Empty")
+    _refresh_unit("")
     _refresh_state("")
 
 func _process(_delta: float) -> void:

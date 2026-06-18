@@ -108,10 +108,11 @@ tile_scene = Scene(
                         horizontal_alignment=1,
                         mouse_filter=2,
                         clip_text=True,
+                        modulate=Color(0.55, 0.62, 0.67, 1.0),
                     ),
                     Label(
                         "Unit",
-                        text="Empty",
+                        text="",
                         custom_minimum_size=Vec2(88, 24),
                         horizontal_alignment=1,
                         mouse_filter=2,

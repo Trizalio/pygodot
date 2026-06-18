@@ -43,6 +43,8 @@ Implemented so far:
   movement playback instead of resolving all movement in one visual step.
 - Event focus pass with one-at-a-time neighbor effect playback and per-unit
   movement previews that name the acting unit before it moves.
+- Board noise polish with blank empty cells and muted coordinate labels so
+  occupied tiles stand out during play.
 
 Runtime behavior remains ordinary GDScript. This folder does not contain an
 automatic Godot 3 to Godot 4 converter and does not claim to be a full LD49
