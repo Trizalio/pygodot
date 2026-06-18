@@ -47,6 +47,8 @@ Implemented so far:
   occupied tiles stand out during play.
 - Mobile portrait layout pass with a vertical play surface and weighted
   Godot container sizing for board, spells, and controls.
+- Mobile fit polish with taller cells, shorter spell hints, and expanded
+  per-cell text bands for unit/effect labels.
 
 Runtime behavior remains ordinary GDScript. This folder does not contain an
 automatic Godot 3 to Godot 4 converter and does not claim to be a full LD49

@@ -92,6 +92,8 @@ Implemented:
   muted coordinate labels.
 - LD49 mobile portrait layout in `ld49_pygodot/`, with weighted Godot
   container sizing for board, spells, and controls.
+- LD49 mobile fit polish in `ld49_pygodot/`, with taller cells, shorter spell
+  hints, and expanded text bands for unit/effect labels.
 
 ## Next Direction
 

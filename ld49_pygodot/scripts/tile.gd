@@ -199,12 +199,12 @@ func _preview_color(spell_id: String) -> Color:
 func _movement_preview_label(role: String, outcome: String, display_name: String) -> String:
     var short_name := _short_name(display_name)
     if outcome == "frozen":
-        return "%s Frozen" % short_name
+        return "%s Ice" % short_name
     if outcome == "castle":
-        return "%s Castle" % short_name
+        return "%s Lock" % short_name
     if outcome == "blocked":
-        return "%s Block" % short_name if role == "to" else "%s Move" % short_name
-    return "%s Next" % short_name if role == "to" else "%s Move" % short_name
+        return "%s X" % short_name if role == "to" else "%s >" % short_name
+    return "%s >" % short_name if role == "to" else "%s *" % short_name
 
 func _movement_preview_color(role: String, outcome: String) -> Color:
     if outcome == "frozen":
@@ -239,11 +239,11 @@ func _focus_preview_color(role: String, effect: String) -> Color:
 func _effect_label(effect: String) -> String:
     match effect:
         "scorch":
-            return "Scorch"
+            return "Scor"
         "horde":
             return "Horde"
         "brace":
-            return "Brace"
+            return "Brac"
         _:
             return effect.capitalize()
 

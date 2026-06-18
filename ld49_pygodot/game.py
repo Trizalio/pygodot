@@ -58,21 +58,23 @@ hint_scene = Scene(
     path="res://scenes/hint.tscn",
     root=Panel(
         "Hint",
-        custom_minimum_size=Vec2(220, 118),
+        custom_minimum_size=Vec2(0, 76),
+        size_flags_horizontal=3,
         children=[
             VBoxContainer(
                 "VBox",
                 anchors_preset=15,
-                offset_left=10,
-                offset_top=8,
-                offset_right=210,
-                offset_bottom=110,
+                offset_left=8,
+                offset_top=6,
+                offset_right=-8,
+                offset_bottom=-6,
                 children=[
                     Label("Title", text="Hint", horizontal_alignment=1),
                     Label(
                         "Body",
-                        text="Drag spells onto units, advance turns, and clear the unstable board.",
-                        custom_minimum_size=Vec2(200, 72),
+                        text="Drag spells onto units. Resolve focused events, then survive the castle pressure.",
+                        custom_minimum_size=Vec2(0, 42),
+                        size_flags_horizontal=3,
                         horizontal_alignment=1,
                         autowrap_mode=2,
                         clip_text=True,
@@ -89,7 +91,7 @@ tile_scene = Scene(
     root=Panel(
         "Tile",
         script=file_script("tile", extends="Panel"),
-        custom_minimum_size=Vec2(56, 56),
+        custom_minimum_size=Vec2(92, 92),
         size_flags_horizontal=3,
         size_flags_vertical=3,
         mouse_filter=0,
@@ -106,27 +108,30 @@ tile_scene = Scene(
                     Label(
                         "Label",
                         text="A1",
-                        custom_minimum_size=Vec2(50, 15),
+                        custom_minimum_size=Vec2(86, 16),
                         horizontal_alignment=1,
                         mouse_filter=2,
                         clip_text=True,
+                        theme_override_font_sizes={"font_size": 11},
                         modulate=Color(0.55, 0.62, 0.67, 1.0),
                     ),
                     Label(
                         "Unit",
                         text="",
-                        custom_minimum_size=Vec2(50, 20),
+                        custom_minimum_size=Vec2(86, 32),
                         horizontal_alignment=1,
                         mouse_filter=2,
                         clip_text=True,
+                        theme_override_font_sizes={"font_size": 15},
                     ),
                     Label(
                         "State",
                         text="",
-                        custom_minimum_size=Vec2(50, 18),
+                        custom_minimum_size=Vec2(86, 32),
                         horizontal_alignment=1,
                         mouse_filter=2,
                         clip_text=True,
+                        theme_override_font_sizes={"font_size": 13},
                     ),
                 ],
             )
@@ -140,7 +145,7 @@ spell_scene = Scene(
     root=Panel(
         "Spell",
         script=file_script("spell", extends="Panel"),
-        custom_minimum_size=Vec2(110, 58),
+        custom_minimum_size=Vec2(118, 74),
         size_flags_horizontal=3,
         mouse_filter=0,
         children=[
@@ -153,8 +158,15 @@ spell_scene = Scene(
                 offset_right=-6,
                 offset_bottom=-6,
                 children=[
-                    Label("Title", text="Fireball", horizontal_alignment=1, mouse_filter=2),
-                    Label("Hint", text="2 damage + burn", horizontal_alignment=1, mouse_filter=2),
+                    Label("Title", text="Fireball", horizontal_alignment=1, mouse_filter=2, clip_text=True),
+                    Label(
+                        "Hint",
+                        text="2 dmg + burn",
+                        horizontal_alignment=1,
+                        mouse_filter=2,
+                        autowrap_mode=2,
+                        clip_text=True,
+                    ),
                 ],
             )
         ],
@@ -211,28 +223,28 @@ def spell_buttons() -> list:
             spell_resource,
             spell_id="fireball",
             display_name="Fireball",
-            hint_text="2 damage + burn",
+            hint_text="2 dmg + burn",
         ),
         scene_instance(
             "FrostSpell",
             spell_resource,
             spell_id="frost",
             display_name="Frost",
-            hint_text="1 damage + freeze",
+            hint_text="1 dmg + freeze",
         ),
         scene_instance(
             "ShieldSpell",
             spell_resource,
             spell_id="shield",
             display_name="Shield",
-            hint_text="add armor",
+            hint_text="+armor allies",
         ),
         scene_instance(
             "HealSpell",
             spell_resource,
             spell_id="heal",
             display_name="Heal",
-            hint_text="restore hp",
+            hint_text="heal allies",
         ),
     ]
 
