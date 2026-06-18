@@ -90,6 +90,8 @@ Implemented:
   neighbor effects and named per-unit movement previews.
 - LD49 board noise polish in `ld49_pygodot/`, including blank empty cells and
   muted coordinate labels.
+- LD49 mobile portrait layout in `ld49_pygodot/`, with weighted Godot
+  container sizing for board, spells, and controls.
 
 ## Next Direction
 

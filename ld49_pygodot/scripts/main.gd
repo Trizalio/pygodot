@@ -1,8 +1,8 @@
 @onready var status_label := $Shell/VBox/ScorePanel/StatusLabel
-@onready var score_label := $Shell/VBox/ScorePanel/ScoreLabel
-@onready var turn_label := $Shell/VBox/ScorePanel/TurnLabel
-@onready var castle_label := $Shell/VBox/GameBody/BoardPanel/CastlePanel/CastleLabel
-@onready var map_grid := $Shell/VBox/GameBody/BoardPanel/MapGrid
+@onready var score_label := $Shell/VBox/ScorePanel/Counters/ScoreLabel
+@onready var turn_label := $Shell/VBox/ScorePanel/Counters/TurnLabel
+@onready var castle_label := $Shell/VBox/BoardPanel/CastlePanel/CastleLabel
+@onready var map_grid := $Shell/VBox/BoardPanel/MapGrid
 var turn_playback_active := false
 
 func _ready() -> void:

@@ -45,6 +45,8 @@ Implemented so far:
   movement previews that name the acting unit before it moves.
 - Board noise polish with blank empty cells and muted coordinate labels so
   occupied tiles stand out during play.
+- Mobile portrait layout pass with a vertical play surface and weighted
+  Godot container sizing for board, spells, and controls.
 
 Runtime behavior remains ordinary GDScript. This folder does not contain an
 automatic Godot 3 to Godot 4 converter and does not claim to be a full LD49

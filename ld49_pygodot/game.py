@@ -24,7 +24,7 @@ from pygodot import (
 )
 
 ROOT = Path(__file__).parent
-VIEWPORT_SIZE = Vec2(820, 760)
+VIEWPORT_SIZE = Vec2(540, 960)
 
 
 def file_script(name: str, *, extends: str = "MarginContainer") -> Script:
@@ -89,22 +89,24 @@ tile_scene = Scene(
     root=Panel(
         "Tile",
         script=file_script("tile", extends="Panel"),
-        custom_minimum_size=Vec2(96, 78),
+        custom_minimum_size=Vec2(56, 56),
+        size_flags_horizontal=3,
+        size_flags_vertical=3,
         mouse_filter=0,
         children=[
             VBoxContainer(
                 "VBox",
                 anchors_preset=15,
                 mouse_filter=2,
-                offset_left=4,
-                offset_top=4,
-                offset_right=92,
-                offset_bottom=74,
+                offset_left=3,
+                offset_top=3,
+                offset_right=-3,
+                offset_bottom=-3,
                 children=[
                     Label(
                         "Label",
                         text="A1",
-                        custom_minimum_size=Vec2(88, 20),
+                        custom_minimum_size=Vec2(50, 15),
                         horizontal_alignment=1,
                         mouse_filter=2,
                         clip_text=True,
@@ -113,7 +115,7 @@ tile_scene = Scene(
                     Label(
                         "Unit",
                         text="",
-                        custom_minimum_size=Vec2(88, 24),
+                        custom_minimum_size=Vec2(50, 20),
                         horizontal_alignment=1,
                         mouse_filter=2,
                         clip_text=True,
@@ -121,7 +123,7 @@ tile_scene = Scene(
                     Label(
                         "State",
                         text="",
-                        custom_minimum_size=Vec2(88, 22),
+                        custom_minimum_size=Vec2(50, 18),
                         horizontal_alignment=1,
                         mouse_filter=2,
                         clip_text=True,
@@ -138,17 +140,18 @@ spell_scene = Scene(
     root=Panel(
         "Spell",
         script=file_script("spell", extends="Panel"),
-        custom_minimum_size=Vec2(180, 58),
+        custom_minimum_size=Vec2(110, 58),
+        size_flags_horizontal=3,
         mouse_filter=0,
         children=[
             VBoxContainer(
                 "VBox",
                 anchors_preset=15,
                 mouse_filter=2,
-                offset_left=8,
+                offset_left=6,
                 offset_top=6,
-                offset_right=172,
-                offset_bottom=52,
+                offset_right=-6,
+                offset_bottom=-6,
                 children=[
                     Label("Title", text="Fireball", horizontal_alignment=1, mouse_filter=2),
                     Label("Hint", text="2 damage + burn", horizontal_alignment=1, mouse_filter=2),
@@ -238,7 +241,8 @@ def debug_button(name: str, text: str, method: str) -> Button:
     return Button(
         name,
         text=text,
-        custom_minimum_size=Vec2(170, 42),
+        custom_minimum_size=Vec2(118, 38),
+        size_flags_horizontal=3,
         signals=[signal("pressed", target=".", method=method)],
     )
 
@@ -256,15 +260,13 @@ game.add_scene(
             script=file_script("main"),
             groups=["ld49_port", "stage_a_g"],
             anchors_preset=15,
-            offset_right=820,
-            offset_bottom=760,
+            offset_right=540,
+            offset_bottom=960,
             children=[
                 TextureRect(
                     "Background",
                     texture=texture("res://resources/icon.svg"),
                     anchors_preset=15,
-                    offset_right=820,
-                    offset_bottom=760,
                     expand_mode=1,
                     stretch_mode=6,
                     modulate=Color(0.18, 0.22, 0.25, 0.25),
@@ -272,94 +274,112 @@ game.add_scene(
                 Panel(
                     "Shell",
                     anchors_preset=15,
-                    offset_left=18,
-                    offset_top=18,
-                    offset_right=802,
-                    offset_bottom=742,
+                    offset_left=12,
+                    offset_top=12,
+                    offset_right=-12,
+                    offset_bottom=-12,
                     children=[
                         VBoxContainer(
                             "VBox",
                             anchors_preset=15,
-                            offset_left=14,
-                            offset_top=14,
-                            offset_right=770,
-                            offset_bottom=710,
+                            offset_left=10,
+                            offset_top=10,
+                            offset_right=-10,
+                            offset_bottom=-10,
                             children=[
-                                HBoxContainer(
+                                VBoxContainer(
                                     "ScorePanel",
+                                    size_flags_horizontal=3,
+                                    size_flags_vertical=0,
                                     children=[
                                         Label(
                                             "Title",
                                             text="LD49 battle",
-                                            custom_minimum_size=Vec2(190, 34),
+                                            size_flags_horizontal=3,
+                                            horizontal_alignment=1,
                                             theme_override_font_sizes={"font_size": 22},
                                         ),
-                                        Label(
-                                            "ScoreLabel",
-                                            text="Score 0",
-                                            custom_minimum_size=Vec2(115, 34),
-                                            horizontal_alignment=1,
-                                        ),
-                                        Label(
-                                            "TurnLabel",
-                                            text="Turn 1",
-                                            custom_minimum_size=Vec2(100, 34),
-                                            horizontal_alignment=1,
+                                        HBoxContainer(
+                                            "Counters",
+                                            size_flags_horizontal=3,
+                                            children=[
+                                                Label(
+                                                    "ScoreLabel",
+                                                    text="Score 0",
+                                                    size_flags_horizontal=3,
+                                                    horizontal_alignment=1,
+                                                ),
+                                                Label(
+                                                    "TurnLabel",
+                                                    text="Turn 1",
+                                                    size_flags_horizontal=3,
+                                                    horizontal_alignment=1,
+                                                ),
+                                            ],
                                         ),
                                         Label(
                                             "StatusLabel",
                                             text="LD49 port ready",
-                                            custom_minimum_size=Vec2(330, 34),
+                                            size_flags_horizontal=3,
+                                            custom_minimum_size=Vec2(0, 38),
                                             horizontal_alignment=1,
+                                            autowrap_mode=2,
+                                            clip_text=True,
                                         ),
                                     ],
                                 ),
-                                HBoxContainer(
-                                    "GameBody",
+                                VBoxContainer(
+                                    "BoardPanel",
+                                    size_flags_horizontal=3,
+                                    size_flags_vertical=3,
+                                    size_flags_stretch_ratio=8.0,
                                     children=[
-                                        VBoxContainer(
-                                            "BoardPanel",
-                                            custom_minimum_size=Vec2(520, 500),
+                                        Panel(
+                                            "CastlePanel",
+                                            size_flags_horizontal=3,
+                                            size_flags_vertical=1,
+                                            custom_minimum_size=Vec2(0, 48),
                                             children=[
-                                                Panel(
-                                                    "CastlePanel",
-                                                    custom_minimum_size=Vec2(520, 58),
-                                                    children=[
-                                                        Label(
-                                                            "CastleLabel",
-                                                            text="Castle 0/6 D:0 U:0 G:0",
-                                                            anchors_preset=15,
-                                                            offset_left=8,
-                                                            offset_top=8,
-                                                            offset_right=512,
-                                                            offset_bottom=50,
-                                                            horizontal_alignment=1,
-                                                            vertical_alignment=1,
-                                                        )
-                                                    ],
-                                                ),
-                                                GridContainer(
-                                                    "MapGrid",
-                                                    columns=5,
-                                                    custom_minimum_size=Vec2(520, 430),
-                                                    children=map_cells(),
-                                                ),
+                                                Label(
+                                                    "CastleLabel",
+                                                    text="Castle 0/6 D:0 U:0 G:0",
+                                                    anchors_preset=15,
+                                                    offset_left=8,
+                                                    offset_top=6,
+                                                    offset_right=-8,
+                                                    offset_bottom=-6,
+                                                    horizontal_alignment=1,
+                                                    vertical_alignment=1,
+                                                )
                                             ],
                                         ),
-                                        VBoxContainer(
-                                            "SidePanel",
-                                            custom_minimum_size=Vec2(220, 360),
-                                            children=[
-                                                Label("SpellsTitle", text="Spells", horizontal_alignment=1),
-                                                VBoxContainer("SpellsPanel", children=spell_buttons()),
-                                                Label("HintsTitle", text="Hints", horizontal_alignment=1),
-                                                scene_instance("HintPanel", hint_resource),
-                                            ],
+                                        GridContainer(
+                                            "MapGrid",
+                                            columns=5,
+                                            size_flags_horizontal=3,
+                                            size_flags_vertical=3,
+                                            size_flags_stretch_ratio=9.0,
+                                            children=map_cells(),
                                         ),
+                                    ],
+                                ),
+                                VBoxContainer(
+                                    "ActionsPanel",
+                                    size_flags_horizontal=3,
+                                    size_flags_vertical=0,
+                                    children=[
+                                        Label("SpellsTitle", text="Spells", horizontal_alignment=1),
+                                        HBoxContainer(
+                                            "SpellsPanel",
+                                            size_flags_horizontal=3,
+                                            children=spell_buttons(),
+                                        ),
+                                        scene_instance("HintPanel", hint_resource),
                                     ],
                                 ),
                                 HBoxContainer(
                                     "DebugBar",
+                                    size_flags_horizontal=3,
                                     children=[
                                         debug_button(
                                             "IntroButton",
@@ -400,8 +420,8 @@ game.add_scene(
             script=file_script("end"),
             groups=["ld49_port", "stage_f"],
             anchors_preset=15,
-            offset_right=820,
-            offset_bottom=760,
+            offset_right=540,
+            offset_bottom=960,
             children=[
                 Panel(
                     "Panel",
@@ -434,8 +454,8 @@ game.add_scene(
             script=file_script("intro"),
             groups=["ld49_port", "stage_a_g"],
             anchors_preset=15,
-            offset_right=820,
-            offset_bottom=760,
+            offset_right=540,
+            offset_bottom=960,
             children=[
                 Panel(
                     "Panel",
@@ -468,8 +488,8 @@ game.add_scene(
             script=file_script("fader"),
             groups=["ld49_port", "stage_a_g"],
             anchors_preset=15,
-            offset_right=820,
-            offset_bottom=760,
+            offset_right=540,
+            offset_bottom=960,
             children=[
                 Panel(
                     "Panel",
