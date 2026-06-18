@@ -9,8 +9,8 @@ from ld49_pygodot.game import game
 from ld49_pygodot.validation import validate_build
 
 
-class LD49PygodotSkeletonTests(unittest.TestCase):
-    def test_stage_b_skeleton_builds_game_scene_shell(self) -> None:
+class LD49PygodotPortTests(unittest.TestCase):
+    def test_ld49_port_builds_stage_a_to_g_vertical_slice(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             build_dir = Path(tmp) / "godot_project"
             game.build_dir = build_dir
@@ -95,7 +95,7 @@ class LD49PygodotSkeletonTests(unittest.TestCase):
             self.assertIn("[physics]", project_text)
             self.assertIn("common/enable_pause_aware_picking=true", project_text)
 
-            self.assertIn('[node name="Main" type="MarginContainer" groups=["ld49_port", "stage_b"]]', main_scene_text)
+            self.assertIn('[node name="Main" type="MarginContainer" groups=["ld49_port", "stage_a_g"]]', main_scene_text)
             self.assertIn('[node name="Background" type="TextureRect" parent="."]', main_scene_text)
             self.assertIn('texture = ExtResource("Texture2D_resources_icon_svg")', main_scene_text)
             self.assertIn('[node name="ScorePanel" type="HBoxContainer" parent="Shell/VBox"]', main_scene_text)
@@ -131,8 +131,8 @@ class LD49PygodotSkeletonTests(unittest.TestCase):
             self.assertIn('[node name="Spell" type="Panel"]', spell_scene_text)
             self.assertIn('[node name="Tile" type="Panel"]', tile_scene_text)
             self.assertIn('[node name="Unit" type="Panel"]', unit_scene_text)
-            self.assertIn('[node name="Intro" type="MarginContainer" groups=["ld49_port", "stage_a"]]', intro_scene_text)
-            self.assertIn('[node name="Fader" type="MarginContainer" groups=["ld49_port", "stage_a"]]', fader_scene_text)
+            self.assertIn('[node name="Intro" type="MarginContainer" groups=["ld49_port", "stage_a_g"]]', intro_scene_text)
+            self.assertIn('[node name="Fader" type="MarginContainer" groups=["ld49_port", "stage_a_g"]]', fader_scene_text)
             self.assertIn(
                 '[connection signal="pressed" from="Shell/VBox/DebugBar/IntroButton" to="." method="_on_intro_pressed"]',
                 main_scene_text,

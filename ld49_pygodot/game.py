@@ -65,7 +65,7 @@ hint_scene = Scene(
                     Label("Title", text="Hint", horizontal_alignment=1),
                     Label(
                         "Body",
-                        text="Stage B shell placeholder",
+                        text="Drag spells onto units, advance turns, and clear the unstable board.",
                         horizontal_alignment=1,
                         autowrap_mode=2,
                     ),
@@ -246,7 +246,7 @@ game.add_scene(
         root=MarginContainer(
             "Main",
             script=file_script("main"),
-            groups=["ld49_port", "stage_b"],
+            groups=["ld49_port", "stage_a_g"],
             anchors_preset=15,
             offset_right=540,
             offset_bottom=750,
@@ -300,7 +300,7 @@ game.add_scene(
                                         ),
                                         Label(
                                             "StatusLabel",
-                                            text="Stage B shell",
+                                            text="LD49 port ready",
                                             custom_minimum_size=Vec2(150, 32),
                                             horizontal_alignment=1,
                                         ),
@@ -407,7 +407,7 @@ game.add_scene(
         root=MarginContainer(
             "Intro",
             script=file_script("intro"),
-            groups=["ld49_port", "stage_a"],
+            groups=["ld49_port", "stage_a_g"],
             anchors_preset=15,
             offset_right=540,
             offset_bottom=750,
@@ -418,7 +418,7 @@ game.add_scene(
                         VBoxContainer(
                             "VBox",
                             children=[
-                                Label("Title", text="Intro Skeleton", horizontal_alignment=1),
+                                Label("Title", text="Intro", horizontal_alignment=1),
                                 Label("StatusLabel", text="Intro placeholder", horizontal_alignment=1),
                                 Button(
                                     "BackButton",
@@ -441,7 +441,7 @@ game.add_scene(
         root=MarginContainer(
             "Fader",
             script=file_script("fader"),
-            groups=["ld49_port", "stage_a"],
+            groups=["ld49_port", "stage_a_g"],
             anchors_preset=15,
             offset_right=540,
             offset_bottom=750,
@@ -452,7 +452,7 @@ game.add_scene(
                         VBoxContainer(
                             "VBox",
                             children=[
-                                Label("Title", text="Fader Skeleton", horizontal_alignment=1),
+                                Label("Title", text="Fader", horizontal_alignment=1),
                                 Label("StatusLabel", text="Fader placeholder", horizontal_alignment=1),
                                 ColorRect(
                                     "FadePreview",

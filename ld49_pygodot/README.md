@@ -1,6 +1,6 @@
-# LD49 pygodot port skeleton
+# LD49 pygodot port
 
-This folder is the real LD49 port target scaffold. It is intentionally separate
+This folder is the real LD49 port target. It is intentionally separate
 from the old Godot 3 project and from the small `examples/ld49_*` rehearsal
 slices.
 
@@ -13,7 +13,7 @@ Implemented so far:
 - fader scene;
 - copied placeholder icon resource;
 - source-owned autoload scripts, including `AudioManager`.
-- Stage B `main.tscn` shell with a score panel, `TextureRect` background, 5x5
+- Stage B `main.tscn` layout with a score panel, `TextureRect` background, 5x5
   map grid, spells panel, debug buttons, and a generated hint scene instance.
 - Stage C core runtime singletons: `GameState`, `Matrix`, `MatrixUtils`,
   `Rand`, `Utils`, `SceneChanger`, and `AudioManager`.

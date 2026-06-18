@@ -60,7 +60,7 @@ Implemented:
   `examples/ld49_vertical_slice`.
 - LD49 Godot 3 to Godot 4 migration notes in
   `docs/LD49_MIGRATION_NOTES.md`.
-- a real LD49 port skeleton target and Stage B game scene shell in
+- a real LD49 port target and Stage B game scene layout in
   `ld49_pygodot/`.
 - Stage C core runtime scripts in `ld49_pygodot/scripts/`.
 - Stage D reusable tile and spell scenes in `ld49_pygodot/`, including a
