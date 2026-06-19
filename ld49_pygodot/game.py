@@ -451,15 +451,21 @@ game.add_scene(
                                             theme_override_font_sizes={"font_size": 18},
                                         ),
                                         node(
-                                            "EventLogText",
-                                            "TextEdit",
-                                            text="",
+                                            "EventLogScroll",
+                                            "ScrollContainer",
                                             size_flags_horizontal=3,
                                             size_flags_vertical=3,
-                                            editable=False,
-                                            wrap_mode=1,
                                             mouse_filter=0,
-                                            theme_override_font_sizes={"font_size": 14},
+                                            children=[
+                                                Label(
+                                                    "EventLogText",
+                                                    text="No events yet",
+                                                    size_flags_horizontal=3,
+                                                    autowrap_mode=2,
+                                                    mouse_filter=2,
+                                                    theme_override_font_sizes={"font_size": 14},
+                                                )
+                                            ],
                                         ),
                                     ],
                                 )
