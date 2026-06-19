@@ -156,10 +156,12 @@ func _on_tile_spell_hovered(tile_id: String, spell_id: String) -> void:
         status_label.text = "%s targets %s" % [spell_id.capitalize(), tile_id]
 
 func _on_event_log_button_pressed() -> void:
+    if event_log.is_empty() and not status_label.text.is_empty():
+        _append_event(status_label.text)
     _refresh_event_log()
     event_log_overlay.visible = true
-    if event_log.size() > 0 and event_log_text.has_method("scroll_to_line"):
-        event_log_text.scroll_to_line(event_log.size() - 1)
+    if event_log_text.has_method("set_caret_line"):
+        event_log_text.set_caret_line(max(event_log.size() - 1, 0))
 
 func _on_event_log_overlay_gui_input(event: InputEvent) -> void:
     if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
@@ -243,7 +245,10 @@ func _append_event(message: String) -> void:
 func _refresh_event_log() -> void:
     if event_log.is_empty():
         event_log_button.text = "Log: empty"
-        event_log_text.text = ""
+        event_log_text.text = "No events yet"
         return
     event_log_button.text = "Log: %s" % event_log[event_log.size() - 1]
-    event_log_text.text = "\n".join(event_log)
+    var lines: Array[String] = []
+    for index in range(event_log.size()):
+        lines.append("%02d. %s" % [index + 1, event_log[index]])
+    event_log_text.text = "\n".join(lines)
