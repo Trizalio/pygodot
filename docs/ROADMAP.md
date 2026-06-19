@@ -96,6 +96,8 @@ Implemented:
   hints, and expanded text bands for unit/effect labels.
 - LD49 action bar polish in `ld49_pygodot/`, with compact spell cards and an
   inline hint line instead of a bulky hint panel.
+- LD49 readable event log in `ld49_pygodot/`, with a compact action-bar
+  preview and a scrollable full-screen overlay.
 
 ## Next Direction
 

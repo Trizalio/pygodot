@@ -13,6 +13,7 @@ from pygodot import (
     Label,
     MarginContainer,
     Panel,
+    RichTextLabel,
     Scene,
     Script,
     TextureRect,
@@ -365,6 +366,15 @@ game.add_scene(
                                             size_flags_horizontal=3,
                                             children=spell_buttons(),
                                         ),
+                                        Button(
+                                            "EventLogButton",
+                                            text="Log: ready",
+                                            size_flags_horizontal=3,
+                                            custom_minimum_size=Vec2(0, 32),
+                                            clip_text=True,
+                                            signals=[signal("pressed", target=".", method="_on_event_log_button_pressed")],
+                                            theme_override_font_sizes={"font_size": 12},
+                                        ),
                                         Label(
                                             "HintLine",
                                             text="Drag spell -> unit. Focus events resolve one by one.",
@@ -405,7 +415,58 @@ game.add_scene(
                             ],
                         )
                     ],
-                )
+                ),
+                ColorRect(
+                    "EventLogOverlay",
+                    anchors_preset=15,
+                    color=Color(0.04, 0.05, 0.06, 0.74),
+                    mouse_filter=0,
+                    visible=False,
+                    signals=[signal("gui_input", target=".", method="_on_event_log_overlay_gui_input")],
+                    children=[
+                        Panel(
+                            "EventLogPanel",
+                            anchors_preset=15,
+                            offset_left=24,
+                            offset_top=72,
+                            offset_right=-24,
+                            offset_bottom=-72,
+                            mouse_filter=0,
+                            signals=[signal("gui_input", target=".", method="_on_event_log_panel_gui_input")],
+                            children=[
+                                VBoxContainer(
+                                    "VBox",
+                                    anchors_preset=15,
+                                    offset_left=12,
+                                    offset_top=10,
+                                    offset_right=-12,
+                                    offset_bottom=-10,
+                                    children=[
+                                        Label(
+                                            "Title",
+                                            text="Event Log",
+                                            size_flags_horizontal=3,
+                                            custom_minimum_size=Vec2(0, 28),
+                                            horizontal_alignment=1,
+                                            theme_override_font_sizes={"font_size": 18},
+                                        ),
+                                        RichTextLabel(
+                                            "EventLogText",
+                                            text="",
+                                            size_flags_horizontal=3,
+                                            size_flags_vertical=3,
+                                            autowrap_mode=2,
+                                            scroll_active=True,
+                                            fit_content=False,
+                                            mouse_filter=0,
+                                            theme_override_font_sizes={"normal_font_size": 14},
+                                        ),
+                                    ],
+                                )
+                            ],
+                        )
+                    ],
+                ),
             ],
         ),
     )

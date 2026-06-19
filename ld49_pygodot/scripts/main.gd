@@ -3,7 +3,12 @@
 @onready var turn_label := $Shell/VBox/ScorePanel/Counters/TurnLabel
 @onready var castle_label := $Shell/VBox/BoardPanel/CastlePanel/CastleLabel
 @onready var map_grid := $Shell/VBox/BoardPanel/MapGrid
+@onready var event_log_button := $Shell/VBox/ActionsPanel/EventLogButton
+@onready var event_log_overlay := $EventLogOverlay
+@onready var event_log_text := $EventLogOverlay/EventLogPanel/VBox/EventLogText
 var turn_playback_active := false
+var event_log := PackedStringArray()
+const EVENT_LOG_LIMIT := 80
 
 func _ready() -> void:
     GameState.reset()
@@ -11,6 +16,7 @@ func _ready() -> void:
     _connect_tiles()
     _refresh_tiles()
     _refresh_runtime_labels()
+    _append_event("Battle ready")
 
 func _on_intro_pressed() -> void:
     AudioManager.play_cue("open_intro")
@@ -24,10 +30,12 @@ func _on_reset_pressed() -> void:
     if turn_playback_active:
         return
     GameState.reset()
+    event_log.clear()
     _reset_tiles()
     _refresh_tiles()
     AudioManager.stop_music()
     _refresh_runtime_labels()
+    _append_event("Reset state")
 
 func _on_advance_units_pressed() -> void:
     if turn_playback_active:
@@ -41,7 +49,7 @@ func _on_tile_spell_dropped(tile_id: String, spell_id: String, display_name: Str
     _clear_spell_preview()
     var summary := GameState.apply_spell(tile_id, spell_id)
     AudioManager.play_cue("cast_%s" % spell_id)
-    status_label.text = "%s cast on %s. %s" % [display_name, tile_id, summary]
+    _set_status("%s cast on %s. %s" % [display_name, tile_id, summary])
     _refresh_tiles()
     _refresh_counters()
     await _pause_turn_phase()
@@ -51,23 +59,23 @@ func _play_turn_phases(action_name: String) -> void:
     turn_playback_active = true
     GameState.begin_neighbor_phase()
     if not GameState.has_queued_neighbor_event():
-        status_label.text = "%s: no neighbor effects" % action_name
+        _set_status("%s: no neighbor effects" % action_name)
         _refresh_tiles()
         _refresh_counters()
         await _pause_turn_phase()
     while GameState.has_queued_neighbor_event():
         var event := GameState.peek_neighbor_event()
         _show_neighbor_event(event)
-        status_label.text = "%s: %s -> %s (%s)" % [
+        _set_status("%s: %s -> %s (%s)" % [
             action_name,
             event.get("actor_name", ""),
             event.get("target_name", ""),
             event.get("effect", ""),
-        ]
+        ])
         _refresh_counters()
         await _pause_unit_step()
         var trait_result := GameState.resolve_next_neighbor_event()
-        status_label.text = "%s: %s" % [action_name, trait_result]
+        _set_status("%s: %s" % [action_name, trait_result])
         _refresh_tiles()
         _refresh_counters()
         await _pause_unit_step()
@@ -78,24 +86,24 @@ func _play_turn_phases(action_name: String) -> void:
         var preview := GameState.peek_next_unit_move()
         _show_next_movement_preview(preview)
         if not preview.is_empty():
-            status_label.text = "%s: next %s %s -> %s" % [
+            _set_status("%s: next %s %s -> %s" % [
                 action_name,
                 preview.get("display_name", ""),
                 preview.get("from", ""),
                 preview.get("to", ""),
-            ]
+            ])
             _refresh_counters()
             await _pause_unit_step()
         var moved := GameState.move_next_unit()
         if moved.is_empty():
             continue
-        status_label.text = "%s: %s" % [action_name, moved]
+        _set_status("%s: %s" % [action_name, moved])
         _refresh_tiles()
         _refresh_counters()
         await _pause_unit_step()
     _clear_focus_preview()
     var spawned := GameState.spawn_wave()
-    status_label.text = "%s: %s" % [action_name, spawned]
+    _set_status("%s: %s" % [action_name, spawned])
     _refresh_tiles()
     _refresh_counters()
     _finish_if_complete()
@@ -147,6 +155,20 @@ func _on_tile_spell_hovered(tile_id: String, spell_id: String) -> void:
     else:
         status_label.text = "%s targets %s" % [spell_id.capitalize(), tile_id]
 
+func _on_event_log_button_pressed() -> void:
+    _refresh_event_log()
+    event_log_overlay.visible = true
+    if event_log.size() > 0 and event_log_text.has_method("scroll_to_line"):
+        event_log_text.scroll_to_line(event_log.size() - 1)
+
+func _on_event_log_overlay_gui_input(event: InputEvent) -> void:
+    if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+        event_log_overlay.visible = false
+
+func _on_event_log_panel_gui_input(event: InputEvent) -> void:
+    if event is InputEventMouseButton and event.pressed:
+        accept_event()
+
 func _clear_spell_preview() -> void:
     for tile in map_grid.get_children():
         if tile.has_method("clear_preview"):
@@ -193,14 +215,35 @@ func _finish_if_complete() -> void:
         SceneChanger.go_to_end()
 
 func _refresh_runtime_labels() -> void:
-    status_label.text = "%s. %s. %s" % [
+    _set_status("%s. %s. %s" % [
         GameState.describe_state(),
         GameState.describe_matrix(),
         AudioManager.describe_state(),
-    ]
+    ], false)
     _refresh_counters()
 
 func _refresh_counters() -> void:
     score_label.text = GameState.describe_score()
     turn_label.text = GameState.describe_turn()
     castle_label.text = GameState.describe_castle()
+
+func _set_status(message: String, record_event := true) -> void:
+    status_label.text = message
+    if record_event:
+        _append_event(message)
+
+func _append_event(message: String) -> void:
+    if message.is_empty():
+        return
+    event_log.append(message)
+    while event_log.size() > EVENT_LOG_LIMIT:
+        event_log.remove_at(0)
+    _refresh_event_log()
+
+func _refresh_event_log() -> void:
+    if event_log.is_empty():
+        event_log_button.text = "Log: empty"
+        event_log_text.text = ""
+        return
+    event_log_button.text = "Log: %s" % event_log[event_log.size() - 1]
+    event_log_text.text = "\n".join(event_log)

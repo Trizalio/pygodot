@@ -123,6 +123,8 @@ class LD49PygodotPortTests(unittest.TestCase):
             self.assertIn('[node name="HealSpell" parent="Shell/VBox/ActionsPanel/SpellsPanel" instance=ExtResource("PackedScene_scenes_spell_tscn")]', main_scene_text)
             self.assertIn('spell_id = "heal"', main_scene_text)
             self.assertIn('hint_text = "heal"', main_scene_text)
+            self.assertIn('[node name="EventLogButton" type="Button" parent="Shell/VBox/ActionsPanel"]', main_scene_text)
+            self.assertIn('text = "Log: ready"', main_scene_text)
             self.assertIn('[node name="HintLine" type="Label" parent="Shell/VBox/ActionsPanel"]', main_scene_text)
             self.assertNotIn("UnitsPanel", main_scene_text)
             self.assertNotIn("PackedScene_scenes_unit_tscn", main_scene_text)
@@ -130,6 +132,10 @@ class LD49PygodotPortTests(unittest.TestCase):
             self.assertIn('text = "Pass Turn"', main_scene_text)
             self.assertIn("custom_minimum_size = Vector2(118, 38)", main_scene_text)
             self.assertNotIn("PackedScene_scenes_hint_tscn", main_scene_text)
+            self.assertIn('[node name="EventLogOverlay" type="ColorRect" parent="."]', main_scene_text)
+            self.assertIn("visible = false", main_scene_text)
+            self.assertIn('[node name="EventLogText" type="RichTextLabel" parent="EventLogOverlay/EventLogPanel/VBox"]', main_scene_text)
+            self.assertIn("scroll_active = true", main_scene_text)
             self.assertIn('[node name="End" type="MarginContainer" groups=["ld49_port", "stage_f"]]', end_scene_text)
             self.assertIn('[connection signal="pressed" from="Panel/VBox/BackButton" to="." method="_on_back_pressed"]', end_scene_text)
             self.assertIn('[node name="Spell" type="Panel"]', spell_scene_text)
@@ -162,6 +168,14 @@ class LD49PygodotPortTests(unittest.TestCase):
                 '[connection signal="pressed" from="Shell/VBox/DebugBar/AdvanceUnitsButton" to="." method="_on_advance_units_pressed"]',
                 main_scene_text,
             )
+            self.assertIn(
+                '[connection signal="pressed" from="Shell/VBox/ActionsPanel/EventLogButton" to="." method="_on_event_log_button_pressed"]',
+                main_scene_text,
+            )
+            self.assertIn(
+                '[connection signal="gui_input" from="EventLogOverlay" to="." method="_on_event_log_overlay_gui_input"]',
+                main_scene_text,
+            )
             self.assertIn("SceneChanger.go_to_intro()", main_script_text)
             self.assertIn("SceneChanger.show_fader()", main_script_text)
             self.assertIn("SceneChanger.go_to_end()", main_script_text)
@@ -169,7 +183,14 @@ class LD49PygodotPortTests(unittest.TestCase):
             self.assertIn("@onready var score_label := $Shell/VBox/ScorePanel/Counters/ScoreLabel", main_script_text)
             self.assertIn("@onready var turn_label := $Shell/VBox/ScorePanel/Counters/TurnLabel", main_script_text)
             self.assertIn("@onready var map_grid := $Shell/VBox/BoardPanel/MapGrid", main_script_text)
+            self.assertIn("@onready var event_log_button := $Shell/VBox/ActionsPanel/EventLogButton", main_script_text)
+            self.assertIn("@onready var event_log_overlay := $EventLogOverlay", main_script_text)
             self.assertIn("func _finish_if_complete() -> void:", main_script_text)
+            self.assertIn("func _on_event_log_button_pressed() -> void:", main_script_text)
+            self.assertIn("func _on_event_log_overlay_gui_input(event: InputEvent) -> void:", main_script_text)
+            self.assertIn("func _append_event(message: String) -> void:", main_script_text)
+            self.assertIn("event_log.clear()", main_script_text)
+            self.assertIn('event_log_text.text = "\\n".join(event_log)', main_script_text)
             self.assertIn("func _on_reset_pressed() -> void:", main_script_text)
             self.assertIn("var turn_playback_active := false", main_script_text)
             self.assertIn("func _play_turn_phases(action_name: String) -> void:", main_script_text)
