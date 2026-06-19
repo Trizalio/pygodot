@@ -113,7 +113,7 @@ spell_scene = Scene(
     root=Panel(
         "Spell",
         script=file_script("spell", extends="Panel"),
-        custom_minimum_size=Vec2(112, 50),
+        custom_minimum_size=Vec2(116, 52),
         size_flags_horizontal=3,
         mouse_filter=0,
         children=[
@@ -125,10 +125,14 @@ spell_scene = Scene(
                 offset_top=4,
                 offset_right=-5,
                 offset_bottom=-4,
+                custom_minimum_size=Vec2(104, 42),
+                size_flags_horizontal=3,
                 children=[
                     Label(
                         "Title",
                         text="Fireball",
+                        custom_minimum_size=Vec2(104, 18),
+                        size_flags_horizontal=3,
                         horizontal_alignment=1,
                         mouse_filter=2,
                         clip_text=True,
@@ -137,7 +141,8 @@ spell_scene = Scene(
                     Label(
                         "Hint",
                         text="2 dmg + burn",
-                        custom_minimum_size=Vec2(0, 18),
+                        custom_minimum_size=Vec2(104, 18),
+                        size_flags_horizontal=3,
                         horizontal_alignment=1,
                         mouse_filter=2,
                         clip_text=True,
