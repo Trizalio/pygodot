@@ -98,6 +98,8 @@ Implemented:
   inline hint line instead of a bulky hint panel.
 - LD49 readable event log in `ld49_pygodot/`, with a compact action-bar
   preview and a scrollable full-screen overlay.
+- LD49 castle goal affordance in `ld49_pygodot/`, with highlighted previews
+  for units entering the castle and arrival feedback.
 
 ## Next Direction
 

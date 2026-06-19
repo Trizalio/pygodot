@@ -53,6 +53,8 @@ Implemented so far:
   of a bulky hint panel.
 - Readable event log with a compact action-bar preview and an expandable
   scrollable overlay that closes from the backdrop.
+- Castle goal affordance with highlighted goal-state previews when units are
+  about to enter the castle and arrival feedback when they score.
 
 Runtime behavior remains ordinary GDScript. This folder does not contain an
 automatic Godot 3 to Godot 4 converter and does not claim to be a full LD49

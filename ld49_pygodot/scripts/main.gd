@@ -1,6 +1,7 @@
 @onready var status_label := $Shell/VBox/ScorePanel/StatusLabel
 @onready var score_label := $Shell/VBox/ScorePanel/Counters/ScoreLabel
 @onready var turn_label := $Shell/VBox/ScorePanel/Counters/TurnLabel
+@onready var castle_panel := $Shell/VBox/BoardPanel/CastlePanel
 @onready var castle_label := $Shell/VBox/BoardPanel/CastlePanel/CastleLabel
 @onready var map_grid := $Shell/VBox/BoardPanel/MapGrid
 @onready var event_log_button := $Shell/VBox/ActionsPanel/EventLogButton
@@ -8,6 +9,7 @@
 @onready var event_log_text := $EventLogOverlay/EventLogPanel/EventLogText
 var turn_playback_active := false
 var event_log := PackedStringArray()
+var castle_preview_active := false
 const EVENT_LOG_LIMIT := 80
 
 func _ready() -> void:
@@ -98,6 +100,8 @@ func _play_turn_phases(action_name: String) -> void:
         if moved.is_empty():
             continue
         _set_status("%s: %s" % [action_name, moved])
+        if str(preview.get("outcome", "")) == "castle":
+            _set_castle_preview("arrive", str(preview.get("display_name", "")))
         _refresh_tiles()
         _refresh_counters()
         await _pause_unit_step()
@@ -198,7 +202,10 @@ func _show_next_movement_preview(preview: Dictionary) -> void:
         from_tile.set_movement_preview("from", str(preview.get("outcome", "")), str(preview.get("display_name", "")))
     var from_cell := str(preview.get("from", ""))
     var to_cell := str(preview.get("to", ""))
-    if to_cell == "CASTLE" or to_cell.is_empty() or to_cell == from_cell:
+    if to_cell == "CASTLE":
+        _set_castle_preview("target", str(preview.get("display_name", "")))
+        return
+    if to_cell.is_empty() or to_cell == from_cell:
         return
     var to_tile := _tile_by_id(to_cell)
     if to_tile != null and to_tile.has_method("set_movement_preview"):
@@ -208,6 +215,7 @@ func _clear_focus_preview() -> void:
     for tile in map_grid.get_children():
         if tile.has_method("clear_preview"):
             tile.clear_preview()
+    _clear_castle_preview()
 
 func _tile_by_id(tile_id: String) -> Node:
     for tile in map_grid.get_children():
@@ -231,7 +239,23 @@ func _refresh_runtime_labels() -> void:
 func _refresh_counters() -> void:
     score_label.text = GameState.describe_score()
     turn_label.text = GameState.describe_turn()
+    if not castle_preview_active:
+        castle_label.text = GameState.describe_castle()
+        castle_panel.modulate = Color(0.42, 0.50, 0.58, 1.0)
+
+func _set_castle_preview(role: String, display_name: String) -> void:
+    castle_preview_active = true
+    if role == "arrive":
+        castle_label.text = "Goal reached: %s" % display_name
+        castle_panel.modulate = Color(0.42, 0.72, 0.48, 1.0)
+    else:
+        castle_label.text = "Goal <= %s" % display_name
+        castle_panel.modulate = Color(0.78, 0.67, 0.28, 1.0)
+
+func _clear_castle_preview() -> void:
+    castle_preview_active = false
     castle_label.text = GameState.describe_castle()
+    castle_panel.modulate = Color(0.42, 0.50, 0.58, 1.0)
 
 func _set_status(message: String, record_event := true) -> void:
     status_label.text = message

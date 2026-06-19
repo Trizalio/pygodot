@@ -168,7 +168,7 @@ func describe_turn() -> String:
     return "Turn %d" % turn
 
 func describe_castle() -> String:
-    return "Castle %d/%d D:%d U:%d G:%d" % [
+    return "Goal Castle %d/%d D:%d U:%d G:%d" % [
         _castle_total(),
         castle_capacity,
         int(castle_counts.get("demon", 0)),

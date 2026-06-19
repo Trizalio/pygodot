@@ -332,10 +332,11 @@ game.add_scene(
                                             size_flags_horizontal=3,
                                             size_flags_vertical=1,
                                             custom_minimum_size=Vec2(0, 48),
+                                            self_modulate=Color(0.42, 0.50, 0.58, 1.0),
                                             children=[
                                                 Label(
                                                     "CastleLabel",
-                                                    text="Castle 0/6 D:0 U:0 G:0",
+                                                    text="Goal Castle 0/6 D:0 U:0 G:0",
                                                     anchors_preset=15,
                                                     offset_left=8,
                                                     offset_top=6,
@@ -343,6 +344,7 @@ game.add_scene(
                                                     offset_bottom=-6,
                                                     horizontal_alignment=1,
                                                     vertical_alignment=1,
+                                                    theme_override_font_sizes={"font_size": 15},
                                                 )
                                             ],
                                         ),
