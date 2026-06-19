@@ -24,7 +24,6 @@ class LD49PygodotPortTests(unittest.TestCase):
                     "project.godot",
                     "scenes/end.tscn",
                     "scenes/fader.tscn",
-                    "scenes/hint.tscn",
                     "scenes/intro.tscn",
                     "scenes/main.tscn",
                     "scenes/spell.tscn",
@@ -58,7 +57,6 @@ class LD49PygodotPortTests(unittest.TestCase):
             project_text = (build_dir / "project.godot").read_text(encoding="utf-8")
             main_scene_text = (build_dir / "scenes" / "main.tscn").read_text(encoding="utf-8")
             end_scene_text = (build_dir / "scenes" / "end.tscn").read_text(encoding="utf-8")
-            hint_scene_text = (build_dir / "scenes" / "hint.tscn").read_text(encoding="utf-8")
             spell_scene_text = (build_dir / "scenes" / "spell.tscn").read_text(encoding="utf-8")
             tile_scene_text = (build_dir / "scenes" / "tile.tscn").read_text(encoding="utf-8")
             unit_scene_text = (build_dir / "scenes" / "unit.tscn").read_text(encoding="utf-8")
@@ -124,16 +122,14 @@ class LD49PygodotPortTests(unittest.TestCase):
             self.assertIn('spell_id = "shield"', main_scene_text)
             self.assertIn('[node name="HealSpell" parent="Shell/VBox/ActionsPanel/SpellsPanel" instance=ExtResource("PackedScene_scenes_spell_tscn")]', main_scene_text)
             self.assertIn('spell_id = "heal"', main_scene_text)
-            self.assertIn('hint_text = "heal allies"', main_scene_text)
+            self.assertIn('hint_text = "heal"', main_scene_text)
+            self.assertIn('[node name="HintLine" type="Label" parent="Shell/VBox/ActionsPanel"]', main_scene_text)
             self.assertNotIn("UnitsPanel", main_scene_text)
             self.assertNotIn("PackedScene_scenes_unit_tscn", main_scene_text)
             self.assertIn('[node name="AdvanceUnitsButton" type="Button" parent="Shell/VBox/DebugBar"]', main_scene_text)
             self.assertIn('text = "Pass Turn"', main_scene_text)
             self.assertIn("custom_minimum_size = Vector2(118, 38)", main_scene_text)
-            self.assertIn('[node name="HintPanel" parent="Shell/VBox/ActionsPanel" instance=ExtResource("PackedScene_scenes_hint_tscn")]', main_scene_text)
-            self.assertIn('[node name="Hint" type="Panel"]', hint_scene_text)
-            self.assertIn("custom_minimum_size = Vector2(0, 42)", hint_scene_text)
-            self.assertIn("clip_text = true", hint_scene_text)
+            self.assertNotIn("PackedScene_scenes_hint_tscn", main_scene_text)
             self.assertIn('[node name="End" type="MarginContainer" groups=["ld49_port", "stage_f"]]', end_scene_text)
             self.assertIn('[connection signal="pressed" from="Panel/VBox/BackButton" to="." method="_on_back_pressed"]', end_scene_text)
             self.assertIn('[node name="Spell" type="Panel"]', spell_scene_text)
@@ -317,13 +313,6 @@ class LD49PygodotPortTests(unittest.TestCase):
             self.assertEqual(
                 manifest["external_resources"],
                 [
-                    {
-                        "copied": False,
-                        "id": "PackedScene_scenes_hint_tscn",
-                        "ownership": "generated",
-                        "path": "res://scenes/hint.tscn",
-                        "type": "PackedScene",
-                    },
                     {
                         "copied": False,
                         "id": "PackedScene_scenes_spell_tscn",

@@ -94,6 +94,8 @@ Implemented:
   container sizing for board, spells, and controls.
 - LD49 mobile fit polish in `ld49_pygodot/`, with taller cells, shorter spell
   hints, and expanded text bands for unit/effect labels.
+- LD49 action bar polish in `ld49_pygodot/`, with compact spell cards and an
+  inline hint line instead of a bulky hint panel.
 
 ## Next Direction
 

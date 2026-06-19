@@ -8,7 +8,6 @@ REQUIRED_GENERATED_FILES = {
     "project.godot",
     "scenes/end.tscn",
     "scenes/fader.tscn",
-    "scenes/hint.tscn",
     "scenes/intro.tscn",
     "scenes/main.tscn",
     "scenes/spell.tscn",
@@ -123,7 +122,6 @@ def _validate_manifest(manifest: dict, issues: list[str]) -> None:
         for resource in manifest.get("external_resources", [])
     }
     for path in [
-        "res://scenes/hint.tscn",
         "res://scenes/spell.tscn",
         "res://scenes/tile.tscn",
     ]:

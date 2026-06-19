@@ -54,38 +54,6 @@ game.add_autoload("GameState", "res://scripts/game_state.gd")
 game.add_autoload("SceneChanger", "res://scripts/scene_changer.gd")
 game.add_autoload("AudioManager", "res://scripts/audio_manager.gd")
 
-hint_scene = Scene(
-    path="res://scenes/hint.tscn",
-    root=Panel(
-        "Hint",
-        custom_minimum_size=Vec2(0, 76),
-        size_flags_horizontal=3,
-        children=[
-            VBoxContainer(
-                "VBox",
-                anchors_preset=15,
-                offset_left=8,
-                offset_top=6,
-                offset_right=-8,
-                offset_bottom=-6,
-                children=[
-                    Label("Title", text="Hint", horizontal_alignment=1),
-                    Label(
-                        "Body",
-                        text="Drag spells onto units. Resolve focused events, then survive the castle pressure.",
-                        custom_minimum_size=Vec2(0, 42),
-                        size_flags_horizontal=3,
-                        horizontal_alignment=1,
-                        autowrap_mode=2,
-                        clip_text=True,
-                    ),
-                ],
-            )
-        ],
-    ),
-)
-hint_resource = hint_scene.as_packed_scene()
-
 tile_scene = Scene(
     path="res://scenes/tile.tscn",
     root=Panel(
@@ -145,7 +113,7 @@ spell_scene = Scene(
     root=Panel(
         "Spell",
         script=file_script("spell", extends="Panel"),
-        custom_minimum_size=Vec2(118, 74),
+        custom_minimum_size=Vec2(112, 50),
         size_flags_horizontal=3,
         mouse_filter=0,
         children=[
@@ -153,19 +121,27 @@ spell_scene = Scene(
                 "VBox",
                 anchors_preset=15,
                 mouse_filter=2,
-                offset_left=6,
-                offset_top=6,
-                offset_right=-6,
-                offset_bottom=-6,
+                offset_left=5,
+                offset_top=4,
+                offset_right=-5,
+                offset_bottom=-4,
                 children=[
-                    Label("Title", text="Fireball", horizontal_alignment=1, mouse_filter=2, clip_text=True),
+                    Label(
+                        "Title",
+                        text="Fireball",
+                        horizontal_alignment=1,
+                        mouse_filter=2,
+                        clip_text=True,
+                        theme_override_font_sizes={"font_size": 14},
+                    ),
                     Label(
                         "Hint",
                         text="2 dmg + burn",
+                        custom_minimum_size=Vec2(0, 18),
                         horizontal_alignment=1,
                         mouse_filter=2,
-                        autowrap_mode=2,
                         clip_text=True,
+                        theme_override_font_sizes={"font_size": 11},
                     ),
                 ],
             )
@@ -222,29 +198,29 @@ def spell_buttons() -> list:
             "FireballSpell",
             spell_resource,
             spell_id="fireball",
-            display_name="Fireball",
-            hint_text="2 dmg + burn",
+            display_name="Fire",
+            hint_text="2 dmg burn",
         ),
         scene_instance(
             "FrostSpell",
             spell_resource,
             spell_id="frost",
             display_name="Frost",
-            hint_text="1 dmg + freeze",
+            hint_text="1 dmg stop",
         ),
         scene_instance(
             "ShieldSpell",
             spell_resource,
             spell_id="shield",
             display_name="Shield",
-            hint_text="+armor allies",
+            hint_text="armor",
         ),
         scene_instance(
             "HealSpell",
             spell_resource,
             spell_id="heal",
             display_name="Heal",
-            hint_text="heal allies",
+            hint_text="heal",
         ),
     ]
 
@@ -259,7 +235,6 @@ def debug_button(name: str, text: str, method: str) -> Button:
     )
 
 
-game.add_scene(hint_scene)
 game.add_scene(tile_scene)
 game.add_scene(spell_scene)
 game.add_scene(unit_scene)
@@ -380,13 +355,20 @@ game.add_scene(
                                     size_flags_horizontal=3,
                                     size_flags_vertical=0,
                                     children=[
-                                        Label("SpellsTitle", text="Spells", horizontal_alignment=1),
                                         HBoxContainer(
                                             "SpellsPanel",
                                             size_flags_horizontal=3,
                                             children=spell_buttons(),
                                         ),
-                                        scene_instance("HintPanel", hint_resource),
+                                        Label(
+                                            "HintLine",
+                                            text="Drag spell -> unit. Focus events resolve one by one.",
+                                            size_flags_horizontal=3,
+                                            custom_minimum_size=Vec2(0, 24),
+                                            horizontal_alignment=1,
+                                            clip_text=True,
+                                            theme_override_font_sizes={"font_size": 12},
+                                        ),
                                     ],
                                 ),
                                 HBoxContainer(
