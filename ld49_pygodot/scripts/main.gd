@@ -161,10 +161,12 @@ func _on_event_log_button_pressed() -> void:
         _append_event(status_label.text)
     _refresh_event_log()
     event_log_overlay.visible = true
+    event_log_scroll.visible = true
+    event_log_text.visible = true
     await get_tree().process_frame
     event_log_scroll.scroll_vertical = int(event_log_scroll.get_v_scroll_bar().max_value)
 
-func _on_event_log_overlay_gui_input(event: InputEvent) -> void:
+func _on_event_log_backdrop_gui_input(event: InputEvent) -> void:
     if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
         event_log_overlay.visible = false
 

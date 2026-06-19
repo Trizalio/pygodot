@@ -134,9 +134,13 @@ class LD49PygodotPortTests(unittest.TestCase):
             self.assertNotIn("PackedScene_scenes_hint_tscn", main_scene_text)
             self.assertIn('[node name="EventLogOverlay" type="ColorRect" parent="."]', main_scene_text)
             self.assertIn("visible = false", main_scene_text)
+            self.assertIn('[node name="EventLogBackdrop" type="ColorRect" parent="EventLogOverlay"]', main_scene_text)
             self.assertIn('[node name="EventLogScroll" type="ScrollContainer" parent="EventLogOverlay/EventLogPanel/VBox"]', main_scene_text)
             self.assertIn('[node name="EventLogText" type="Label" parent="EventLogOverlay/EventLogPanel/VBox/EventLogScroll"]', main_scene_text)
-            self.assertIn('text = "No events yet"', main_scene_text)
+            self.assertIn("custom_minimum_size = Vector2(0, 650)", main_scene_text)
+            self.assertIn("custom_minimum_size = Vector2(452, 620)", main_scene_text)
+            self.assertIn('text = "01. Battle ready"', main_scene_text)
+            self.assertIn('theme_override_colors = {"font_color": Color(0.96, 0.98, 0.92, 1.0)}', main_scene_text)
             self.assertIn('[node name="End" type="MarginContainer" groups=["ld49_port", "stage_f"]]', end_scene_text)
             self.assertIn('[connection signal="pressed" from="Panel/VBox/BackButton" to="." method="_on_back_pressed"]', end_scene_text)
             self.assertIn('[node name="Spell" type="Panel"]', spell_scene_text)
@@ -174,7 +178,7 @@ class LD49PygodotPortTests(unittest.TestCase):
                 main_scene_text,
             )
             self.assertIn(
-                '[connection signal="gui_input" from="EventLogOverlay" to="." method="_on_event_log_overlay_gui_input"]',
+                '[connection signal="gui_input" from="EventLogOverlay/EventLogBackdrop" to="." method="_on_event_log_backdrop_gui_input"]',
                 main_scene_text,
             )
             self.assertIn("SceneChanger.go_to_intro()", main_script_text)
@@ -189,10 +193,12 @@ class LD49PygodotPortTests(unittest.TestCase):
             self.assertIn("@onready var event_log_scroll := $EventLogOverlay/EventLogPanel/VBox/EventLogScroll", main_script_text)
             self.assertIn("func _finish_if_complete() -> void:", main_script_text)
             self.assertIn("func _on_event_log_button_pressed() -> void:", main_script_text)
-            self.assertIn("func _on_event_log_overlay_gui_input(event: InputEvent) -> void:", main_script_text)
+            self.assertIn("func _on_event_log_backdrop_gui_input(event: InputEvent) -> void:", main_script_text)
             self.assertIn("func _append_event(message: String) -> void:", main_script_text)
             self.assertIn("event_log.clear()", main_script_text)
             self.assertIn("await get_tree().process_frame", main_script_text)
+            self.assertIn("event_log_scroll.visible = true", main_script_text)
+            self.assertIn("event_log_text.visible = true", main_script_text)
             self.assertIn("event_log_scroll.scroll_vertical", main_script_text)
             self.assertIn('event_log_text.text = "No events yet"', main_script_text)
             self.assertIn('lines.append("%02d. %s" % [index + 1, event_log[index]])', main_script_text)

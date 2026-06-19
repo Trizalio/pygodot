@@ -419,11 +419,17 @@ game.add_scene(
                 ColorRect(
                     "EventLogOverlay",
                     anchors_preset=15,
-                    color=Color(0.04, 0.05, 0.06, 0.74),
-                    mouse_filter=0,
+                    color=Color(0.02, 0.03, 0.04, 0.82),
+                    mouse_filter=2,
                     visible=False,
-                    signals=[signal("gui_input", target=".", method="_on_event_log_overlay_gui_input")],
                     children=[
+                        ColorRect(
+                            "EventLogBackdrop",
+                            anchors_preset=15,
+                            color=Color(0.02, 0.03, 0.04, 0.01),
+                            mouse_filter=0,
+                            signals=[signal("gui_input", target=".", method="_on_event_log_backdrop_gui_input")],
+                        ),
                         Panel(
                             "EventLogPanel",
                             anchors_preset=15,
@@ -432,6 +438,7 @@ game.add_scene(
                             offset_right=-24,
                             offset_bottom=-72,
                             mouse_filter=0,
+                            self_modulate=Color(0.92, 0.93, 0.89, 1.0),
                             signals=[signal("gui_input", target=".", method="_on_event_log_panel_gui_input")],
                             children=[
                                 VBoxContainer(
@@ -448,21 +455,26 @@ game.add_scene(
                                             size_flags_horizontal=3,
                                             custom_minimum_size=Vec2(0, 28),
                                             horizontal_alignment=1,
+                                            theme_override_colors={"font_color": Color(0.96, 0.98, 0.92, 1.0)},
                                             theme_override_font_sizes={"font_size": 18},
                                         ),
                                         node(
                                             "EventLogScroll",
                                             "ScrollContainer",
+                                            custom_minimum_size=Vec2(0, 650),
                                             size_flags_horizontal=3,
                                             size_flags_vertical=3,
                                             mouse_filter=0,
                                             children=[
                                                 Label(
                                                     "EventLogText",
-                                                    text="No events yet",
+                                                    text="01. Battle ready",
+                                                    custom_minimum_size=Vec2(452, 620),
                                                     size_flags_horizontal=3,
+                                                    size_flags_vertical=3,
                                                     autowrap_mode=2,
                                                     mouse_filter=2,
+                                                    theme_override_colors={"font_color": Color(0.96, 0.98, 0.92, 1.0)},
                                                     theme_override_font_sizes={"font_size": 14},
                                                 )
                                             ],
